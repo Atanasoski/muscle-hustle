@@ -92,6 +92,40 @@
                                 <a href="{{ route('workouts.today') }}" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
                                     <i class="bi bi-play-circle-fill me-2"></i> Start Workout Now
                                 </a>
+                                
+                                @if($lastWorkout)
+                                    <div class="mt-4 p-3 bg-light border rounded-3">
+                                        <h6 class="fw-bold mb-2">
+                                            <i class="bi bi-clock-history text-muted"></i> Previous Workout
+                                        </h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-1 fw-bold">{{ $lastWorkout->workoutTemplate ? $lastWorkout->workoutTemplate->name : 'Free Workout' }}</p>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-calendar3"></i> {{ $lastWorkout->performed_at->diffForHumans() }}
+                                                </small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-success">
+                                                    {{ $lastWorkout->setLogs->count() }} sets logged
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @if($lastWorkout->setLogs->count() > 0)
+                                            <div class="mt-2 pt-2 border-top">
+                                                <small class="text-muted d-block mb-1">Top exercises:</small>
+                                                @php
+                                                    $topExercises = $lastWorkout->setLogs->groupBy('exercise_id')->take(3);
+                                                @endphp
+                                                @foreach($topExercises as $exerciseSets)
+                                                    <small class="d-block">
+                                                        <i class="bi bi-dot"></i> {{ $exerciseSets->first()->exercise->name }} - {{ $exerciseSets->count() }} sets
+                                                    </small>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
                             @else
                                 <div class="alert alert-warning border-0 mb-3">
                                     <i class="bi bi-exclamation-triangle me-2"></i>

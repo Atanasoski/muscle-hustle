@@ -37,6 +37,13 @@ class DashboardController extends Controller
         // Get today's meals
         $todayMeals = $mealPlan ? $mealPlan->meals->where('day_of_week', $dayOfWeek) : collect();
 
-        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals'));
+        // Get last completed workout
+        $lastWorkout = $user->workoutSessions()
+            ->whereNotNull('performed_at')
+            ->with(['workoutTemplate', 'setLogs.exercise'])
+            ->latest('performed_at')
+            ->first();
+
+        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'lastWorkout'));
     }
 }
