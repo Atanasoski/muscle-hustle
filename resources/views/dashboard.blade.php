@@ -22,7 +22,7 @@
                     <div class="stat-icon mb-3">
                         <i class="bi bi-calendar-check display-4"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">{{ $weekWorkouts->count() }}</h3>
+                    <h3 class="fw-bold mb-1 text-white">{{ $weekWorkouts->count() }}</h3>
                     <p class="mb-0 text-white-50">Workouts This Week</p>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     <div class="stat-icon mb-3">
                         <i class="bi bi-fire display-4"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">7</h3>
+                    <h3 class="fw-bold mb-1 text-white">7</h3>
                     <p class="mb-0 text-white-50">Day Streak</p>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                     <div class="stat-icon mb-3">
                         <i class="bi bi-trophy display-4"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">{{ $weekWorkouts->sum(function($w) { return $w->exercises->count(); }) }}</h3>
+                    <h3 class="fw-bold mb-1 text-white">{{ $weekWorkouts->sum(function($w) { return $w->exercises->count(); }) }}</h3>
                     <p class="mb-0 text-white-50">Exercises Planned</p>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                     <div class="stat-icon mb-3">
                         <i class="bi bi-journal-text display-4"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">{{ Auth::user()->workoutTemplates->count() }}</h3>
+                    <h3 class="fw-bold mb-1 text-white">{{ Auth::user()->workoutTemplates->count() }}</h3>
                     <p class="mb-0 text-white-50">Templates</p>
                 </div>
             </div>
