@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WorkoutTemplate;
 use App\Models\MealPlan;
+use App\Models\WorkoutTemplate;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -24,6 +23,7 @@ class DashboardController extends Controller
         // Get this week's workouts
         $weekWorkouts = WorkoutTemplate::where('user_id', $user->id)
             ->whereNotNull('day_of_week')
+            ->with('exercises')
             ->orderBy('day_of_week')
             ->get();
 

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="{{ route('dashboard') }}">
             <i class="bi bi-lightning-charge-fill"></i> Muscle Hustle
@@ -11,12 +11,12 @@
                 @auth
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                            <i class="bi bi-house-door"></i> Dashboard
+                            <i class="bi bi-house-door-fill"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('workouts.*') ? 'active' : '' }}" href="{{ route('workouts.today') }}">
-                            <i class="bi bi-play-circle"></i> Today's Workout
+                            <i class="bi bi-play-circle-fill"></i> Today's Workout
                         </a>
                     </li>
                     <li class="nav-item">
@@ -26,7 +26,7 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('planner.*') ? 'active' : '' }}" href="#" id="plannerDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-calendar-week"></i> Planner
+                            <i class="bi bi-calendar-week-fill"></i> Planner
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('planner.workouts') }}">
@@ -39,8 +39,13 @@
                     </li>
                 @endauth
             </ul>
-            <ul class="navbar-nav">
+            <ul class="navbar-nav align-items-center">
                 @auth
+                    <li class="nav-item me-3">
+                        <div class="theme-toggle" onclick="toggleTheme()">
+                            <i id="theme-icon" class="bi bi-sun-fill"></i>
+                        </div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}

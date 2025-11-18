@@ -45,4 +45,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the workout templates for the user.
+     */
+    public function workoutTemplates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkoutTemplate::class);
+    }
+
+    /**
+     * Get the workout sessions for the user.
+     */
+    public function workoutSessions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WorkoutSession::class);
+    }
+
+    /**
+     * Get the meal plans for the user.
+     */
+    public function mealPlans(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MealPlan::class);
+    }
+
+    /**
+     * Get the custom exercises for the user.
+     */
+    public function exercises(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Exercise::class);
+    }
 }
