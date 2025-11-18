@@ -15,16 +15,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed global exercises
+        // Seed in the correct order due to foreign key dependencies
         $this->call([
-            ExerciseSeeder::class,
+            UserSeeder::class,           // Create demo user first
+            ExerciseSeeder::class,       // Create global exercises
+            WorkoutTemplateSeeder::class, // Create workout templates with exercises
+            MealPlanSeeder::class,       // Create meal plans with meals
         ]);
 
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->command->info('');
+        $this->command->info('🎉 Database seeded successfully!');
+        $this->command->info('📧 User: atanasoski992@gmail.com');
+        $this->command->info('🔑 Password: kiril123');
+        $this->command->info('');
     }
 }
