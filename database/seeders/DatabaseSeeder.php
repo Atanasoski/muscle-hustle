@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed global exercises
+        $this->call([
+            ExerciseSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
         User::factory()->create([
