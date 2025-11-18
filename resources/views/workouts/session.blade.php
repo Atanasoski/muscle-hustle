@@ -7,36 +7,51 @@
     <div class="row">
         <div class="col-md-10 offset-md-1">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><i class="bi bi-play-circle-fill"></i> Active Workout</h1>
-                <span class="badge bg-success fs-6">In Progress</span>
+                <div>
+                    <h1 class="display-6 fw-bold">
+                        <i class="bi bi-play-circle-fill text-danger"></i> Active Workout
+                    </h1>
+                    <p class="text-muted mb-0">Track your sets and progress</p>
+                </div>
+                <span class="badge bg-success fs-6 px-3 py-2">
+                    <i class="bi bi-lightning-fill"></i> In Progress
+                </span>
             </div>
 
             <!-- Rest Timer Card (Initially Hidden) -->
-            <div id="timer-card" class="card shadow-lg border-warning mb-4" style="display: none;">
-                <div class="card-body text-center">
-                    <h4>Rest Timer</h4>
-                    <div id="timer-display" class="display-1 fw-bold text-warning">00:00</div>
-                    <div class="btn-group mt-3">
-                        <button id="timer-stop" class="btn btn-danger">
+            <div id="timer-card" class="card shadow-lg border-0 bg-info text-white mb-4" style="display: none;">
+                <div class="card-body text-center py-4">
+                    <h4 class="mb-3">
+                        <i class="bi bi-stopwatch"></i> Rest Timer
+                    </h4>
+                    <div id="timer-display" class="display-1 fw-bold">00:00</div>
+                    <div class="btn-group mt-3 shadow">
+                        <button id="timer-stop" class="btn btn-light btn-lg">
                             <i class="bi bi-stop-circle"></i> Stop
                         </button>
-                        <button id="timer-add-30" class="btn btn-secondary">+30s</button>
+                        <button id="timer-add-30" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-plus-circle"></i> +30s
+                        </button>
                     </div>
                 </div>
             </div>
 
             @if($session->workoutTemplate && $exercises->count() > 0)
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">{{ $session->workoutTemplate->name }}</h5>
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-danger text-white border-0 py-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-fire"></i> {{ $session->workoutTemplate->name }}
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         @foreach($exercises as $templateExercise)
-                            <div class="exercise-section mb-4 p-3 border rounded">
+                            <div class="exercise-section mb-4 p-4 border-2 border-start border-danger rounded-3 bg-light">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
-                                        <h5 class="mb-1">{{ $templateExercise->exercise->name }}</h5>
-                                        <small class="text-muted">
+                                        <h5 class="mb-2 fw-bold">
+                                            <i class="bi bi-dumbbell text-danger"></i> {{ $templateExercise->exercise->name }}
+                                        </h5>
+                                        <small class="text-muted d-block">
                                             @if($templateExercise->target_sets && $templateExercise->target_reps)
                                                 Target: {{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}
                                             @endif
@@ -54,8 +69,8 @@
                                         @endif
                                     </div>
                                     @if($templateExercise->rest_seconds)
-                                        <button class="btn btn-sm btn-outline-warning start-timer" data-seconds="{{ $templateExercise->rest_seconds }}">
-                                            <i class="bi bi-clock"></i> {{ $templateExercise->rest_seconds }}s Rest
+                                        <button class="btn btn-info text-white start-timer shadow-sm" data-seconds="{{ $templateExercise->rest_seconds }}">
+                                            <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s Rest
                                         </button>
                                     @endif
                                 </div>
@@ -65,13 +80,17 @@
                                     $loggedSets = $session->setLogs->where('exercise_id', $templateExercise->exercise_id);
                                 @endphp
                                 @if($loggedSets->count() > 0)
-                                    <div class="mb-3">
-                                        <h6>Logged Sets:</h6>
-                                        @foreach($loggedSets as $setLog)
-                                            <span class="badge bg-success me-1">
-                                                Set {{ $setLog->set_number }}: {{ $setLog->weight }}kg × {{ $setLog->reps }}
-                                            </span>
-                                        @endforeach
+                                    <div class="mb-3 p-3 bg-white rounded">
+                                        <h6 class="mb-2">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Logged Sets:
+                                        </h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($loggedSets as $setLog)
+                                                <span class="badge bg-success fs-6 px-3 py-2">
+                                                    Set {{ $setLog->set_number }}: {{ $setLog->weight }}kg × {{ $setLog->reps }} reps
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 @endif
 
@@ -112,17 +131,19 @@
             @endif
 
             <!-- Complete Workout -->
-            <div class="card shadow-sm">
-                <div class="card-body">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
                     <form action="{{ route('workouts.complete', $session) }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">Workout Notes (optional)</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                        <div class="mb-4">
+                            <label for="notes" class="form-label fw-bold">
+                                <i class="bi bi-journal-text"></i> Workout Notes (optional)
+                            </label>
+                            <textarea class="form-control form-control-lg" id="notes" name="notes" rows="3" 
                                       placeholder="How did it go? Any observations?">{{ $session->notes }}</textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100" onclick="return confirm('Complete this workout?')">
-                            <i class="bi bi-check-circle-fill"></i> Complete Workout
+                        <button type="submit" class="btn btn-danger btn-lg w-100 py-3 shadow" onclick="return confirm('Complete this workout?')">
+                            <i class="bi bi-check-circle-fill me-2"></i> Complete Workout
                         </button>
                     </form>
                 </div>

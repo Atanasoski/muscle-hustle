@@ -19,8 +19,10 @@
     <!-- Custom Styles -->
     <style>
         :root {
-            --primary-color: #ff6b35;
-            --secondary-color: #4ecdc4;
+            /* Muscle Hustle Signature Colors */
+            --primary-color: #ff6b35;      /* Orange/Coral - Primary actions */
+            --secondary-color: #4ecdc4;    /* Teal - Secondary accents */
+            --navy-color: #2c3e50;         /* Dark Navy - Headers */
             --success-color: #44bd32;
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
@@ -166,6 +168,20 @@
         .btn-success:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(68, 189, 50, 0.4);
+        }
+        
+        /* Teal/Secondary Button */
+        .btn-info {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #5dd9d1 100%);
+            border: none;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+            color: white;
         }
 
         /* Alerts */

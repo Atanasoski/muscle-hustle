@@ -3,42 +3,56 @@
 @section('title', 'Weekly Workout Planner')
 
 @section('content')
-<div class="container">
-    <h1 class="mb-4"><i class="bi bi-calendar-week"></i> Weekly Workout Planner</h1>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold">
+                <i class="bi bi-calendar-week-fill text-info"></i> Weekly Workout Planner
+            </h1>
+            <p class="text-muted">Plan your training week - assign workouts to specific days</p>
+        </div>
+    </div>
 
-    <div class="row">
+    <div class="row g-4">
         @php
             $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            $dayEmojis = ['💪', '🔥', '💪', '🔥', '💪', '😴', '😴'];
         @endphp
         
         @foreach($days as $index => $day)
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">{{ $day }}</h5>
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100 border-0 {{ $weeklyPlan[$index] ? 'border-start border-5 border-info' : '' }}">
+                    <div class="card-header {{ $weeklyPlan[$index] ? 'bg-info' : 'bg-secondary' }} bg-opacity-10 border-0 py-3">
+                        <h5 class="mb-0 fw-bold">
+                            <span class="me-2">{{ $dayEmojis[$index] }}</span>{{ $day }}
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         @if($weeklyPlan[$index])
-                            <h6 class="card-title">{{ $weeklyPlan[$index]->name }}</h6>
-                            <p class="card-text text-muted">{{ $weeklyPlan[$index]->description ?: 'No description' }}</p>
+                            <h6 class="card-title fw-bold mb-2">{{ $weeklyPlan[$index]->name }}</h6>
+                            <p class="card-text text-muted mb-3">{{ $weeklyPlan[$index]->description ?: 'No description provided' }}</p>
                             
                             <div class="d-flex gap-2">
-                                <a href="{{ route('workout-templates.edit', $weeklyPlan[$index]) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('workout-templates.edit', $weeklyPlan[$index]) }}" class="btn btn-sm btn-info text-white flex-fill">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
-                                <form action="{{ route('planner.workouts.unassign') }}" method="POST" class="d-inline">
+                                <form action="{{ route('planner.workouts.unassign') }}" method="POST" class="flex-fill">
                                     @csrf
                                     <input type="hidden" name="template_id" value="{{ $weeklyPlan[$index]->id }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
                                         <i class="bi bi-x-circle"></i> Remove
                                     </button>
                                 </form>
                             </div>
                         @else
-                            <p class="text-muted">No workout assigned</p>
-                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#assignModal{{ $index }}">
-                                <i class="bi bi-plus-circle"></i> Assign Workout
-                            </button>
+                            <div class="text-center py-3">
+                                <p class="text-muted mb-3">
+                                    <i class="bi bi-dash-circle"></i> No workout assigned
+                                </p>
+                                <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#assignModal{{ $index }}">
+                                    <i class="bi bi-plus-circle me-2"></i> Assign Workout
+                                </button>
+                            </div>
                         @endif
                     </div>
                 </div>

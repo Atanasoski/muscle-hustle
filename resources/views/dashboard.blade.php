@@ -243,9 +243,9 @@
 
 @push('styles')
 <style>
-    /* Stat Cards */
+    /* Stat Cards - Signature Colors */
     .stat-card {
-        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%);
+        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%); /* Orange */
         color: white;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -256,17 +256,17 @@
     }
     
     .stat-card-secondary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Navy */
         color: white;
     }
     
     .stat-card-secondary:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4) !important;
+        box-shadow: 0 15px 35px rgba(44, 62, 80, 0.4) !important;
     }
     
     .stat-card-success {
-        background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%);
+        background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%); /* Green */
         color: white;
     }
     
@@ -276,7 +276,7 @@
     }
     
     .stat-card-info {
-        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        background: linear-gradient(135deg, #4ecdc4 0%, #5dd9d1 100%); /* Teal */
         color: white;
     }
     
@@ -289,17 +289,17 @@
         text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    /* Card Headers */
+    /* Card Headers - Signature Colors */
     .bg-gradient-primary {
-        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%);
+        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%); /* Orange */
     }
     
     .bg-gradient-secondary {
-        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        background: linear-gradient(135deg, #4ecdc4 0%, #5dd9d1 100%); /* Teal */
     }
     
     .bg-gradient-dark {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Navy */
     }
 
     /* Hover Lift Effect */

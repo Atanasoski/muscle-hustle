@@ -212,16 +212,40 @@
 document.addEventListener('DOMContentLoaded', function() {
     const list = document.getElementById('exercise-list');
     if (list) {
-        new Sortable(list, {
+        let originalOrder = [];
+        
+        const sortable = new Sortable(list, {
             handle: '.handle',
             animation: 150,
+            onStart: function(evt) {
+                // Save the original order when drag starts
+                originalOrder = Array.from(list.children)
+                    .map(item => item.dataset.id)
+                    .filter(id => id && id !== 'undefined' && id !== 'null')
+                    .map(id => parseInt(id))
+                    .filter(id => !isNaN(id) && id > 0);
+            },
             onEnd: function(evt) {
+                // Check if position actually changed
+                if (evt.oldIndex === evt.newIndex) {
+                    return; // No change, don't send request
+                }
+                
                 // Get the new order - only include valid IDs
                 const order = Array.from(list.children)
                     .map(item => item.dataset.id)
                     .filter(id => id && id !== 'undefined' && id !== 'null')
                     .map(id => parseInt(id))
                     .filter(id => !isNaN(id) && id > 0);
+                
+                // Check if the order actually changed
+                const orderChanged = originalOrder.length !== order.length || 
+                                    originalOrder.some((id, index) => id !== order[index]);
+                
+                if (!orderChanged) {
+                    console.log('Order unchanged, skipping update');
+                    return;
+                }
                 
                 console.log('Sending order:', order);
                 
