@@ -64,7 +64,7 @@
 
     <div class="row g-4 mb-4">
         <!-- Today's Workout -->
-        <div class="col-lg-7">
+        <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-header bg-gradient-primary text-white border-0 py-3">
                     <h4 class="mb-0 d-flex align-items-center">
@@ -116,8 +116,73 @@
             </div>
         </div>
 
+        <!-- Today's Meals -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-header bg-gradient-success text-white border-0 py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    @if($todayMeals->count() > 0)
+                        <div class="d-flex flex-column gap-3">
+                            @foreach($todayMeals as $meal)
+                                <div class="meal-card p-3 rounded-3 border">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <span class="badge bg-success mb-2">
+                                                {{ ucfirst($meal->type) }}
+                                            </span>
+                                            <h6 class="fw-bold mb-0">{{ $meal->name }}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 flex-wrap mt-2">
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-fire"></i> {{ $meal->calories }} cal
+                                        </span>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-lightning"></i> {{ $meal->protein }}g protein
+                                        </span>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-droplet"></i> {{ $meal->carbs }}g carbs
+                                        </span>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-circle"></i> {{ $meal->fat }}g fat
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                            
+                            @php
+                                $totalCalories = $todayMeals->sum('calories');
+                                $totalProtein = $todayMeals->sum('protein');
+                                $totalCarbs = $todayMeals->sum('carbs');
+                                $totalFat = $todayMeals->sum('fat');
+                            @endphp
+                            
+                            <div class="alert alert-success border-0 mb-0">
+                                <strong>Daily Totals:</strong>
+                                {{ $totalCalories }} cal • {{ $totalProtein }}g protein • {{ $totalCarbs }}g carbs • {{ $totalFat }}g fat
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-center py-4">
+                            <i class="bi bi-egg display-1 text-muted mb-3"></i>
+                            <h5 class="text-muted mb-3">No meals planned for today</h5>
+                            <a href="{{ route('planner.meals') }}" class="btn btn-success">
+                                <i class="bi bi-plus-circle me-2"></i> Plan Your Meals
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
         <!-- Quick Actions -->
-        <div class="col-lg-5">
+        <div class="col-lg-12">
             <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-header bg-gradient-secondary text-white border-0 py-3">
                     <h4 class="mb-0 d-flex align-items-center">
@@ -301,6 +366,10 @@
     .bg-gradient-dark {
         background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Navy */
     }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%); /* Green */
+    }
 
     /* Hover Lift Effect */
     .hover-lift {
@@ -418,6 +487,17 @@
         color: var(--text-secondary);
         font-style: italic;
         font-size: 0.9rem;
+    }
+    
+    /* Meal Cards */
+    .meal-card {
+        background: var(--bg-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .meal-card:hover {
+        background: var(--bg-tertiary);
+        transform: translateX(3px);
     }
 </style>
 @endpush

@@ -34,6 +34,9 @@ class DashboardController extends Controller
             ->with('meals')
             ->first();
 
-        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek'));
+        // Get today's meals
+        $todayMeals = $mealPlan ? $mealPlan->meals->where('day_of_week', $dayOfWeek) : collect();
+
+        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals'));
     }
 }
