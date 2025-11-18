@@ -28,13 +28,19 @@
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('planner.*') ? 'active' : '' }}" href="#" id="plannerDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-calendar-week-fill"></i> Planner
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('planner.workouts') }}">
-                                <i class="bi bi-dumbbell"></i> Workouts
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('planner.meals') }}">
-                                <i class="bi bi-egg-fried"></i> Meals
-                            </a></li>
+                        <ul class="dropdown-menu dropdown-menu-icons">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.workouts') }}">
+                                    <i class="bi bi-lightning-charge-fill fs-5 text-danger"></i>
+                                    <span>Workouts</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.meals') }}">
+                                    <i class="bi bi-egg-fried fs-5 text-success"></i>
+                                    <span>Meals</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endauth

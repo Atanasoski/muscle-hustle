@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Muscle Hustle') }} - @yield('title', 'Fitness Tracker')</title>
 
@@ -261,6 +261,21 @@
             background: var(--bg-tertiary);
             color: var(--primary-color);
         }
+        
+        /* Dropdown with icons */
+        .dropdown-menu-icons {
+            min-width: 200px;
+        }
+        
+        .dropdown-menu-icons .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+        }
+        
+        .dropdown-menu-icons .dropdown-item:hover i {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
 
         /* Page heading */
         h1, h2, h3, h4, h5, h6 {
@@ -330,9 +345,9 @@
     </style>
 
     @stack('styles')
-</head>
+    </head>
 <body>
-    @include('layouts.navigation')
+            @include('layouts.navigation')
 
     <!-- Flash Messages -->
     @if(session('success'))
@@ -341,7 +356,7 @@
                 <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        </div>
+                    </div>
     @endif
 
     @if(session('error'))
@@ -392,5 +407,5 @@
     </script>
     
     @stack('scripts')
-</body>
+    </body>
 </html>
