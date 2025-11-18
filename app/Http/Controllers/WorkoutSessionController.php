@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Exercise;
+use App\Models\SetLog;
 use App\Models\WorkoutSession;
 use App\Models\WorkoutTemplate;
-use App\Models\SetLog;
-use App\Models\Exercise;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -49,7 +49,7 @@ class WorkoutSessionController extends Controller
             ->whereDate('performed_at', $today->toDateString())
             ->first();
 
-        if (!$session) {
+        if (! $session) {
             $session = WorkoutSession::create([
                 'user_id' => auth()->id(),
                 'workout_template_id' => $request->template_id,
@@ -73,7 +73,7 @@ class WorkoutSessionController extends Controller
         $session->load(['workoutTemplate.workoutTemplateExercises.exercise', 'setLogs']);
 
         // Get exercises for this session
-        $exercises = $session->workoutTemplate 
+        $exercises = $session->workoutTemplate
             ? $session->workoutTemplate->workoutTemplateExercises
             : collect();
 
@@ -81,13 +81,13 @@ class WorkoutSessionController extends Controller
         $lastWorkouts = [];
         foreach ($exercises as $templateExercise) {
             $lastSet = SetLog::whereHas('workoutSession', function ($query) use ($session) {
-                    $query->where('user_id', auth()->id())
-                          ->where('id', '!=', $session->id);
-                })
+                $query->where('user_id', auth()->id())
+                    ->where('id', '!=', $session->id);
+            })
                 ->where('exercise_id', $templateExercise->exercise_id)
                 ->orderBy('created_at', 'desc')
                 ->first();
-            
+
             $lastWorkouts[$templateExercise->exercise_id] = $lastSet;
         }
 
@@ -140,6 +140,26 @@ class WorkoutSessionController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Workout completed! Great job! 💪');
+    }
+
+    /**
+     * Cancel a workout session
+     */
+    public function cancel(WorkoutSession $session): \Illuminate\Http\RedirectResponse
+    {
+        // Authorization check
+        if ($session->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Delete all set logs first
+        $session->setLogs()->delete();
+
+        // Delete the session
+        $session->delete();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Workout cancelled.');
     }
 
     /**

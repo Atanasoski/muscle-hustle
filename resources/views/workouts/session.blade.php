@@ -13,9 +13,18 @@
                     </h1>
                     <p class="text-muted mb-0">Track your sets and progress</p>
                 </div>
-                <span class="badge bg-success fs-6 px-3 py-2">
-                    <i class="bi bi-lightning-fill"></i> In Progress
-                </span>
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        <i class="bi bi-lightning-fill"></i> In Progress
+                    </span>
+                    <form action="{{ route('workouts.cancel', $session) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this workout? All logged sets will be deleted.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-x-circle"></i> Cancel Workout
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <!-- Rest Timer Card (Initially Hidden) -->
