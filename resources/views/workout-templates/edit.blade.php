@@ -216,27 +216,69 @@ document.addEventListener('DOMContentLoaded', function() {
             handle: '.handle',
             animation: 150,
             onEnd: function(evt) {
-                // Get the new order
-                const order = Array.from(list.children).map(item => item.dataset.id);
+                // Get the new order - only include valid IDs
+                const order = Array.from(list.children)
+                    .map(item => item.dataset.id)
+                    .filter(id => id && id !== 'undefined' && id !== 'null')
+                    .map(id => parseInt(id))
+                    .filter(id => !isNaN(id) && id > 0);
+                
+                console.log('Sending order:', order);
+                
+                if (order.length === 0) {
+                    console.error('No valid exercise IDs found');
+                    return;
+                }
                 
                 // Send AJAX request to update order
                 fetch('{{ route('workout-templates.update-order', $workoutTemplate) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ order: order })
                 })
-                .then(response => response.json())
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        console.error('Validation errors:', data);
+                        throw new Error(data.message || 'Network response was not ok');
+                    }
+                    return data;
+                })
                 .then(data => {
                     if (data.success) {
                         console.log('Order updated successfully');
+                        showToast('Exercise order updated!', 'success');
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Failed to update order: ' + error.message, 'error');
+                });
             }
         });
+    }
+    
+    // Simple toast notification function
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed bottom-0 end-0 m-3`;
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            ${message}
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
     }
 });
 </script>

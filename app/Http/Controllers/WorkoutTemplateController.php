@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WorkoutTemplate;
-use App\Models\Exercise;
-use App\Models\WorkoutTemplateExercise;
 use App\Http\Requests\StoreWorkoutTemplateRequest;
 use App\Http\Requests\UpdateWorkoutTemplateRequest;
+use App\Models\Exercise;
+use App\Models\WorkoutTemplate;
+use App\Models\WorkoutTemplateExercise;
 use Illuminate\Http\Request;
 
 class WorkoutTemplateController extends Controller
@@ -58,11 +58,11 @@ class WorkoutTemplateController extends Controller
         }
 
         $workoutTemplate->load(['workoutTemplateExercises.exercise']);
-        
+
         // Get all available exercises (global + user's own)
         $exercises = Exercise::where(function ($query) {
             $query->whereNull('user_id')
-                  ->orWhere('user_id', auth()->id());
+                ->orWhere('user_id', auth()->id());
         })->orderBy('name')->get();
 
         return view('workout-templates.edit', compact('workoutTemplate', 'exercises'));
@@ -154,25 +154,46 @@ class WorkoutTemplateController extends Controller
     /**
      * Update exercise order (AJAX)
      */
-    public function updateOrder(Request $request, WorkoutTemplate $workoutTemplate)
+    public function updateOrder(Request $request, WorkoutTemplate $workoutTemplate): \Illuminate\Http\JsonResponse
     {
         // Authorization check
         if ($workoutTemplate->user_id !== auth()->id()) {
-            abort(403);
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $request->validate([
-            'order' => 'required|array',
-            'order.*' => 'required|integer|exists:workout_template_exercises,id',
-        ]);
+        try {
+            $validated = $request->validate([
+                'order' => 'required|array',
+                'order.*' => 'required|integer',
+            ]);
 
-        foreach ($request->order as $index => $id) {
-            WorkoutTemplateExercise::where('id', $id)
-                ->where('workout_template_id', $workoutTemplate->id)
-                ->update(['order' => $index]);
+            // Verify all IDs belong to this template
+            $templateExerciseIds = $workoutTemplate->workoutTemplateExercises->pluck('id')->toArray();
+            $requestIds = $validated['order'];
+
+            $invalidIds = array_diff($requestIds, $templateExerciseIds);
+            if (! empty($invalidIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid exercise IDs provided',
+                ], 422);
+            }
+
+            // Update the order
+            foreach ($validated['order'] as $index => $id) {
+                WorkoutTemplateExercise::where('id', $id)
+                    ->where('workout_template_id', $workoutTemplate->id)
+                    ->update(['order' => $index]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Order updated successfully']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
         }
-
-        return response()->json(['success' => true]);
     }
 
     /**
