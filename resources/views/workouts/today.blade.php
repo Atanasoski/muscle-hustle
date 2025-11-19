@@ -8,13 +8,13 @@
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="bg-danger text-white rounded-3 p-3 shadow" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-calendar-day-fill fs-1"></i>
+                <div class="d-flex align-items-center gap-2 gap-md-3 mb-3">
+                    <div class="bg-danger text-white rounded-3 p-2 p-md-3 shadow" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-calendar-day-fill fs-3 fs-md-1"></i>
                     </div>
                     <div>
-                        <h1 class="display-5 fw-bold mb-1">{{ $template->name }}</h1>
-                        <p class="text-muted mb-0 fs-5">
+                        <h1 class="h3 h2-md fw-bold mb-1">{{ $template->name }}</h1>
+                        <p class="text-muted mb-0 small">
                             <i class="bi bi-clock"></i> Today's Training Session
                         </p>
                     </div>
@@ -38,9 +38,9 @@
                             @endif
                         </div>
                     </div>
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-md-4">
                         @if($template->description)
-                            <div class="alert alert-light border mb-4">
+                            <div class="alert alert-light border mb-3 mb-md-4">
                                 <i class="bi bi-info-circle text-danger me-2"></i>
                                 <strong>Goal:</strong> {{ $template->description }}
                             </div>
@@ -51,25 +51,25 @@
                                 <i class="bi bi-list-check"></i> Exercise Plan
                             </h5>
                             
-                            <div class="d-flex flex-column gap-3">
+                            <div class="d-flex flex-column gap-2 gap-md-3">
                                 @foreach($template->workoutTemplateExercises as $index => $exercise)
                                     <div class="card border-2 {{ $loop->first ? 'border-danger' : '' }}">
-                                        <div class="card-body p-3">
-                                            <div class="d-flex gap-3">
-                                                <div class="bg-danger text-white rounded-3 fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                        <div class="card-body p-2 p-md-3">
+                                            <div class="d-flex gap-2 gap-md-3">
+                                                <div class="bg-danger text-white rounded-3 fw-bold d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; min-width: 35px; font-size: 0.9rem;">
                                                     {{ $index + 1 }}
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                                        <h6 class="mb-0 fw-bold">
-                                                            <i class="bi bi-{{ getExerciseIcon($exercise->exercise->category) }} text-danger me-2"></i>
+                                                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-2 gap-1">
+                                                        <h6 class="mb-0 fw-bold small">
+                                                            <i class="bi bi-{{ getExerciseIcon($exercise->exercise->category) }} text-danger me-1"></i>
                                                             {{ $exercise->exercise->name }}
                                                         </h6>
-                                                        <span class="badge bg-light text-dark">
+                                                        <span class="badge bg-light text-dark" style="font-size: 0.7rem;">
                                                             {{ ucfirst($exercise->exercise->category) }}
                                                         </span>
                                                     </div>
-                                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                                    <div class="d-flex flex-wrap gap-1 gap-md-2 mt-2">
                                                         @if($exercise->target_sets)
                                                             <span class="badge bg-secondary">
                                                                 <i class="bi bi-layers"></i> {{ $exercise->target_sets }} sets
@@ -99,25 +99,25 @@
                             </div>
 
                             @if($session)
-                                <div class="alert alert-success border-0 mt-4 mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-check-circle-fill fs-1 me-3"></i>
+                                <div class="alert alert-success border-0 mt-3 mt-md-4 mb-3">
+                                    <div class="d-flex align-items-center gap-2 gap-md-3">
+                                        <i class="bi bi-check-circle-fill fs-3 fs-md-1"></i>
                                         <div>
                                             <strong>Workout In Progress!</strong>
-                                            <p class="mb-0">You've already started this workout. Let's finish strong!</p>
+                                            <p class="mb-0 small">You've already started this workout. Let's finish strong!</p>
                                         </div>
                                     </div>
                                 </div>
-                                <a href="{{ route('workouts.session', $session) }}" class="btn btn-success btn-lg w-100 py-3 shadow">
+                                <a href="{{ route('workouts.session', $session) }}" class="btn btn-success btn-lg w-100 py-2 py-md-3 shadow">
                                     <i class="bi bi-play-circle-fill me-2"></i> Continue Workout
                                 </a>
                             @else
-                                <form action="{{ route('workouts.start') }}" method="POST" class="mt-4">
+                                <form action="{{ route('workouts.start') }}" method="POST" class="mt-3 mt-md-4">
                                     @csrf
                                     <input type="hidden" name="template_id" value="{{ $template->id }}">
-                                    <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow">
-                                        <i class="bi bi-play-circle-fill me-2 fs-4"></i> 
-                                        <span class="fs-5">Start Workout Now</span>
+                                    <button type="submit" class="btn btn-success btn-lg w-100 py-2 py-md-3 shadow">
+                                        <i class="bi bi-play-circle-fill me-2"></i> 
+                                        <span>Start Workout Now</span>
                                     </button>
                                 </form>
                             @endif
@@ -139,32 +139,32 @@
             <div class="col-lg-4 mb-4">
                 <!-- Quick Stats -->
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-md-4">
                         <h6 class="text-uppercase text-muted mb-3 fw-bold small">
                             <i class="bi bi-graph-up"></i> Workout Stats
                         </h6>
-                        <div class="row g-3">
+                        <div class="row g-2 g-md-3">
                             <div class="col-6">
                                 <div class="text-center">
-                                    <div class="display-6 fw-bold text-danger">{{ $template->workoutTemplateExercises->count() }}</div>
+                                    <div class="h4 h3-md fw-bold text-danger">{{ $template->workoutTemplateExercises->count() }}</div>
                                     <div class="small text-muted mt-1">Exercises</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="text-center">
-                                    <div class="display-6 fw-bold text-success">{{ $template->workoutTemplateExercises->sum('target_sets') }}</div>
+                                    <div class="h4 h3-md fw-bold text-success">{{ $template->workoutTemplateExercises->sum('target_sets') }}</div>
                                     <div class="small text-muted mt-1">Total Sets</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="text-center">
-                                    <div class="display-6 fw-bold text-warning">~{{ $template->workoutTemplateExercises->count() * 5 }}</div>
+                                    <div class="h4 h3-md fw-bold text-warning">~{{ $template->workoutTemplateExercises->count() * 5 }}</div>
                                     <div class="small text-muted mt-1">Minutes</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="text-center">
-                                    <div class="display-6 fw-bold text-info">{{ $template->workoutTemplateExercises->avg('rest_seconds') ?? 90 }}s</div>
+                                    <div class="h4 h3-md fw-bold text-info">{{ $template->workoutTemplateExercises->avg('rest_seconds') ?? 90 }}s</div>
                                     <div class="small text-muted mt-1">Avg Rest</div>
                                 </div>
                             </div>
@@ -174,26 +174,26 @@
 
                 <!-- Tips Card -->
                 <div class="card border-0 shadow-sm bg-light">
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-md-4">
                         <h6 class="fw-bold mb-3">
                             <i class="bi bi-lightbulb-fill text-warning"></i> Pro Tips
                         </h6>
                         <ul class="list-unstyled mb-0">
                             <li class="mb-2 d-flex align-items-center">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                <span>Warm up for 5-10 minutes</span>
+                                <i class="bi bi-check-circle-fill text-success me-2 flex-shrink-0"></i>
+                                <span class="small">Warm up for 5-10 minutes</span>
                             </li>
                             <li class="mb-2 d-flex align-items-center">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                <span>Focus on proper form</span>
+                                <i class="bi bi-check-circle-fill text-success me-2 flex-shrink-0"></i>
+                                <span class="small">Focus on proper form</span>
                             </li>
                             <li class="mb-2 d-flex align-items-center">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                <span>Stay hydrated</span>
+                                <i class="bi bi-check-circle-fill text-success me-2 flex-shrink-0"></i>
+                                <span class="small">Stay hydrated</span>
                             </li>
                             <li class="mb-0 d-flex align-items-center">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                <span>Control your breathing</span>
+                                <i class="bi bi-check-circle-fill text-success me-2 flex-shrink-0"></i>
+                                <span class="small">Control your breathing</span>
                             </li>
                         </ul>
                     </div>
