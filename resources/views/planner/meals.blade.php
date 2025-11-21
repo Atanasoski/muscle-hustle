@@ -40,57 +40,82 @@
                     </div>
                 </div>
                 <div class="card-body p-3 p-md-4">
-                    <div class="row g-3 g-md-4">
+                    <div class="row g-3">
                         @foreach($types as $type)
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <div class="meal-card-container">
-                                    <div class="d-flex align-items-center gap-2 mb-2">
-                                        <i class="bi bi-{{ $typeIcons[$type] }} text-success fs-5"></i>
-                                        <strong class="text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px; color: #6c757d;">{{ $type }}</strong>
+                            <div class="col-12 col-lg-6">
+                                <div class="meal-type-card border rounded-3 p-3 h-100 bg-white">
+                                    <!-- Header -->
+                                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-{{ $typeIcons[$type] }} text-success fs-4"></i>
+                                            <span class="text-uppercase fw-bold text-success" style="font-size: 0.9rem; letter-spacing: 1px;">{{ $type }}</span>
+                                        </div>
+                                        @if(isset($mealGrid[$dayIndex][$type]) && $mealGrid[$dayIndex][$type] && $mealGrid[$dayIndex][$type]->calories)
+                                            <span class="badge bg-success px-3 py-2">
+                                                <i class="bi bi-fire"></i> {{ $mealGrid[$dayIndex][$type]->calories }} cal
+                                            </span>
+                                        @endif
                                     </div>
                                     
                                     @if(isset($mealGrid[$dayIndex][$type]) && $mealGrid[$dayIndex][$type])
                                         @php $meal = $mealGrid[$dayIndex][$type]; @endphp
-                                        <div class="meal-card p-2 rounded-3 bg-light border h-100">
-                                            <div class="fw-bold small mb-1">{{ $meal->name }}</div>
-                                            @if($meal->serving_size)
-                                                <div class="small text-muted mb-1">
-                                                    <i class="bi bi-rulers"></i> {{ $meal->serving_size }}
+                                        
+                                        <!-- Meal Name -->
+                                        <h6 class="fw-bold mb-3">{{ $meal->name }}</h6>
+                                        
+                                        <!-- Serving Size -->
+                                        @if($meal->serving_size)
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <i class="bi bi-rulers text-muted mt-1"></i>
+                                                    <div class="text-muted small lh-sm" style="flex: 1;">{{ $meal->serving_size }}</div>
                                                 </div>
-                                            @endif
-                                            @if($meal->calories)
-                                                <div class="small text-muted mb-1">
-                                                    <i class="bi bi-fire"></i> {{ $meal->calories }} cal
-                                                </div>
-                                            @endif
-                                            @if($meal->protein || $meal->carbs || $meal->fat)
-                                                <div class="small text-muted mb-2" style="font-size: 0.75rem;">
-                                                    P:{{ $meal->protein }}g C:{{ $meal->carbs }}g F:{{ $meal->fat }}g
-                                                </div>
-                                            @endif
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-outline-danger flex-fill" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#editMealModal{{ $dayIndex }}{{ $type }}">
-                                                    <i class="bi bi-pencil"></i> Edit
-                                                </button>
-                                                <form action="{{ route('planner.meals.destroy', $meal) }}" 
-                                                      method="POST" class="flex-fill" 
-                                                      onsubmit="return confirm('Delete this meal?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
-                                                        <i class="bi bi-trash"></i> Delete
-                                                    </button>
-                                                </form>
                                             </div>
+                                        @endif
+                                        
+                                        <!-- Macros -->
+                                        @if($meal->protein || $meal->carbs || $meal->fat)
+                                            <div class="d-flex gap-2 mb-3">
+                                                <span class="badge bg-primary-subtle text-primary px-2 py-1">
+                                                    P:{{ $meal->protein }}g
+                                                </span>
+                                                <span class="badge bg-warning-subtle text-warning px-2 py-1">
+                                                    C:{{ $meal->carbs }}g
+                                                </span>
+                                                <span class="badge bg-danger-subtle text-danger px-2 py-1">
+                                                    F:{{ $meal->fat }}g
+                                                </span>
+                                            </div>
+                                        @endif
+                                        
+                                        <!-- Actions -->
+                                        <div class="d-flex gap-2 mt-auto">
+                                            <button class="btn btn-outline-primary btn-sm flex-fill" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editMealModal{{ $dayIndex }}{{ $type }}">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </button>
+                                            <form action="{{ route('planner.meals.destroy', $meal) }}" 
+                                                  method="POST" class="flex-fill" 
+                                                  onsubmit="return confirm('Delete this meal?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </form>
                                         </div>
                                     @else
-                                        <button class="btn btn-sm btn-outline-success w-100" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#addMealModal{{ $dayIndex }}{{ $type }}">
-                                            <i class="bi bi-plus"></i> Add
-                                        </button>
+                                        <!-- Empty State -->
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-{{ $typeIcons[$type] }} text-muted mb-2" style="font-size: 2rem;"></i>
+                                            <p class="text-muted mb-3 small">No meal planned</p>
+                                            <button class="btn btn-outline-success btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#addMealModal{{ $dayIndex }}{{ $type }}">
+                                                <i class="bi bi-plus-lg"></i> Add Meal
+                                            </button>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -252,13 +277,14 @@
 
 @push('styles')
 <style>
-.meal-card-container {
-    min-height: 100px;
+.meal-type-card {
+    transition: all 0.2s ease;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
 }
-.meal-card {
-    transition: transform 0.2s;
-}
-.meal-card:hover {
+.meal-type-card:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 </style>
