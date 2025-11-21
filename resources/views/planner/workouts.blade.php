@@ -36,7 +36,7 @@
                                 <a href="{{ route('workout-templates.edit', $weeklyPlan[$index]) }}" class="btn btn-sm btn-info text-white flex-fill">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
-                                <form action="{{ route('planner.workouts.unassign') }}" method="POST" class="flex-fill">
+                                <form action="{{ route('planner.workouts.unassign') }}" method="POST" class="flex-fill" onsubmit="return confirm('Remove this workout from {{ $day }}?')">
                                     @csrf
                                     <input type="hidden" name="template_id" value="{{ $weeklyPlan[$index]->id }}">
                                     <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
