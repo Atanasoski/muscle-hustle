@@ -44,6 +44,63 @@ class DashboardController extends Controller
             ->latest('performed_at')
             ->first();
 
-        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'lastWorkout'));
+        // Calculate workout streak
+        $streak = $this->calculateStreak($user->id);
+
+        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'lastWorkout', 'streak'));
+    }
+
+    private function calculateStreak(int $userId): int
+    {
+        // Get all completed workout dates
+        $completedDates = \App\Models\WorkoutSession::where('user_id', $userId)
+            ->whereNotNull('performed_at')
+            ->pluck('performed_at')
+            ->map(fn ($date) => $date->toDateString())
+            ->unique()
+            ->values();
+
+        if ($completedDates->isEmpty()) {
+            return 0;
+        }
+
+        // Get all planned workout days (day_of_week)
+        $plannedDays = WorkoutTemplate::where('user_id', $userId)
+            ->whereNotNull('day_of_week')
+            ->pluck('day_of_week')
+            ->toArray();
+
+        $streak = 0;
+        $checkDate = Carbon::yesterday();
+
+        // Check backwards from yesterday
+        while (true) {
+            $dateString = $checkDate->toDateString();
+            $dayOfWeek = $checkDate->dayOfWeek === 0 ? 6 : $checkDate->dayOfWeek - 1;
+
+            // Check if this day had a completed workout
+            if ($completedDates->contains($dateString)) {
+                $streak++;
+                $checkDate->subDay();
+
+                continue;
+            }
+
+            // Check if this was a planned workout day
+            if (in_array($dayOfWeek, $plannedDays)) {
+                // Workout was planned but not completed - break streak
+                break;
+            }
+
+            // It was a rest day, skip and continue
+            $checkDate->subDay();
+
+            // Safety: don't check more than 365 days back
+            if ($checkDate->diffInDays(Carbon::now()) > 365) {
+                break;
+            }
+        }
+
+        return $streak;
     }
 }

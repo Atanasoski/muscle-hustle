@@ -33,7 +33,7 @@
                     <div class="stat-icon mb-3">
                         <i class="bi bi-fire display-4"></i>
                     </div>
-                    <h3 class="fw-bold mb-1 text-white">7</h3>
+                    <h3 class="fw-bold mb-1 text-white">{{ $streak }}</h3>
                     <p class="mb-0 text-white-50">Day Streak</p>
                 </div>
             </div>
