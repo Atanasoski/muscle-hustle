@@ -12,6 +12,7 @@ class Meal extends Model
         'day_of_week',
         'type',
         'name',
+        'serving_size',
         'calories',
         'protein',
         'carbs',

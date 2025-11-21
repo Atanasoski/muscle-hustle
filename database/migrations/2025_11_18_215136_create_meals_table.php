@@ -17,6 +17,7 @@ return new class extends Migration
             $table->tinyInteger('day_of_week'); // 0-6
             $table->string('type'); // breakfast, lunch, dinner, snack
             $table->string('name');
+            $table->text('serving_size')->nullable();
             $table->integer('calories')->nullable();
             $table->integer('protein')->nullable();
             $table->integer('carbs')->nullable();

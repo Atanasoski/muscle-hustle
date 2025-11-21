@@ -46,6 +46,11 @@
                                         @php $meal = $mealGrid[$dayIndex][$type]; @endphp
                                         <div class="meal-card p-2 rounded-3 bg-light border h-100">
                                             <div class="fw-bold small mb-1">{{ $meal->name }}</div>
+                                            @if($meal->serving_size)
+                                                <div class="small text-muted mb-1">
+                                                    <i class="bi bi-rulers"></i> {{ $meal->serving_size }}
+                                                </div>
+                                            @endif
                                             @if($meal->calories)
                                                 <div class="small text-muted mb-1">
                                                     <i class="bi bi-fire"></i> {{ $meal->calories }} cal
@@ -114,6 +119,13 @@
                                 <input type="text" class="form-control" name="name" 
                                        value="{{ $mealGrid[$dayIndex][$type]->name ?? '' }}" 
                                        placeholder="e.g., Grilled Chicken Salad" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Serving Size / Portions</label>
+                                <input type="text" class="form-control" name="serving_size" 
+                                       value="{{ $mealGrid[$dayIndex][$type]->serving_size ?? '' }}" 
+                                       placeholder="e.g., 200g salmon, 150g sweet potato, 100g broccoli">
+                                <small class="text-muted">Describe the portions/quantities</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Calories</label>
