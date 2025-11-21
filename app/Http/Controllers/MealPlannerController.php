@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MealPlan;
 use App\Models\Meal;
+use App\Models\MealPlan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -15,7 +15,7 @@ class MealPlannerController extends Controller
     public function index()
     {
         $weekStart = Carbon::now()->startOfWeek();
-        
+
         // Get or create meal plan for this week
         $mealPlan = MealPlan::firstOrCreate(
             [
@@ -33,7 +33,7 @@ class MealPlannerController extends Controller
         // Organize meals in a 2D array [day][type]
         $mealGrid = [];
         $types = ['breakfast', 'lunch', 'dinner', 'snack'];
-        
+
         for ($day = 0; $day < 7; $day++) {
             foreach ($types as $type) {
                 $mealGrid[$day][$type] = $meals->first(function ($meal) use ($day, $type) {
@@ -42,7 +42,39 @@ class MealPlannerController extends Controller
             }
         }
 
-        return view('planner.meals', compact('mealPlan', 'mealGrid', 'weekStart'));
+        // Calculate daily totals
+        $dailyTotals = [];
+        for ($day = 0; $day < 7; $day++) {
+            $dayMeals = collect($types)
+                ->map(fn ($type) => $mealGrid[$day][$type])
+                ->filter();
+
+            $dailyTotals[$day] = [
+                'calories' => $dayMeals->sum('calories'),
+                'protein' => $dayMeals->sum('protein'),
+                'carbs' => $dayMeals->sum('carbs'),
+                'fat' => $dayMeals->sum('fat'),
+            ];
+        }
+
+        // Calculate weekly totals
+        $weeklyTotals = [
+            'calories' => collect($dailyTotals)->sum('calories'),
+            'protein' => collect($dailyTotals)->sum('protein'),
+            'carbs' => collect($dailyTotals)->sum('carbs'),
+            'fat' => collect($dailyTotals)->sum('fat'),
+        ];
+
+        // Calculate average per day (only days with meals)
+        $daysWithMeals = collect($dailyTotals)
+            ->filter(fn ($day) => $day['calories'] > 0)
+            ->count();
+
+        $weeklyTotals['avg_calories'] = $daysWithMeals > 0
+            ? round($weeklyTotals['calories'] / $daysWithMeals)
+            : 0;
+
+        return view('planner.meals', compact('mealPlan', 'mealGrid', 'weekStart', 'dailyTotals', 'weeklyTotals'));
     }
 
     /**
@@ -54,6 +86,7 @@ class MealPlannerController extends Controller
             'day_of_week' => 'required|integer|min:0|max:6',
             'type' => 'required|in:breakfast,lunch,dinner,snack',
             'name' => 'required|string|max:255',
+            'serving_size' => 'nullable|string',
             'calories' => 'nullable|integer|min:0',
             'protein' => 'nullable|integer|min:0',
             'carbs' => 'nullable|integer|min:0',
@@ -61,7 +94,7 @@ class MealPlannerController extends Controller
         ]);
 
         $weekStart = Carbon::now()->startOfWeek();
-        
+
         // Get or create meal plan
         $mealPlan = MealPlan::firstOrCreate(
             [
@@ -79,6 +112,7 @@ class MealPlannerController extends Controller
             ],
             [
                 'name' => $request->name,
+                'serving_size' => $request->serving_size,
                 'calories' => $request->calories,
                 'protein' => $request->protein,
                 'carbs' => $request->carbs,

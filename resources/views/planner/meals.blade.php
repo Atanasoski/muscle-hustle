@@ -27,10 +27,17 @@
         @foreach($days as $dayIndex => $dayName)
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-success text-white border-0 py-3">
-                    <h5 class="mb-0 fw-bold text-white">
-                        <span class="me-2">{{ $dayEmojis[$dayIndex] }}</span>
-                        {{ $dayName }}
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold text-white">
+                            <span class="me-2">{{ $dayEmojis[$dayIndex] }}</span>
+                            {{ $dayName }}
+                        </h5>
+                        @if($dailyTotals[$dayIndex]['calories'] > 0)
+                            <span class="badge bg-white text-success">
+                                {{ $dailyTotals[$dayIndex]['calories'] }} cal
+                            </span>
+                        @endif
+                    </div>
                 </div>
                 <div class="card-body p-3 p-md-4">
                     <div class="row g-3 g-md-4">
@@ -89,10 +96,86 @@
                             </div>
                         @endforeach
                     </div>
+                    
+                    <!-- Daily Summary -->
+                    @if($dailyTotals[$dayIndex]['calories'] > 0)
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="row g-2">
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="fw-bold text-success">{{ $dailyTotals[$dayIndex]['calories'] }}</div>
+                                        <small class="text-muted">Total Calories</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="fw-bold text-primary">{{ $dailyTotals[$dayIndex]['protein'] }}g</div>
+                                        <small class="text-muted">Protein</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="fw-bold text-warning">{{ $dailyTotals[$dayIndex]['carbs'] }}g</div>
+                                        <small class="text-muted">Carbs</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="fw-bold text-danger">{{ $dailyTotals[$dayIndex]['fat'] }}g</div>
+                                        <small class="text-muted">Fat</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach
     </div>
+    
+    <!-- Weekly Summary -->
+    @if($weeklyTotals['calories'] > 0)
+        <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body p-4">
+                <h5 class="text-white mb-3">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Weekly Summary
+                </h5>
+                <div class="row g-3 text-white">
+                    <div class="col-6 col-md-3">
+                        <div class="text-center">
+                            <div class="h2 mb-0 fw-bold">{{ number_format($weeklyTotals['calories']) }}</div>
+                            <small class="opacity-75">Total Calories</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center">
+                            <div class="h2 mb-0 fw-bold">{{ number_format($weeklyTotals['avg_calories']) }}</div>
+                            <small class="opacity-75">Avg/Day</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="text-center">
+                            <div class="h4 mb-0 fw-bold">{{ $weeklyTotals['protein'] }}g</div>
+                            <small class="opacity-75">Protein</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="text-center">
+                            <div class="h4 mb-0 fw-bold">{{ $weeklyTotals['carbs'] }}g</div>
+                            <small class="opacity-75">Carbs</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <div class="text-center">
+                            <div class="h4 mb-0 fw-bold">{{ $weeklyTotals['fat'] }}g</div>
+                            <small class="opacity-75">Fat</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 <!-- Meal Modals (moved outside nested structure for proper Bootstrap behavior) -->
