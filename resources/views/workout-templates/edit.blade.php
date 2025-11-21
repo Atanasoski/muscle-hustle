@@ -113,44 +113,6 @@
                                 </div>
                             </div>
                         </li>
-
-                        <!-- Edit Exercise Modal -->
-                        <div class="modal fade" id="editExerciseModal{{ $templateExercise->id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <form action="{{ route('workout-templates.update-exercise', [$workoutTemplate, $templateExercise]) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Edit {{ $templateExercise->exercise->name }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Target Sets</label>
-                                                <input type="number" class="form-control" name="target_sets" value="{{ $templateExercise->target_sets }}" min="1">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Target Reps</label>
-                                                <input type="number" class="form-control" name="target_reps" value="{{ $templateExercise->target_reps }}" min="1">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Target Weight (kg)</label>
-                                                <input type="number" class="form-control" name="target_weight" value="{{ $templateExercise->target_weight }}" step="0.5" min="0">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Rest (seconds)</label>
-                                                <input type="number" class="form-control" name="rest_seconds" value="{{ $templateExercise->rest_seconds }}" min="0">
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                     @endforeach
                 </ul>
             @else
@@ -159,6 +121,48 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Exercise Modals (moved outside the list for proper Bootstrap behavior) -->
+@if($workoutTemplate->workoutTemplateExercises->count() > 0)
+    @foreach($workoutTemplate->workoutTemplateExercises as $templateExercise)
+        <div class="modal fade" id="editExerciseModal{{ $templateExercise->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('workout-templates.update-exercise', [$workoutTemplate, $templateExercise]) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit {{ $templateExercise->exercise->name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Target Sets</label>
+                                <input type="number" class="form-control" name="target_sets" value="{{ $templateExercise->target_sets }}" min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Target Reps</label>
+                                <input type="number" class="form-control" name="target_reps" value="{{ $templateExercise->target_reps }}" min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Target Weight (kg)</label>
+                                <input type="number" class="form-control" name="target_weight" value="{{ $templateExercise->target_weight }}" step="0.5" min="0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rest (seconds)</label>
+                                <input type="number" class="form-control" name="rest_seconds" value="{{ $templateExercise->rest_seconds }}" min="0">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+@endif
 
 <!-- Add Exercise Modal -->
 <div class="modal fade" id="addExerciseModal" tabindex="-1">

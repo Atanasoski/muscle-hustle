@@ -80,67 +80,6 @@
                                             <i class="bi bi-plus"></i> Add
                                         </button>
                                     @endif
-
-                                    <!-- Add/Edit Modal -->
-                                    <div class="modal fade" id="{{ isset($mealGrid[$dayIndex][$type]) && $mealGrid[$dayIndex][$type] ? 'editMealModal' : 'addMealModal' }}{{ $dayIndex }}{{ $type }}" tabindex="-1">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <form action="{{ route('planner.meals.store') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="day_of_week" value="{{ $dayIndex }}">
-                                                    <input type="hidden" name="type" value="{{ $type }}">
-                                                    
-                                                    <div class="modal-header bg-success text-white">
-                                                        <h5 class="modal-title">
-                                                            <i class="bi bi-{{ $typeIcons[$type] }} me-2"></i>
-                                                            {{ ucfirst($type) }} - {{ $dayName }}
-                                                        </h5>
-                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-bold">Meal Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" name="name" 
-                                                                   value="{{ $mealGrid[$dayIndex][$type]->name ?? '' }}" 
-                                                                   placeholder="e.g., Grilled Chicken Salad" required>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-bold">Calories</label>
-                                                            <input type="number" class="form-control" name="calories" 
-                                                                   value="{{ $mealGrid[$dayIndex][$type]->calories ?? '' }}" 
-                                                                   placeholder="e.g., 450" min="0">
-                                                        </div>
-                                                        <div class="row g-2">
-                                                            <div class="col-4">
-                                                                <label class="form-label fw-bold small">Protein (g)</label>
-                                                                <input type="number" class="form-control" name="protein" 
-                                                                       value="{{ $mealGrid[$dayIndex][$type]->protein ?? '' }}" 
-                                                                       placeholder="35" min="0">
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <label class="form-label fw-bold small">Carbs (g)</label>
-                                                                <input type="number" class="form-control" name="carbs" 
-                                                                       value="{{ $mealGrid[$dayIndex][$type]->carbs ?? '' }}" 
-                                                                       placeholder="45" min="0">
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <label class="form-label fw-bold small">Fat (g)</label>
-                                                                <input type="number" class="form-control" name="fat" 
-                                                                       value="{{ $mealGrid[$dayIndex][$type]->fat ?? '' }}" 
-                                                                       placeholder="12" min="0">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-success">
-                                                            <i class="bi bi-check-circle me-1"></i> Save Meal
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -150,6 +89,71 @@
         @endforeach
     </div>
 </div>
+
+<!-- Meal Modals (moved outside nested structure for proper Bootstrap behavior) -->
+@foreach($days as $dayIndex => $dayName)
+    @foreach($types as $type)
+        <div class="modal fade" id="{{ isset($mealGrid[$dayIndex][$type]) && $mealGrid[$dayIndex][$type] ? 'editMealModal' : 'addMealModal' }}{{ $dayIndex }}{{ $type }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="{{ route('planner.meals.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="day_of_week" value="{{ $dayIndex }}">
+                        <input type="hidden" name="type" value="{{ $type }}">
+                        
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="bi bi-{{ $typeIcons[$type] }} me-2"></i>
+                                {{ ucfirst($type) }} - {{ $dayName }}
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Meal Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="name" 
+                                       value="{{ $mealGrid[$dayIndex][$type]->name ?? '' }}" 
+                                       placeholder="e.g., Grilled Chicken Salad" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Calories</label>
+                                <input type="number" class="form-control" name="calories" 
+                                       value="{{ $mealGrid[$dayIndex][$type]->calories ?? '' }}" 
+                                       placeholder="e.g., 450" min="0">
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <label class="form-label fw-bold small">Protein (g)</label>
+                                    <input type="number" class="form-control" name="protein" 
+                                           value="{{ $mealGrid[$dayIndex][$type]->protein ?? '' }}" 
+                                           placeholder="35" min="0">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label fw-bold small">Carbs (g)</label>
+                                    <input type="number" class="form-control" name="carbs" 
+                                           value="{{ $mealGrid[$dayIndex][$type]->carbs ?? '' }}" 
+                                           placeholder="45" min="0">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label fw-bold small">Fat (g)</label>
+                                    <input type="number" class="form-control" name="fat" 
+                                           value="{{ $mealGrid[$dayIndex][$type]->fat ?? '' }}" 
+                                           placeholder="12" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-1"></i> Save Meal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+@endforeach
 
 @push('styles')
 <style>
