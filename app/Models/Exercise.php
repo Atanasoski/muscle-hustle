@@ -10,8 +10,8 @@ class Exercise extends Model
 {
     protected $fillable = [
         'user_id',
+        'category_id',
         'name',
-        'category',
         'default_rest_sec',
     ];
 
@@ -21,6 +21,14 @@ class Exercise extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relationship: Exercise belongs to Category
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     /**

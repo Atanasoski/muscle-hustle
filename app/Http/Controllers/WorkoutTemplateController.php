@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkoutTemplateRequest;
 use App\Http\Requests\UpdateWorkoutTemplateRequest;
+use App\Models\Category;
 use App\Models\Exercise;
 use App\Models\WorkoutTemplate;
 use App\Models\WorkoutTemplateExercise;
@@ -59,11 +60,22 @@ class WorkoutTemplateController extends Controller
 
         $workoutTemplate->load(['workoutTemplateExercises.exercise']);
 
-        // Get all available exercises (global + user's own)
-        $exercises = Exercise::where(function ($query) {
-            $query->whereNull('user_id')
-                ->orWhere('user_id', auth()->id());
-        })->orderBy('name')->get();
+        // Get categories with their exercises (global + user's own)
+        $exercises = Category::orderBy('display_order')
+            ->with(['exercises' => function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('user_id')
+                        ->orWhere('user_id', auth()->id());
+                })
+                    ->orderBy('name');
+            }])
+            ->get()
+            ->filter(function ($category) {
+                return $category->exercises->isNotEmpty();
+            })
+            ->mapWithKeys(function ($category) {
+                return [$category->name => $category->exercises];
+            });
 
         return view('workout-templates.edit', compact('workoutTemplate', 'exercises'));
     }

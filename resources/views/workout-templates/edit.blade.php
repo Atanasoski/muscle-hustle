@@ -175,8 +175,12 @@
                         <label class="form-label">Exercise <span class="text-danger">*</span></label>
                         <select class="form-select" name="exercise_id" required>
                             <option value="">Select exercise...</option>
-                            @foreach($exercises as $exercise)
+                            @foreach($exercises as $categoryName => $categoryExercises)
+                                <optgroup label="{{ $categoryName }}">
+                                    @foreach($categoryExercises as $exercise)
                                 <option value="{{ $exercise->id }}">{{ $exercise->name }}</option>
+                                    @endforeach
+                                </optgroup>
                             @endforeach
                         </select>
                     </div>
