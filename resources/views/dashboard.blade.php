@@ -114,10 +114,7 @@
                                         @if($lastWorkout->setLogs->count() > 0)
                                             <div class="mt-2 pt-2 border-top">
                                                 <small class="text-muted d-block mb-1">Top exercises:</small>
-                                                @php
-                                                    $topExercises = $lastWorkout->setLogs->groupBy('exercise_id')->take(3);
-                                                @endphp
-                                                @foreach($topExercises as $exerciseSets)
+                                                @foreach($lastWorkout->setLogs->groupBy('exercise_id')->take(3) as $exerciseSets)
                                                     <small class="d-block">
                                                         <i class="bi bi-dot"></i> {{ $exerciseSets->first()->exercise->name }} - {{ $exerciseSets->count() }} sets
                                                     </small>
@@ -188,16 +185,9 @@
                                 </div>
                             @endforeach
                             
-                            @php
-                                $totalCalories = $todayMeals->sum('calories');
-                                $totalProtein = $todayMeals->sum('protein');
-                                $totalCarbs = $todayMeals->sum('carbs');
-                                $totalFat = $todayMeals->sum('fat');
-                            @endphp
-                            
                             <div class="alert alert-success border-0 mb-0">
                                 <strong>Daily Totals:</strong>
-                                {{ $totalCalories }} cal • {{ $totalProtein }}g protein • {{ $totalCarbs }}g carbs • {{ $totalFat }}g fat
+                                {{ $todayMeals->sum('calories') }} cal • {{ $todayMeals->sum('protein') }}g protein • {{ $todayMeals->sum('carbs') }}g carbs • {{ $todayMeals->sum('fat') }}g fat
                             </div>
                         </div>
                     @else
@@ -228,7 +218,6 @@
                         <div class="row g-3">
                             @php
                                 $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                                $dayIcons = ['💪', '🔥', '😴', '💪', '🔥', '😴', '😴'];
                             @endphp
                             @foreach($days as $index => $day)
                                 @php
@@ -238,7 +227,6 @@
                                 <div class="col-lg-3 col-md-4 col-sm-6">
                                     <div class="day-card {{ $isToday ? 'is-today' : '' }} {{ $workout ? 'has-workout' : 'rest-day' }}">
                                         <div class="day-card-header">
-                                            <span class="day-emoji">{{ $dayIcons[$index] }}</span>
                                             <div class="day-name">{{ $day }}</div>
                                             @if($isToday)
                                                 <span class="badge bg-primary today-badge">Today</span>
@@ -420,10 +408,6 @@
         align-items: center;
         gap: 0.5rem;
         flex-wrap: wrap;
-    }
-    
-    .day-emoji {
-        font-size: 1.5rem;
     }
     
     .day-name {

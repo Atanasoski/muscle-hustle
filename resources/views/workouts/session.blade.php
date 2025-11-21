@@ -47,98 +47,92 @@
                 </div>
             </div>
 
-            @if($session->workoutTemplate && $exercises->count() > 0)
-                <div class="card shadow-sm mb-4 border-0">
-                    <div class="card-header bg-danger text-white border-0 py-3">
-                        <h5 class="mb-0">
-                            <i class="bi bi-fire"></i> {{ $session->workoutTemplate->name }}
-                        </h5>
-                    </div>
-                    <div class="card-body p-4">
-                        @foreach($exercises as $templateExercise)
-                            <div class="exercise-section mb-4 p-3 p-md-4 border-2 border-start border-danger rounded-3 bg-light">
-                                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 mb-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-2 fw-bold">
-                                            <i class="bi bi-dumbbell text-danger"></i> {{ $templateExercise->exercise->name }}
-                                        </h5>
-                                        <small class="text-muted d-block">
-                                            @if($templateExercise->target_sets && $templateExercise->target_reps)
-                                                Target: {{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}
-                                            @endif
-                                            @if($templateExercise->target_weight)
-                                                @ {{ $templateExercise->target_weight }}kg
-                                            @endif
-                                        </small>
-                                        @if(isset($lastWorkouts[$templateExercise->exercise_id]))
-                                            <small class="text-success d-block mt-1">
-                                                <i class="bi bi-info-circle"></i> Last: 
-                                                {{ $lastWorkouts[$templateExercise->exercise_id]->weight }}kg × 
-                                                {{ $lastWorkouts[$templateExercise->exercise_id]->reps }} reps
-                                            </small>
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-danger text-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-fire"></i> {{ $session->workoutTemplate->name }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @foreach($exercises as $templateExercise)
+                        <div class="exercise-section mb-4 p-3 p-md-4 border-2 border-start border-danger rounded-3 bg-light">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 mb-3">
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-2 fw-bold">
+                                        <i class="bi bi-dumbbell text-danger"></i> {{ $templateExercise->exercise->name }}
+                                    </h5>
+                                    <small class="text-muted d-block">
+                                        @if($templateExercise->target_sets && $templateExercise->target_reps)
+                                            Target: {{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}
                                         @endif
-                                    </div>
-                                    @if($templateExercise->rest_seconds)
-                                        <button class="btn btn-info text-white start-timer shadow-sm btn-sm" data-seconds="{{ $templateExercise->rest_seconds }}">
-                                            <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
-                                        </button>
+                                        @if($templateExercise->target_weight)
+                                            @ {{ $templateExercise->target_weight }}kg
+                                        @endif
+                                    </small>
+                                    @if(isset($lastWorkouts[$templateExercise->exercise_id]))
+                                        <small class="text-success d-block mt-1">
+                                            <i class="bi bi-info-circle"></i> Last: 
+                                            {{ $lastWorkouts[$templateExercise->exercise_id]->weight }}kg × 
+                                            {{ $lastWorkouts[$templateExercise->exercise_id]->reps }} reps
+                                        </small>
                                     @endif
                                 </div>
-
-                                <!-- Sets Already Logged -->
-                                @php
-                                    $loggedSets = $session->setLogs->where('exercise_id', $templateExercise->exercise_id);
-                                @endphp
-                                @if($loggedSets->count() > 0)
-                                    <div class="mb-3 p-3 bg-white rounded">
-                                        <h6 class="mb-2">
-                                            <i class="bi bi-check-circle-fill text-success"></i> Logged Sets:
-                                        </h6>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            @foreach($loggedSets as $setLog)
-                                                <span class="badge bg-success fs-6 px-3 py-2">
-                                                    Set {{ $setLog->set_number }}: {{ $setLog->weight }}kg × {{ $setLog->reps }} reps
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                @if($templateExercise->rest_seconds)
+                                    <button class="btn btn-info text-white start-timer shadow-sm btn-sm" data-seconds="{{ $templateExercise->rest_seconds }}">
+                                        <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
+                                    </button>
                                 @endif
-
-                                <!-- Log New Set Form -->
-                                <form class="log-set-form row g-2" data-exercise-id="{{ $templateExercise->exercise_id }}">
-                                    <div class="col-4 col-sm-3">
-                                        <label class="form-label small">Set #</label>
-                                        <input type="number" class="form-control form-control-sm" name="set_number" 
-                                               value="{{ $loggedSets->count() + 1 }}" min="1" required>
-                                    </div>
-                                    <div class="col-4 col-sm-3">
-                                        <label class="form-label small">Weight</label>
-                                        <input type="number" class="form-control form-control-sm" name="weight" 
-                                               value="{{ $templateExercise->target_weight ?? ($lastWorkouts[$templateExercise->exercise_id]->weight ?? '') }}" 
-                                               step="0.5" min="0" required placeholder="kg">
-                                    </div>
-                                    <div class="col-4 col-sm-3">
-                                        <label class="form-label small">Reps</label>
-                                        <input type="number" class="form-control form-control-sm" name="reps" 
-                                               value="{{ $templateExercise->target_reps ?? '' }}" 
-                                               min="0" required>
-                                    </div>
-                                    <div class="col-12 col-sm-3">
-                                        <label class="form-label small d-none d-sm-block">&nbsp;</label>
-                                        <button type="submit" class="btn btn-success btn-sm w-100">
-                                            <i class="bi bi-check-circle"></i> Log Set
-                                        </button>
-                                    </div>
-                                </form>
                             </div>
-                        @endforeach
-                    </div>
+
+                            <!-- Sets Already Logged -->
+                            @php
+                                $loggedSets = $session->setLogs->where('exercise_id', $templateExercise->exercise_id);
+                            @endphp
+                            @if($loggedSets->count() > 0)
+                                <div class="mb-3 p-3 bg-white rounded">
+                                    <h6 class="mb-2">
+                                        <i class="bi bi-check-circle-fill text-success"></i> Logged Sets:
+                                    </h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach($loggedSets as $setLog)
+                                            <span class="badge bg-success fs-6 px-3 py-2">
+                                                Set {{ $setLog->set_number }}: {{ $setLog->weight }}kg × {{ $setLog->reps }} reps
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Log New Set Form -->
+                            <form class="log-set-form row g-2" data-exercise-id="{{ $templateExercise->exercise_id }}">
+                                <div class="col-4 col-sm-3">
+                                    <label class="form-label small">Set #</label>
+                                    <input type="number" class="form-control form-control-sm" name="set_number" 
+                                           value="{{ $loggedSets->count() + 1 }}" min="1" required>
+                                </div>
+                                <div class="col-4 col-sm-3">
+                                    <label class="form-label small">Weight</label>
+                                    <input type="number" class="form-control form-control-sm" name="weight" 
+                                           value="{{ $templateExercise->target_weight ?? ($lastWorkouts[$templateExercise->exercise_id]->weight ?? '') }}" 
+                                           step="0.5" min="0" required placeholder="kg">
+                                </div>
+                                <div class="col-4 col-sm-3">
+                                    <label class="form-label small">Reps</label>
+                                    <input type="number" class="form-control form-control-sm" name="reps" 
+                                           value="{{ $templateExercise->target_reps ?? '' }}" 
+                                           min="0" required>
+                                </div>
+                                <div class="col-12 col-sm-3">
+                                    <label class="form-label small d-none d-sm-block">&nbsp;</label>
+                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                        <i class="bi bi-check-circle"></i> Log Set
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @endforeach
                 </div>
-            @else
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> This is a free-form workout. You can log sets manually or add notes at the end.
-                </div>
-            @endif
+            </div>
 
             <!-- Complete Workout -->
             <div class="card shadow-sm border-0">

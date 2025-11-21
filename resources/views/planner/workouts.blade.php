@@ -16,16 +16,13 @@
     <div class="row g-4">
         @php
             $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            $dayEmojis = ['💪', '🔥', '💪', '🔥', '💪', '😴', '😴'];
         @endphp
         
         @foreach($days as $index => $day)
             <div class="col-md-6 col-lg-4">
                 <div class="card shadow-sm h-100 border-0 {{ $weeklyPlan[$index] ? 'border-start border-5 border-info' : '' }}">
                     <div class="card-header {{ $weeklyPlan[$index] ? 'bg-info' : 'bg-secondary' }} bg-opacity-10 border-0 py-3">
-                        <h5 class="mb-0 fw-bold">
-                            <span class="me-2">{{ $dayEmojis[$index] }}</span>{{ $day }}
-                        </h5>
+                        <h5 class="mb-0 fw-bold">{{ $day }}</h5>
                     </div>
                     <div class="card-body p-4">
                         @if($weeklyPlan[$index])

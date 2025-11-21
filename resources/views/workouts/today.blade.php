@@ -62,12 +62,16 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-2 gap-1">
                                                         <h6 class="mb-0 fw-bold small">
-                                                            <i class="bi bi-{{ getExerciseIcon($exercise->exercise->category) }} text-danger me-1"></i>
+                                                            @if($exercise->exercise->category)
+                                                                <span class="me-1">{{ $exercise->exercise->category->icon }}</span>
+                                                            @endif
                                                             {{ $exercise->exercise->name }}
                                                         </h6>
-                                                        <span class="badge bg-light text-dark" style="font-size: 0.7rem;">
-                                                            {{ ucfirst($exercise->exercise->category) }}
-                                                        </span>
+                                                        @if($exercise->exercise->category)
+                                                            <span class="badge bg-light text-dark" style="font-size: 0.7rem;">
+                                                                {{ $exercise->exercise->category->name }}
+                                                            </span>
+                                                        @endif
                                                     </div>
                                                     <div class="d-flex flex-wrap gap-1 gap-md-2 mt-2">
                                                         @if($exercise->target_sets)
@@ -203,46 +207,27 @@
     @else
         <!-- No Workout Today -->
         <div class="row">
-            <div class="col-lg-8 offset-lg-2">
+            <div class="col-lg-6 offset-lg-3">
                 <div class="text-center py-5 mb-4">
                     <i class="bi bi-calendar-x display-1 text-muted opacity-50 mb-4"></i>
                     <h2 class="mb-3">No Workout Scheduled</h2>
-                    <p class="text-muted fs-5 mb-0">
-                        You don't have a workout planned for today. Would you like to plan your week or start a free workout?
+                    <p class="text-muted fs-5 mb-4">
+                        You don't have a workout planned for today. Let's set up your weekly workout schedule!
                     </p>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body p-4 text-center">
-                                <div class="bg-danger bg-opacity-10 text-danger rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
-                                    <i class="bi bi-calendar-week-fill fs-1"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">Plan Your Week</h5>
-                                <p class="text-muted mb-3">Schedule your workouts for the entire week</p>
-                                <a href="{{ route('planner.workouts') }}" class="btn btn-danger">
-                                    <i class="bi bi-calendar-plus me-2"></i> Go to Planner
-                                </a>
-                            </div>
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-4 p-md-5 text-center">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="bi bi-calendar-week-fill fs-1"></i>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body p-4 text-center">
-                                <div class="bg-success bg-opacity-10 text-success rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
-                                    <i class="bi bi-play-circle-fill fs-1"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">Free Workout</h5>
-                                <p class="text-muted mb-3">Start a workout without a template</p>
-                                <form action="{{ route('workouts.start') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-play-circle me-2"></i> Start Now
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                        <h4 class="fw-bold mb-3">Plan Your Training Week</h4>
+                        <p class="text-muted mb-4">
+                            Assign workout templates to specific days of the week and stay on track with your fitness goals.
+                        </p>
+                        <a href="{{ route('planner.workouts') }}" class="btn btn-danger btn-lg px-5">
+                            <i class="bi bi-calendar-plus me-2"></i> Go to Workout Planner
+                        </a>
                     </div>
                 </div>
             </div>
@@ -251,16 +236,3 @@
 </div>
 @endsection
 
-@php
-function getExerciseIcon($category) {
-    $icons = [
-        'chest' => 'heart-pulse',
-        'back' => 'arrow-bar-up',
-        'legs' => 'bicycle',
-        'shoulders' => 'person-arms-up',
-        'arms' => 'lightning',
-        'core' => 'bullseye',
-    ];
-    return $icons[strtolower($category)] ?? 'lightning-charge';
-}
-@endphp

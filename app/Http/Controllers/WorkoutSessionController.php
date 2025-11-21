@@ -22,7 +22,7 @@ class WorkoutSessionController extends Controller
         // Get today's template
         $template = WorkoutTemplate::where('user_id', auth()->id())
             ->where('day_of_week', $dayOfWeek)
-            ->with(['workoutTemplateExercises.exercise'])
+            ->with(['workoutTemplateExercises.exercise.category'])
             ->first();
 
         // Check if there's already a session for today
@@ -70,7 +70,7 @@ class WorkoutSessionController extends Controller
             abort(403);
         }
 
-        $session->load(['workoutTemplate.workoutTemplateExercises.exercise', 'setLogs']);
+        $session->load(['workoutTemplate.workoutTemplateExercises.exercise.category', 'setLogs']);
 
         // Get exercises for this session
         $exercises = $session->workoutTemplate
