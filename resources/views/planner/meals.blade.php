@@ -75,16 +75,16 @@
                                         
                                         <!-- Macros -->
                                         @if($meal->protein || $meal->carbs || $meal->fat)
-                                            <div class="d-flex gap-2 mb-3">
-                                                <span class="badge bg-primary-subtle text-primary px-2 py-1">
-                                                    P:{{ $meal->protein }}g
-                                                </span>
-                                                <span class="badge bg-warning-subtle text-warning px-2 py-1">
-                                                    C:{{ $meal->carbs }}g
-                                                </span>
-                                                <span class="badge bg-danger-subtle text-danger px-2 py-1">
-                                                    F:{{ $meal->fat }}g
-                                                </span>
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                <div class="macro-badge protein">
+                                                    <i class="bi bi-lightning-charge-fill"></i> {{ $meal->protein }}g protein
+                                                </div>
+                                                <div class="macro-badge carbs">
+                                                    <i class="bi bi-droplet-fill"></i> {{ $meal->carbs }}g carbs
+                                                </div>
+                                                <div class="macro-badge fat">
+                                                    <i class="bi bi-circle-fill"></i> {{ $meal->fat }}g fat
+                                                </div>
                                             </div>
                                         @endif
                                         
@@ -286,6 +286,33 @@
 .meal-type-card:hover {
     box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+}
+.macro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1.5px solid;
+    background: white;
+    white-space: nowrap;
+}
+.macro-badge.protein {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+.macro-badge.carbs {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+.macro-badge.fat {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+.macro-badge i {
+    font-size: 0.65rem;
 }
 </style>
 @endpush
