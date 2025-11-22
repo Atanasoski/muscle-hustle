@@ -189,11 +189,33 @@
                                 <label class="form-label fw-bold">Default Rest Time (seconds)</label>
                                 <input type="number" class="form-control" name="default_rest_sec" value="{{ $exercise->default_rest_sec }}" min="0">
                             </div>
+                            <hr>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold d-flex align-items-center justify-content-between">
+                                    <span>Background Video (Pexels)</span>
+                                    @if($exercise->pexels_video_path)
+                                        <span class="badge bg-success">✓ Downloaded</span>
+                                    @endif
+                                </label>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary flex-fill" 
+                                            onclick="openPexelsModal({{ $exercise->id }}, '{{ $exercise->name }}')">
+                                        <i class="bi bi-search"></i> Browse Videos
+                                    </button>
+                                    @if($exercise->pexels_video_path)
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="deletePexelsVideo({{ $exercise->id }})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    @endif
+                                </div>
+                                <small class="text-muted">Optional: Add a short background video clip from Pexels</small>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-1"></i> Save Changes
+                                <i class="bi btn-check-circle me-1"></i> Save Changes
                             </button>
                         </div>
                     </form>
@@ -221,5 +243,198 @@
         @endif
     @endforeach
 @endforeach
+
+<!-- Pexels Video Browser Modal -->
+<div class="modal fade" id="pexelsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Browse Pexels Videos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" id="pexels-search-input" class="form-control" placeholder="Search for videos...">
+                        <button class="btn btn-primary" onclick="searchPexelsVideos()">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+                <div id="pexels-results" class="row g-3">
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="bi bi-search display-4 mb-3"></i>
+                        <p>Search for exercise videos above</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Preview Modal -->
+<div class="modal fade" id="videoPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <video id="preview-video" controls autoplay loop>
+                        <source id="preview-source" src="" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="download-video-btn">
+                    <i class="bi bi-download"></i> Download & Use This Video
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+let currentExerciseId = null;
+let currentVideoUrl = null;
+const pexelsModal = new bootstrap.Modal(document.getElementById('pexelsModal'));
+const previewModal = new bootstrap.Modal(document.getElementById('videoPreviewModal'));
+
+function openPexelsModal(exerciseId, exerciseName) {
+    currentExerciseId = exerciseId;
+    document.getElementById('pexels-search-input').value = exerciseName;
+    pexelsModal.show();
+    searchPexelsVideos();
+}
+
+async function searchPexelsVideos() {
+    const query = document.getElementById('pexels-search-input').value || 'fitness';
+    const resultsDiv = document.getElementById('pexels-results');
+    
+    resultsDiv.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-3">Searching Pixabay...</p></div>';
+    
+    try {
+        const response = await fetch(`{{ route('exercises.pexels.search') }}?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (data.videos && data.videos.length > 0) {
+            resultsDiv.innerHTML = data.videos.map(video => `
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative" style="cursor: pointer;" onclick="previewPexelsVideo('${video.video_url}')">
+                            <img src="${video.image}" class="card-img-top" alt="Video thumbnail">
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="bg-white rounded-circle p-3 shadow">
+                                    <i class="bi bi-play-fill fs-3 text-primary"></i>
+                                </div>
+                            </div>
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-dark">${video.duration}s</span>
+                        </div>
+                        <div class="card-body p-2 text-center">
+                            <small class="text-muted">${video.width}x${video.height}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            resultsDiv.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-exclamation-circle display-4 mb-3"></i><p>No videos found. Try a different search term.</p></div>';
+        }
+    } catch (error) {
+        resultsDiv.innerHTML = '<div class="col-12 text-center text-danger py-5"><i class="bi bi-x-circle display-4 mb-3"></i><p>Error loading videos. Please try again.</p></div>';
+    }
+}
+
+function previewPexelsVideo(videoUrl) {
+    currentVideoUrl = videoUrl;
+    document.getElementById('preview-source').src = videoUrl;
+    document.getElementById('preview-video').load();
+    pexelsModal.hide();
+    previewModal.show();
+}
+
+document.getElementById('download-video-btn')?.addEventListener('click', async function() {
+    if (!currentExerciseId || !currentVideoUrl) return;
+    
+    const btn = this;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Downloading...';
+    
+    try {
+        const response = await fetch(`/exercises/${currentExerciseId}/pexels/download`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ video_url: currentVideoUrl })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            previewModal.hide();
+            alert('Video downloaded successfully!');
+            location.reload();
+        } else {
+            alert('Failed to download video: ' + data.message);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    } catch (error) {
+        alert('Error downloading video. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+});
+
+async function deletePexelsVideo(exerciseId) {
+    if (!confirm('Remove this background video?')) return;
+    
+    try {
+        const response = await fetch(`/exercises/${exerciseId}/pexels`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Video removed successfully!');
+            location.reload();
+        }
+    } catch (error) {
+        alert('Error removing video. Please try again.');
+    }
+}
+
+// Allow Enter key to search
+document.getElementById('pexels-search-input')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchPexelsVideos();
+    }
+});
+
+// Stop video when preview modal is closed
+document.getElementById('videoPreviewModal')?.addEventListener('hidden.bs.modal', function() {
+    const video = document.getElementById('preview-video');
+    video.pause();
+    video.currentTime = 0;
+});
+
+// Show browse modal again when preview modal is closed
+document.getElementById('videoPreviewModal')?.addEventListener('hidden.bs.modal', function() {
+    if (currentExerciseId) {
+        pexelsModal.show();
+    }
+});
+</script>
+@endpush
 

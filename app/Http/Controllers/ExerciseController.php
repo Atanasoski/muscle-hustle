@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Exercise;
+use App\Services\PexelsService;
 use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
@@ -76,5 +77,58 @@ class ExerciseController extends Controller
 
         return redirect()->route('exercises.index')
             ->with('success', 'Exercise deleted successfully!');
+    }
+
+    public function searchPexels(Request $request, PexelsService $pexelsService)
+    {
+        $query = $request->input('query', 'fitness workout');
+
+        $results = $pexelsService->searchVideos($query);
+
+        return response()->json($results);
+    }
+
+    public function downloadPexelsVideo(Request $request, Exercise $exercise, PexelsService $pexelsService)
+    {
+        $request->validate([
+            'video_url' => 'required|url',
+        ]);
+
+        // Delete old video if exists
+        if ($exercise->pexels_video_path) {
+            $pexelsService->deleteVideo($exercise->pexels_video_path);
+        }
+
+        // Download and save new video
+        $path = $pexelsService->downloadVideo($request->video_url, $exercise->id);
+
+        if (! $path) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to download video',
+            ], 500);
+        }
+
+        // Update exercise
+        $exercise->update(['pexels_video_path' => $path]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Video downloaded successfully!',
+            'path' => $path,
+        ]);
+    }
+
+    public function deletePexelsVideo(Exercise $exercise, PexelsService $pexelsService)
+    {
+        if ($exercise->pexels_video_path) {
+            $pexelsService->deleteVideo($exercise->pexels_video_path);
+            $exercise->update(['pexels_video_path' => null]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Video removed successfully!',
+        ]);
     }
 }

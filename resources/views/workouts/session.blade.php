@@ -116,7 +116,22 @@
                     </div>
 
                     <div class="card-body p-4">
-                        <!-- Video Player -->
+                        <!-- Background Video (Pexels) -->
+                        @if($templateExercise->exercise->pexels_video_path)
+                            <div class="mb-4 position-relative rounded-3 overflow-hidden" style="height: 200px;">
+                                <video 
+                                    src="{{ Storage::url($templateExercise->exercise->pexels_video_path) }}" 
+                                    autoplay 
+                                    loop 
+                                    muted 
+                                    playsinline
+                                    class="w-100 h-100 object-fit-cover">
+                                </video>
+                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
+                            </div>
+                        @endif
+
+                        <!-- YouTube Tutorial Video -->
                         @if($templateExercise->exercise->video_url)
                             <div class="collapse mb-4" id="video-{{ $templateExercise->id }}">
                                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
