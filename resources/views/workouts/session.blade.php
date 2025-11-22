@@ -116,11 +116,11 @@
                     </div>
 
                     <div class="card-body p-4">
-                        <!-- Background Video (Pexels) -->
-                        @if($templateExercise->exercise->pexels_video_path)
+                        <!-- Background Video (Pixabay) -->
+                        @if($templateExercise->exercise->pixabay_video_path)
                             <div class="mb-4 position-relative rounded-3 overflow-hidden" style="height: 200px;">
                                 <video 
-                                    src="{{ Storage::url($templateExercise->exercise->pexels_video_path) }}" 
+                                    src="{{ Storage::url($templateExercise->exercise->pixabay_video_path) }}" 
                                     autoplay 
                                     loop 
                                     muted 

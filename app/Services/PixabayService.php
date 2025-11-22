@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-class PexelsService
+class PixabayService
 {
     protected string $apiKey;
 
@@ -13,7 +13,7 @@ class PexelsService
 
     public function __construct()
     {
-        $this->apiKey = config('services.pexels.key');
+        $this->apiKey = config('services.pixabay.key');
     }
 
     public function searchVideos(string $query, int $perPage = 15): array
@@ -79,7 +79,7 @@ class PexelsService
 
             return $filename;
         } catch (\Exception $e) {
-            \Log::error('Pexels video download failed: '.$e->getMessage());
+            \Log::error('Pixabay video download failed: '.$e->getMessage());
 
             return null;
         }

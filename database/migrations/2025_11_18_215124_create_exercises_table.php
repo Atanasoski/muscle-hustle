@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('video_url')->nullable();
-            $table->string('pexels_video_path')->nullable();
+            $table->string('pixabay_video_path')->nullable();
             $table->integer('default_rest_sec')->nullable();
             $table->timestamps();
         });

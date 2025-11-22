@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Exercise;
-use App\Services\PexelsService;
+use App\Services\PixabayService;
 use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
@@ -79,28 +79,28 @@ class ExerciseController extends Controller
             ->with('success', 'Exercise deleted successfully!');
     }
 
-    public function searchPexels(Request $request, PexelsService $pexelsService)
+    public function searchPixabay(Request $request, PixabayService $pixabayService)
     {
         $query = $request->input('query', 'fitness workout');
 
-        $results = $pexelsService->searchVideos($query);
+        $results = $pixabayService->searchVideos($query);
 
         return response()->json($results);
     }
 
-    public function downloadPexelsVideo(Request $request, Exercise $exercise, PexelsService $pexelsService)
+    public function downloadPixabayVideo(Request $request, Exercise $exercise, PixabayService $pixabayService)
     {
         $request->validate([
             'video_url' => 'required|url',
         ]);
 
         // Delete old video if exists
-        if ($exercise->pexels_video_path) {
-            $pexelsService->deleteVideo($exercise->pexels_video_path);
+        if ($exercise->pixabay_video_path) {
+            $pixabayService->deleteVideo($exercise->pixabay_video_path);
         }
 
         // Download and save new video
-        $path = $pexelsService->downloadVideo($request->video_url, $exercise->id);
+        $path = $pixabayService->downloadVideo($request->video_url, $exercise->id);
 
         if (! $path) {
             return response()->json([
@@ -110,7 +110,7 @@ class ExerciseController extends Controller
         }
 
         // Update exercise
-        $exercise->update(['pexels_video_path' => $path]);
+        $exercise->update(['pixabay_video_path' => $path]);
 
         return response()->json([
             'success' => true,
@@ -119,11 +119,11 @@ class ExerciseController extends Controller
         ]);
     }
 
-    public function deletePexelsVideo(Exercise $exercise, PexelsService $pexelsService)
+    public function deletePixabayVideo(Exercise $exercise, PixabayService $pixabayService)
     {
-        if ($exercise->pexels_video_path) {
-            $pexelsService->deleteVideo($exercise->pexels_video_path);
-            $exercise->update(['pexels_video_path' => null]);
+        if ($exercise->pixabay_video_path) {
+            $pixabayService->deleteVideo($exercise->pixabay_video_path);
+            $exercise->update(['pixabay_video_path' => null]);
         }
 
         return response()->json([

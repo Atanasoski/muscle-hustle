@@ -35,8 +35,8 @@ return [
         ],
     ],
 
-    'pexels' => [
-        'key' => env('PIXABAY_API_KEY'), // Using Pixabay instead
+    'pixabay' => [
+        'key' => env('PIXABAY_API_KEY'),
     ],
 
 ];

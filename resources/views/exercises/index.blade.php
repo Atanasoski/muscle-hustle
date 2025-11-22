@@ -192,24 +192,24 @@
                             <hr>
                             <div class="mb-3">
                                 <label class="form-label fw-bold d-flex align-items-center justify-content-between">
-                                    <span>Background Video (Pexels)</span>
-                                    @if($exercise->pexels_video_path)
+                                    <span>Background Video (Pixabay)</span>
+                                    @if($exercise->pixabay_video_path)
                                         <span class="badge bg-success">✓ Downloaded</span>
                                     @endif
                                 </label>
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-outline-primary flex-fill" 
-                                            onclick="openPexelsModal({{ $exercise->id }}, '{{ $exercise->name }}')">
+                                            onclick="openPixabayModal({{ $exercise->id }}, '{{ $exercise->name }}')">
                                         <i class="bi bi-search"></i> Browse Videos
                                     </button>
-                                    @if($exercise->pexels_video_path)
+                                    @if($exercise->pixabay_video_path)
                                         <button type="button" class="btn btn-outline-danger" 
-                                                onclick="deletePexelsVideo({{ $exercise->id }})">
+                                                onclick="deletePixabayVideo({{ $exercise->id }})">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     @endif
                                 </div>
-                                <small class="text-muted">Optional: Add a short background video clip from Pexels</small>
+                                <small class="text-muted">Optional: Add a short background video clip from Pixabay</small>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -244,24 +244,24 @@
     @endforeach
 @endforeach
 
-<!-- Pexels Video Browser Modal -->
-<div class="modal fade" id="pexelsModal" tabindex="-1">
+<!-- Pixabay Video Browser Modal -->
+<div class="modal fade" id="pixabayModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Browse Pexels Videos</h5>
+                <h5 class="modal-title">Browse Pixabay Videos</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <div class="input-group">
-                        <input type="text" id="pexels-search-input" class="form-control" placeholder="Search for videos...">
-                        <button class="btn btn-primary" onclick="searchPexelsVideos()">
+                        <input type="text" id="pixabay-search-input" class="form-control" placeholder="Search for videos...">
+                        <button class="btn btn-primary" onclick="searchPixabayVideos()">
                             <i class="bi bi-search"></i> Search
                         </button>
                     </div>
                 </div>
-                <div id="pexels-results" class="row g-3">
+                <div id="pixabay-results" class="row g-3">
                     <div class="col-12 text-center text-muted py-5">
                         <i class="bi bi-search display-4 mb-3"></i>
                         <p>Search for exercise videos above</p>
@@ -302,31 +302,31 @@
 <script>
 let currentExerciseId = null;
 let currentVideoUrl = null;
-const pexelsModal = new bootstrap.Modal(document.getElementById('pexelsModal'));
+const pixabayModal = new bootstrap.Modal(document.getElementById('pixabayModal'));
 const previewModal = new bootstrap.Modal(document.getElementById('videoPreviewModal'));
 
-function openPexelsModal(exerciseId, exerciseName) {
+function openPixabayModal(exerciseId, exerciseName) {
     currentExerciseId = exerciseId;
-    document.getElementById('pexels-search-input').value = exerciseName;
-    pexelsModal.show();
-    searchPexelsVideos();
+    document.getElementById('pixabay-search-input').value = exerciseName;
+    pixabayModal.show();
+    searchPixabayVideos();
 }
 
-async function searchPexelsVideos() {
-    const query = document.getElementById('pexels-search-input').value || 'fitness';
-    const resultsDiv = document.getElementById('pexels-results');
+async function searchPixabayVideos() {
+    const query = document.getElementById('pixabay-search-input').value || 'fitness';
+    const resultsDiv = document.getElementById('pixabay-results');
     
     resultsDiv.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-3">Searching Pixabay...</p></div>';
     
     try {
-        const response = await fetch(`{{ route('exercises.pexels.search') }}?query=${encodeURIComponent(query)}`);
+        const response = await fetch(`{{ route('exercises.pixabay.search') }}?query=${encodeURIComponent(query)}`);
         const data = await response.json();
         
         if (data.videos && data.videos.length > 0) {
             resultsDiv.innerHTML = data.videos.map(video => `
                 <div class="col-md-6 col-lg-3">
                     <div class="card h-100 shadow-sm">
-                        <div class="position-relative" style="cursor: pointer;" onclick="previewPexelsVideo('${video.video_url}')">
+                        <div class="position-relative" style="cursor: pointer;" onclick="previewPixabayVideo('${video.video_url}')">
                             <img src="${video.image}" class="card-img-top" alt="Video thumbnail">
                             <div class="position-absolute top-50 start-50 translate-middle">
                                 <div class="bg-white rounded-circle p-3 shadow">
@@ -349,11 +349,11 @@ async function searchPexelsVideos() {
     }
 }
 
-function previewPexelsVideo(videoUrl) {
+function previewPixabayVideo(videoUrl) {
     currentVideoUrl = videoUrl;
     document.getElementById('preview-source').src = videoUrl;
     document.getElementById('preview-video').load();
-    pexelsModal.hide();
+    pixabayModal.hide();
     previewModal.show();
 }
 
@@ -366,7 +366,7 @@ document.getElementById('download-video-btn')?.addEventListener('click', async f
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Downloading...';
     
     try {
-        const response = await fetch(`/exercises/${currentExerciseId}/pexels/download`, {
+        const response = await fetch(`/exercises/${currentExerciseId}/pixabay/download`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -393,11 +393,11 @@ document.getElementById('download-video-btn')?.addEventListener('click', async f
     }
 });
 
-async function deletePexelsVideo(exerciseId) {
+async function deletePixabayVideo(exerciseId) {
     if (!confirm('Remove this background video?')) return;
     
     try {
-        const response = await fetch(`/exercises/${exerciseId}/pexels`, {
+        const response = await fetch(`/exercises/${exerciseId}/pixabay`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -416,9 +416,9 @@ async function deletePexelsVideo(exerciseId) {
 }
 
 // Allow Enter key to search
-document.getElementById('pexels-search-input')?.addEventListener('keypress', function(e) {
+document.getElementById('pixabay-search-input')?.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-        searchPexelsVideos();
+        searchPixabayVideos();
     }
 });
 
@@ -432,7 +432,7 @@ document.getElementById('videoPreviewModal')?.addEventListener('hidden.bs.modal'
 // Show browse modal again when preview modal is closed
 document.getElementById('videoPreviewModal')?.addEventListener('hidden.bs.modal', function() {
     if (currentExerciseId) {
-        pexelsModal.show();
+        pixabayModal.show();
     }
 });
 </script>

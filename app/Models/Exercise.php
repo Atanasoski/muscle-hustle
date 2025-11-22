@@ -13,7 +13,7 @@ class Exercise extends Model
         'category_id',
         'name',
         'video_url',
-        'pexels_video_path',
+        'pixabay_video_path',
         'default_rest_sec',
     ];
 
