@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\MealPlannerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutPlannerController;
@@ -18,6 +19,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Workout Templates CRUD
     Route::resource('workout-templates', WorkoutTemplateController::class);
+
+    // Exercise Library
+    Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
+    Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
+    Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
+    Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
 
     // Workout Template Exercise Management
     Route::post('/workout-templates/{workoutTemplate}/exercises', [WorkoutTemplateController::class, 'addExercise'])

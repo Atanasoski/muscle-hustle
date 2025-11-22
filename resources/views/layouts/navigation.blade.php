@@ -24,6 +24,11 @@
                             <i class="bi bi-journal-text"></i> Templates
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('exercises.*') ? 'active' : '' }}" href="{{ route('exercises.index') }}">
+                            <i class="bi bi-list-ul"></i> Exercises
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('planner.*') ? 'active' : '' }}" href="#" id="plannerDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-calendar-week-fill"></i> Planner
