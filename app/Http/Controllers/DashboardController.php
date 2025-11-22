@@ -37,17 +37,18 @@ class DashboardController extends Controller
         // Get today's meals
         $todayMeals = $mealPlan ? $mealPlan->meals->where('day_of_week', $dayOfWeek) : collect();
 
-        // Get last completed workout
-        $lastWorkout = $user->workoutSessions()
-            ->whereNotNull('performed_at')
+        // Get last 3 completed workouts
+        $recentWorkouts = $user->workoutSessions()
+            ->whereNotNull('completed_at')
             ->with(['workoutTemplate', 'setLogs.exercise'])
             ->latest('performed_at')
-            ->first();
+            ->take(4)
+            ->get();
 
         // Calculate workout streak
         $streak = $this->calculateStreak($user->id);
 
-        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'lastWorkout', 'streak'));
+        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'recentWorkouts', 'streak'));
     }
 
     private function calculateStreak(int $userId): int
