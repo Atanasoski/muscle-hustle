@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('workout_template_id')->nullable()->constrained()->onDelete('set null');
             $table->dateTime('performed_at');
+            $table->dateTime('completed_at')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

@@ -25,9 +25,10 @@ class WorkoutSessionController extends Controller
             ->with(['workoutTemplateExercises.exercise.category'])
             ->first();
 
-        // Check if there's already a session for today
+        // Check if there's already an active (non-completed) session for today
         $session = WorkoutSession::where('user_id', auth()->id())
             ->whereDate('performed_at', $today->toDateString())
+            ->whereNull('completed_at')
             ->first();
 
         return view('workouts.today', compact('template', 'session'));
@@ -44,9 +45,10 @@ class WorkoutSessionController extends Controller
 
         $today = Carbon::now();
 
-        // Check if session already exists
+        // Check if an active session already exists for today
         $session = WorkoutSession::where('user_id', auth()->id())
             ->whereDate('performed_at', $today->toDateString())
+            ->whereNull('completed_at')
             ->first();
 
         if (! $session) {
@@ -136,6 +138,7 @@ class WorkoutSessionController extends Controller
 
         $session->update([
             'notes' => $request->notes,
+            'completed_at' => Carbon::now(),
         ]);
 
         return redirect()->route('dashboard')

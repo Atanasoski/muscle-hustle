@@ -12,11 +12,13 @@ class WorkoutSession extends Model
         'user_id',
         'workout_template_id',
         'performed_at',
+        'completed_at',
         'notes',
     ];
 
     protected $casts = [
         'performed_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     /**
