@@ -12,6 +12,7 @@ class Exercise extends Model
         'user_id',
         'category_id',
         'name',
+        'video_url',
         'default_rest_sec',
     ];
 

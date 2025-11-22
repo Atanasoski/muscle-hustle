@@ -77,12 +77,29 @@
                                         </small>
                                     @endif
                                 </div>
-                                @if($templateExercise->rest_seconds)
-                                    <button class="btn btn-info text-white start-timer shadow-sm btn-sm" data-seconds="{{ $templateExercise->rest_seconds }}">
-                                        <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
-                                    </button>
-                                @endif
+                                <div class="d-flex flex-column gap-2">
+                                    @if($templateExercise->exercise->video_url)
+                                        <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#video-{{ $templateExercise->id }}">
+                                            <i class="bi bi-play-circle"></i> Watch Form
+                                        </button>
+                                    @endif
+                                    @if($templateExercise->rest_seconds)
+                                        <button class="btn btn-info text-white start-timer shadow-sm btn-sm" data-seconds="{{ $templateExercise->rest_seconds }}">
+                                            <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
+
+                            <!-- Exercise Video -->
+                            @if($templateExercise->exercise->video_url)
+                                <div class="collapse mb-3" id="video-{{ $templateExercise->id }}">
+                                    <div class="ratio ratio-16x9 rounded overflow-hidden">
+                                        <iframe src="{{ str_replace('watch?v=', 'embed/', $templateExercise->exercise->video_url) }}" 
+                                                allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            @endif
 
                             <!-- Sets Already Logged -->
                             @php

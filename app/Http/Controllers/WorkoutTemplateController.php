@@ -219,13 +219,20 @@ class WorkoutTemplateController extends Controller
         }
 
         $request->validate([
+            'video_url' => 'nullable|url',
             'target_sets' => 'nullable|integer|min:1',
             'target_reps' => 'nullable|integer|min:1',
             'target_weight' => 'nullable|numeric|min:0',
             'rest_seconds' => 'nullable|integer|min:0',
         ]);
 
+        // Update template exercise (sets, reps, weight, rest)
         $exercise->update($request->only(['target_sets', 'target_reps', 'target_weight', 'rest_seconds']));
+
+        // Update the exercise video URL if provided
+        if ($request->has('video_url')) {
+            $exercise->exercise->update(['video_url' => $request->video_url]);
+        }
 
         return redirect()->route('workout-templates.edit', $workoutTemplate)
             ->with('success', 'Exercise updated successfully!');

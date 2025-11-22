@@ -137,6 +137,12 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
+                                <label class="form-label">Video URL (YouTube)</label>
+                                <input type="url" class="form-control" name="video_url" value="{{ $templateExercise->exercise->video_url }}" placeholder="https://www.youtube.com/watch?v=...">
+                                <small class="text-muted">Add a YouTube video link for proper form demonstration</small>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
                                 <label class="form-label">Target Sets</label>
                                 <input type="number" class="form-control" name="target_sets" value="{{ $templateExercise->target_sets }}" min="1">
                             </div>
