@@ -20,7 +20,7 @@ class PixabayService
     {
         $response = Http::get($this->baseUrl, [
             'key' => $this->apiKey,
-            'q' => $query.' fitness workout exercise', // Add fitness context
+            'q' => $query, // Search exactly what user types
             'per_page' => min($perPage, 40), // Get more results to filter from
             'safesearch' => 'true',
             'order' => 'popular', // Sort by popularity
