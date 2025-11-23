@@ -168,7 +168,7 @@ class WorkoutSessionController extends Controller
             'rest_seconds' => 'nullable|integer|min:0',
         ]);
 
-        SetLog::create([
+        $setLog = SetLog::create([
             'workout_session_id' => $session->id,
             'exercise_id' => $request->exercise_id,
             'set_number' => $request->set_number,
@@ -177,7 +177,10 @@ class WorkoutSessionController extends Controller
             'rest_seconds' => $request->rest_seconds,
         ]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'set_log_id' => $setLog->id,
+        ]);
     }
 
     /**

@@ -48,7 +48,7 @@
 
             <!-- Exercises -->
             @foreach($exercisesData as $index => $exerciseData)
-                <div class="card border-0 shadow-sm mb-3 exercise-card {{ $exerciseData['is_completed'] ? 'completed' : '' }}">
+                <div id="exercise-{{ $exerciseData['template_exercise']->exercise_id }}" class="card border-0 shadow-sm mb-3 exercise-card {{ $exerciseData['is_completed'] ? 'completed' : '' }}">
                     <!-- Exercise Header -->
                     <div class="card-header bg-white border-bottom py-3">
                         <div class="d-flex justify-content-between align-items-center">
@@ -432,9 +432,9 @@ document.getElementById('timer-add-30').addEventListener('click', function() {
     updateTimerDisplay();
 });
 
-// Log Set Buttons
-document.querySelectorAll('.log-set-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+// Handler function for logging sets (reusable)
+function handleLogSetClick() {
+    const btn = this;
         const exerciseId = this.dataset.exerciseId;
         const setNumber = this.dataset.setNumber;
         const restSeconds = parseInt(this.dataset.restSeconds);
@@ -473,28 +473,109 @@ document.querySelectorAll('.log-set-btn').forEach(btn => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Store timer in localStorage so it starts after reload
-                if (restSeconds > 0) {
-                    const endTime = Date.now() + (restSeconds * 1000);
-                    localStorage.setItem('workout_timer_end', endTime);
+                // Find the current row (the one we just logged)
+                const currentRow = btn.closest('tr');
+                
+                // Mark current set as completed
+                currentRow.classList.remove('table-warning');
+                currentRow.classList.add('table-success');
+                
+                // Update the row to show completed state
+                const weightCell = currentRow.querySelector('td:nth-child(2)');
+                const repsCell = currentRow.querySelector('td:nth-child(3)');
+                const actionCell = currentRow.querySelector('td:nth-child(4)');
+                
+                weightCell.innerHTML = `<strong>${weight}</strong>`;
+                repsCell.innerHTML = `<strong>${reps}</strong>`;
+                actionCell.innerHTML = `<button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                            data-set-id="${data.set_log_id}"
+                                            data-exercise-id="${exerciseId}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>`;
+                
+                // Update set number cell
+                const setCell = currentRow.querySelector('td:nth-child(1)');
+                setCell.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> ${setNumber}`;
+                
+                // Activate next set if there is one
+                const nextRow = currentRow.nextElementSibling;
+                if (nextRow && nextRow.tagName === 'TR') {
+                    nextRow.classList.add('table-warning');
+                    
+                    // Update next row icons
+                    const nextSetCell = nextRow.querySelector('td:nth-child(1)');
+                    const nextSetNumber = parseInt(setNumber) + 1;
+                    nextSetCell.innerHTML = `<i class="bi bi-arrow-right-circle-fill text-warning"></i> ${nextSetNumber}`;
+                    
+                    // Enable inputs and button in next row
+                    const nextWeightCell = nextRow.querySelector('td:nth-child(2)');
+                    const nextRepsCell = nextRow.querySelector('td:nth-child(3)');
+                    const nextActionCell = nextRow.querySelector('td:nth-child(4)');
+                    
+                    const nextWeightInput = nextWeightCell?.querySelector('input[type="number"]');
+                    const nextRepsInput = nextRepsCell?.querySelector('input[type="number"]');
+                    const nextButton = nextActionCell?.querySelector('button');
+                    
+                    if (nextWeightInput) {
+                        nextWeightInput.disabled = false;
+                        nextWeightInput.classList.add(`weight-input-${exerciseId}`);
+                        nextWeightInput.setAttribute('data-set', nextSetNumber);
+                    }
+                    if (nextRepsInput) {
+                        nextRepsInput.disabled = false;
+                        nextRepsInput.classList.add(`reps-input-${exerciseId}`);
+                        nextRepsInput.setAttribute('data-set', nextSetNumber);
+                    }
+                    if (nextButton) {
+                        nextButton.disabled = false;
+                        nextButton.className = 'btn btn-sm btn-success log-set-btn';
+                        nextButton.setAttribute('data-exercise-id', exerciseId);
+                        nextButton.setAttribute('data-set-number', nextSetNumber);
+                        nextButton.setAttribute('data-rest-seconds', restSeconds);
+                        nextButton.innerHTML = '<i class="bi bi-check-circle"></i> Log';
+                        
+                        // Add event listener to new button
+                        nextButton.addEventListener('click', handleLogSetClick);
+                    }
+                } else {
+                    // All sets completed - mark exercise as complete
+                    const exerciseCard = currentRow.closest('.exercise-card');
+                    exerciseCard.classList.add('completed');
+                    
+                    const exerciseNumber = exerciseCard.querySelector('.exercise-number');
+                    exerciseNumber.classList.remove('bg-primary');
+                    exerciseNumber.classList.add('bg-success');
+                    exerciseNumber.innerHTML = '<i class="bi bi-check-lg"></i>';
                 }
                 
-                // Reload page to show next set (timer will auto-start)
-                window.location.reload();
+                // Re-attach delete listener to new button
+                const deleteBtn = actionCell.querySelector('.delete-set-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', handleDeleteSetClick);
+                }
+                
+                // Start rest timer
+                if (restSeconds > 0) {
+                    startTimer(restSeconds);
+                }
             }
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Error logging set. Please try again.');
-            this.disabled = false;
-            this.innerHTML = '<i class="bi bi-check-circle"></i> Log';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle"></i> Log';
         });
-    });
+}
+
+// Attach to all initial log set buttons
+document.querySelectorAll('.log-set-btn').forEach(btn => {
+    btn.addEventListener('click', handleLogSetClick);
 });
 
-// Delete Set Buttons
-document.querySelectorAll('.delete-set-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+// Handler function for deleting sets (reusable)
+function handleDeleteSetClick() {
+    const btn = this;
         if (!confirm('Delete this set?')) return;
         
         const setId = this.dataset.setId;
@@ -518,9 +599,13 @@ document.querySelectorAll('.delete-set-btn').forEach(btn => {
             console.error('Error:', error);
             alert('Error deleting set. Please try again.');
             this.disabled = false;
-            this.innerHTML = '<i class="bi bi-trash"></i>';
+            btn.innerHTML = '<i class="bi bi-trash"></i>';
         });
-    });
+}
+
+// Attach to all initial delete buttons
+document.querySelectorAll('.delete-set-btn').forEach(btn => {
+    btn.addEventListener('click', handleDeleteSetClick);
 });
 </script>
 @endpush
