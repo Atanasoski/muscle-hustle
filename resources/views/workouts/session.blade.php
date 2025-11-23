@@ -45,21 +45,6 @@
                 </div>
             </div>
 
-            <!-- Rest Timer (Hidden by default) -->
-            <div id="timer-card" class="card border-0 shadow-lg mb-4 bg-info text-white" style="display: none;">
-                <div class="card-body text-center py-4">
-                    <h5 class="mb-3"><i class="bi bi-stopwatch"></i> Rest Timer</h5>
-                    <div id="timer-display" class="display-2 fw-bold mb-3">00:00</div>
-                    <div class="btn-group">
-                        <button id="timer-stop" class="btn btn-light px-4">
-                            <i class="bi bi-stop-circle"></i> Stop
-                        </button>
-                        <button id="timer-add-30" class="btn btn-outline-light px-4">
-                            <i class="bi bi-plus-circle"></i> +30s
-                        </button>
-                    </div>
-                </div>
-            </div>
 
             <!-- Exercises -->
             @foreach($exercisesData as $index => $exerciseData)
@@ -251,6 +236,35 @@
         </div>
     </div>
 </div>
+
+<!-- Fixed Rest Timer at Bottom -->
+<div id="timer-card" class="timer-bottom-bar" style="display: none;">
+    <div class="container-fluid px-3 px-lg-4">
+        <div class="row align-items-center">
+            <div class="col-xl-10 offset-xl-1">
+                <div class="d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="timer-icon">
+                            <i class="bi bi-stopwatch"></i>
+                        </div>
+                        <div>
+                            <div class="small text-white-50 fw-semibold">REST TIMER</div>
+                            <div id="timer-display" class="h2 mb-0 fw-bold text-white">00:00</div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="timer-add-30" class="btn btn-light">
+                            <i class="bi bi-plus-circle"></i> +30s
+                        </button>
+                        <button id="timer-stop" class="btn btn-outline-light">
+                            <i class="bi bi-x-circle"></i> Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('styles')
@@ -271,6 +285,46 @@
 
 .exercise-card:hover {
     transform: translateY(-2px);
+}
+
+/* Fixed Bottom Timer Bar */
+.timer-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.timer-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+/* Add padding to body when timer is visible to prevent content overlap */
+body.timer-active {
+    padding-bottom: 100px;
 }
 </style>
 @endpush
@@ -317,7 +371,9 @@ function startTimer(seconds) {
     const endTime = Date.now() + (seconds * 1000);
     localStorage.setItem('workout_timer_end', endTime);
     
+    // Show timer bar and add padding to body
     document.getElementById('timer-card').style.display = 'block';
+    document.body.classList.add('timer-active');
     updateTimerDisplay();
     
     timerInterval = setInterval(() => {
@@ -330,8 +386,6 @@ function startTimer(seconds) {
             alert('Rest time is up! 💪');
         }
     }, 1000);
-    
-    document.getElementById('timer-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function stopTimer() {
@@ -340,6 +394,7 @@ function stopTimer() {
         timerInterval = null;
     }
     document.getElementById('timer-card').style.display = 'none';
+    document.body.classList.remove('timer-active');
     timerSeconds = 0;
     localStorage.removeItem('workout_timer_end');
 }
