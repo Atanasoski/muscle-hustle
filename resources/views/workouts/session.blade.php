@@ -114,17 +114,14 @@
                         @endif
 
                         <!-- All Sets Table -->
-
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="text-center" style="width: 60px;">Set</th>
-                                        <th class="text-center bg-info bg-opacity-10">Previous Weight</th>
-                                        <th class="text-center bg-info bg-opacity-10">Previous Reps</th>
-                                        <th class="text-center">Weight (kg)</th>
+                                        <th class="text-center" style="width: 80px;">Set</th>
+                                        <th class="text-center">Weight</th>
                                         <th class="text-center">Reps</th>
-                                        <th class="text-center" style="width: 100px;">Action</th>
+                                        <th class="text-center" style="width: 120px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -142,34 +139,27 @@
                                                 {{ $set['set_number'] }}
                                             </td>
 
-                                            <!-- Previous Weight -->
-                                            <td class="text-center text-muted small">
-                                                {{ $set['previous_weight'] ? $set['previous_weight'] . ' kg' : '—' }}
-                                            </td>
-
-                                            <!-- Previous Reps -->
-                                            <td class="text-center text-muted small">
-                                                {{ $set['previous_reps'] ?? '—' }}
-                                            </td>
-
-                                            <!-- Current Weight Input or Display -->
+                                            <!-- Weight Input or Display -->
                                             <td class="text-center">
                                                 @if($set['is_completed'])
-                                                    <strong>{{ $set['current_weight'] }} kg</strong>
+                                                    <strong>{{ number_format($set['current_weight'], 0) }}</strong>
                                                 @elseif($set['is_active'])
                                                     <input type="number" 
                                                            class="form-control form-control-sm text-center weight-input-{{ $exerciseData['template_exercise']->exercise_id }}" 
-                                                           value="{{ $set['default_weight'] }}" 
-                                                           step="0.5" 
+                                                           value="{{ number_format($set['default_weight'], 0) }}" 
+                                                           step="1" 
                                                            min="0" 
-                                                           placeholder="0.0"
+                                                           placeholder="Weight"
                                                            data-set="{{ $set['set_number'] }}">
                                                 @else
-                                                    <input type="number" class="form-control form-control-sm text-center" disabled placeholder="—">
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm text-center" 
+                                                           value="{{ number_format($set['default_weight'], 0) }}" 
+                                                           disabled>
                                                 @endif
                                             </td>
 
-                                            <!-- Current Reps Input or Display -->
+                                            <!-- Reps Input or Display -->
                                             <td class="text-center">
                                                 @if($set['is_completed'])
                                                     <strong>{{ $set['current_reps'] }}</strong>
@@ -178,10 +168,13 @@
                                                            class="form-control form-control-sm text-center reps-input-{{ $exerciseData['template_exercise']->exercise_id }}" 
                                                            value="{{ $set['default_reps'] }}" 
                                                            min="0" 
-                                                           placeholder="0"
+                                                           placeholder="Reps"
                                                            data-set="{{ $set['set_number'] }}">
                                                 @else
-                                                    <input type="number" class="form-control form-control-sm text-center" disabled placeholder="—">
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm text-center" 
+                                                           value="{{ $set['default_reps'] }}" 
+                                                           disabled>
                                                 @endif
                                             </td>
 
@@ -383,7 +376,6 @@ function startTimer(seconds) {
         if (timerSeconds <= 0) {
             stopTimer();
             playTimerSound();
-            alert('Rest time is up! 💪');
         }
     }, 1000);
 }
