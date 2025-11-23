@@ -162,6 +162,16 @@
                                             <h6 class="fw-bold mb-0">{{ $meal->name }}</h6>
                                         </div>
                                     </div>
+                                    
+                                    @if($meal->serving_size)
+                                        <div class="mb-2">
+                                            <div class="d-flex align-items-start gap-2">
+                                                <i class="bi bi-rulers text-muted" style="font-size: 0.85rem;"></i>
+                                                <div class="text-muted small lh-sm">{{ $meal->serving_size }}</div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
                                     <div class="d-flex gap-2 flex-wrap mt-2">
                                         <span class="badge bg-light text-dark border">
                                             <i class="bi bi-fire"></i> {{ $meal->calories }} cal
