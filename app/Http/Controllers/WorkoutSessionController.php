@@ -79,21 +79,33 @@ class WorkoutSessionController extends Controller
             ? $session->workoutTemplate->workoutTemplateExercises
             : collect();
 
-        // Get last workout data for each exercise
-        $lastWorkouts = [];
+        // Get last workout data for each exercise (all sets from the most recent workout)
+        $previousSets = [];
         foreach ($exercises as $templateExercise) {
-            $lastSet = SetLog::whereHas('workoutSession', function ($query) use ($session) {
-                $query->where('user_id', auth()->id())
-                    ->where('id', '!=', $session->id);
-            })
-                ->where('exercise_id', $templateExercise->exercise_id)
-                ->orderBy('created_at', 'desc')
+            // Find the most recent completed workout session with this exercise
+            $lastSession = WorkoutSession::where('user_id', auth()->id())
+                ->where('id', '!=', $session->id)
+                ->whereNotNull('completed_at')
+                ->whereHas('setLogs', function ($query) use ($templateExercise) {
+                    $query->where('exercise_id', $templateExercise->exercise_id);
+                })
+                ->orderBy('completed_at', 'desc')
                 ->first();
 
-            $lastWorkouts[$templateExercise->exercise_id] = $lastSet;
+            if ($lastSession) {
+                // Get all sets from that workout for this exercise
+                $sets = SetLog::where('workout_session_id', $lastSession->id)
+                    ->where('exercise_id', $templateExercise->exercise_id)
+                    ->orderBy('set_number')
+                    ->get();
+
+                $previousSets[$templateExercise->exercise_id] = $sets;
+            } else {
+                $previousSets[$templateExercise->exercise_id] = collect();
+            }
         }
 
-        return view('workouts.session', compact('session', 'exercises', 'lastWorkouts'));
+        return view('workouts.session', compact('session', 'exercises', 'previousSets'));
     }
 
     /**

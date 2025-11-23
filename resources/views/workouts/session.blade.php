@@ -13,22 +13,22 @@
                         <div class="text-white">
                             <h1 class="h3 fw-bold mb-2 text-white">
                                 <i class="bi bi-fire"></i> {{ $session->workoutTemplate->name }}
-                            </h1>
+                        </h1>
                             <p class="mb-0 opacity-75 small">
                                 <i class="bi bi-clock"></i> Started {{ $session->created_at->diffForHumans() }}
                             </p>
-                        </div>
+                    </div>
                         <div class="d-flex gap-2">
                             <span class="badge bg-white text-success fs-6 px-3 py-2">
-                                <i class="bi bi-lightning-fill"></i> In Progress
-                            </span>
+                            <i class="bi bi-lightning-fill"></i> In Progress
+                        </span>
                             <form action="{{ route('workouts.cancel', $session) }}" method="POST" onsubmit="return confirm('Cancel workout? All logged sets will be deleted.')" class="d-inline">
-                                @csrf
-                                @method('DELETE')
+                            @csrf
+                            @method('DELETE')
                                 <button type="submit" class="btn btn-light btn-sm">
                                     <i class="bi bi-x-circle"></i> Cancel
-                                </button>
-                            </form>
+                            </button>
+                        </form>
                         </div>
                     </div>
                     
@@ -86,19 +86,19 @@
                                     @else
                                         <span class="fw-bold">{{ $index + 1 }}</span>
                                     @endif
-                                </div>
+                    </div>
                                 <div>
                                     <h5 class="mb-0 fw-bold">{{ $templateExercise->exercise->name }}</h5>
                                     <small class="text-muted">
-                                        @if($templateExercise->target_sets && $templateExercise->target_reps)
-                                            Target: {{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}
+                                            @if($templateExercise->target_sets && $templateExercise->target_reps)
+                                                Target: {{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}
                                             @if($templateExercise->target_weight)
                                                 @ {{ $templateExercise->target_weight }}kg
                                             @endif
                                         @endif
                                     </small>
                                 </div>
-                            </div>
+                                    </div>
                             
                             <div class="d-flex gap-2">
                                 @if($templateExercise->exercise->video_url)
@@ -106,12 +106,12 @@
                                         <i class="bi bi-play-circle"></i> <span class="d-none d-md-inline">Watch</span>
                                     </button>
                                 @endif
-                                @if($templateExercise->rest_seconds)
+                                    @if($templateExercise->rest_seconds)
                                     <button class="btn btn-sm btn-info text-white start-timer" data-seconds="{{ $templateExercise->rest_seconds }}">
-                                        <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
-                                    </button>
-                                @endif
-                            </div>
+                                            <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
+                                        </button>
+                                    @endif
+                                </div>
                         </div>
                     </div>
 
@@ -136,89 +136,119 @@
                             <div class="collapse mb-4" id="video-{{ $templateExercise->id }}">
                                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
                                     <iframe src="{{ str_replace('watch?v=', 'embed/', $templateExercise->exercise->video_url) }}" allowfullscreen></iframe>
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Last Workout Info -->
-                        @if(isset($lastWorkouts[$templateExercise->exercise_id]))
-                            <div class="alert alert-info border-0 mb-3 py-2">
-                                <small>
-                                    <i class="bi bi-info-circle-fill"></i> 
-                                    <strong>Last workout:</strong> 
-                                    {{ $lastWorkouts[$templateExercise->exercise_id]->weight }}kg × 
-                                    {{ $lastWorkouts[$templateExercise->exercise_id]->reps }} reps
-                                </small>
-                            </div>
-                        @endif
-
-                        <!-- Logged Sets -->
-                        @if($loggedSets->count() > 0)
-                            <div class="mb-4">
-                                <h6 class="text-success fw-semibold mb-3">
-                                    <i class="bi bi-check-circle-fill"></i> Completed Sets
-                                </h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="text-center" style="width: 80px;">Set</th>
-                                                <th class="text-center">Weight (kg)</th>
-                                                <th class="text-center">Reps</th>
-                                                <th style="width: 60px;"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($loggedSets as $setLog)
-                                                <tr>
-                                                    <td class="text-center fw-semibold">{{ $setLog->set_number }}</td>
-                                                    <td class="text-center">{{ $setLog->weight }}</td>
-                                                    <td class="text-center">{{ $setLog->reps }}</td>
-                                                    <td class="text-center">
-                                                        <i class="bi bi-check-circle-fill text-success"></i>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Log New Set Form -->
-                        <div class="card bg-light border-0">
-                            <div class="card-body p-3">
-                                <h6 class="fw-semibold mb-3">
-                                    <i class="bi bi-plus-circle text-primary"></i> Log Set {{ $loggedSets->count() + 1 }}
-                                </h6>
-                                <form class="log-set-form" data-exercise-id="{{ $templateExercise->exercise_id }}">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-semibold">Set Number</label>
-                                            <input type="number" class="form-control" name="set_number" 
-                                                   value="{{ $loggedSets->count() + 1 }}" min="1" required readonly>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-semibold">Weight (kg)</label>
-                                            <input type="number" class="form-control" name="weight" 
-                                                   value="{{ $templateExercise->target_weight ?? ($lastWorkouts[$templateExercise->exercise_id]->weight ?? '') }}" 
-                                                   step="0.5" min="0" required placeholder="0.0">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-semibold">Reps</label>
-                                            <input type="number" class="form-control" name="reps" 
-                                                   value="{{ $templateExercise->target_reps ?? '' }}" 
-                                                   min="0" required placeholder="0">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-semibold d-none d-md-block">&nbsp;</label>
-                                            <button type="submit" class="btn btn-success w-100">
-                                                <i class="bi bi-check-circle"></i> Log Set
-                                            </button>
                                         </div>
                                     </div>
-                                </form>
-                            </div>
+                                @endif
+
+                        <!-- All Sets Table -->
+                        @php
+                            $targetSets = $templateExercise->target_sets ?? 3;
+                            $currentSetNumber = $loggedSets->count() + 1;
+                            $previousExerciseSets = $previousSets[$templateExercise->exercise_id] ?? collect();
+                        @endphp
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 60px;">Set</th>
+                                        <th class="text-center bg-info bg-opacity-10">Previous Weight</th>
+                                        <th class="text-center bg-info bg-opacity-10">Previous Reps</th>
+                                        <th class="text-center">Weight (kg)</th>
+                                        <th class="text-center">Reps</th>
+                                        <th class="text-center" style="width: 100px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for($setNum = 1; $setNum <= $targetSets; $setNum++)
+                                        @php
+                                            $previousSet = $previousExerciseSets->firstWhere('set_number', $setNum);
+                                            $loggedSet = $loggedSets->firstWhere('set_number', $setNum);
+                                            $isCompleted = $loggedSet !== null;
+                                            $isActive = $setNum === $currentSetNumber;
+                                            $isLocked = $setNum > $currentSetNumber;
+                                        @endphp
+                                        <tr class="{{ $isCompleted ? 'table-success' : ($isActive ? 'table-warning' : '') }}">
+                                            <!-- Set Number -->
+                                            <td class="text-center fw-bold">
+                                                @if($isCompleted)
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                @elseif($isActive)
+                                                    <i class="bi bi-arrow-right-circle-fill text-warning"></i>
+                                                @else
+                                                    <i class="bi bi-lock-fill text-muted"></i>
+                                                @endif
+                                                {{ $setNum }}
+                                            </td>
+
+                                            <!-- Previous Weight -->
+                                            <td class="text-center text-muted small">
+                                                {{ $previousSet ? $previousSet->weight . ' kg' : '—' }}
+                                            </td>
+
+                                            <!-- Previous Reps -->
+                                            <td class="text-center text-muted small">
+                                                {{ $previousSet ? $previousSet->reps : '—' }}
+                                            </td>
+
+                                            <!-- Current Weight Input or Display -->
+                                            <td class="text-center">
+                                                @if($isCompleted)
+                                                    <strong>{{ $loggedSet->weight }} kg</strong>
+                                                @elseif($isActive)
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm text-center weight-input-{{ $templateExercise->exercise_id }}" 
+                                                           value="{{ $previousSet->weight ?? $templateExercise->target_weight ?? '' }}" 
+                                                           step="0.5" 
+                                                           min="0" 
+                                                           placeholder="0.0"
+                                                           data-set="{{ $setNum }}">
+                                                @else
+                                                    <input type="number" class="form-control form-control-sm text-center" disabled placeholder="—">
+                                                @endif
+                                            </td>
+
+                                            <!-- Current Reps Input or Display -->
+                                            <td class="text-center">
+                                                @if($isCompleted)
+                                                    <strong>{{ $loggedSet->reps }}</strong>
+                                                @elseif($isActive)
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm text-center reps-input-{{ $templateExercise->exercise_id }}" 
+                                                           value="{{ $previousSet->reps ?? $templateExercise->target_reps ?? '' }}" 
+                                                           min="0" 
+                                                           placeholder="0"
+                                                           data-set="{{ $setNum }}">
+                                                @else
+                                                    <input type="number" class="form-control form-control-sm text-center" disabled placeholder="—">
+                                                @endif
+                                            </td>
+
+                                            <!-- Action Button -->
+                                            <td class="text-center">
+                                                @if($isCompleted)
+                                                    <button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                                            data-set-id="{{ $loggedSet->id }}"
+                                                            data-exercise-id="{{ $templateExercise->exercise_id }}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                @elseif($isActive)
+                                                    <button class="btn btn-sm btn-success log-set-btn" 
+                                                            data-exercise-id="{{ $templateExercise->exercise_id }}"
+                                                            data-set-number="{{ $setNum }}"
+                                                            data-rest-seconds="{{ $templateExercise->rest_seconds ?? 90 }}">
+                                                        <i class="bi bi-check-circle"></i> Log
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-sm btn-secondary" disabled>
+                                                        <i class="bi bi-lock"></i>
+                                        </button>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -323,18 +353,31 @@ document.getElementById('timer-add-30').addEventListener('click', function() {
     updateTimerDisplay();
 });
 
-// Log Set Forms
-document.querySelectorAll('.log-set-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const btn = this.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging...';
-        
+// Log Set Buttons
+document.querySelectorAll('.log-set-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
         const exerciseId = this.dataset.exerciseId;
-        const formData = new FormData(this);
+        const setNumber = this.dataset.setNumber;
+        const restSeconds = parseInt(this.dataset.restSeconds);
         
+        // Get input values
+        const weightInput = document.querySelector(`.weight-input-${exerciseId}[data-set="${setNumber}"]`);
+        const repsInput = document.querySelector(`.reps-input-${exerciseId}[data-set="${setNumber}"]`);
+        
+        const weight = parseFloat(weightInput.value);
+        const reps = parseInt(repsInput.value);
+        
+        // Validate
+        if (!weight || weight <= 0 || !reps || reps <= 0) {
+            alert('Please enter valid weight and reps');
+            return;
+        }
+        
+        // Disable button and show loading
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        
+        // Log the set
         fetch('{{ route('workouts.log-set', $session) }}', {
             method: 'POST',
             headers: {
@@ -343,10 +386,49 @@ document.querySelectorAll('.log-set-form').forEach(form => {
             },
             body: JSON.stringify({
                 exercise_id: exerciseId,
-                set_number: formData.get('set_number'),
-                weight: formData.get('weight'),
-                reps: formData.get('reps'),
+                set_number: setNumber,
+                weight: weight,
+                reps: reps,
             })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Start timer if rest time is set
+                if (restSeconds > 0) {
+                    startTimer(restSeconds);
+                }
+                
+                // Reload page to show next set
+                setTimeout(() => {
+                window.location.reload();
+                }, 500);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error logging set. Please try again.');
+            this.disabled = false;
+            this.innerHTML = '<i class="bi bi-check-circle"></i> Log';
+        });
+    });
+});
+
+// Delete Set Buttons
+document.querySelectorAll('.delete-set-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (!confirm('Delete this set?')) return;
+        
+        const setId = this.dataset.setId;
+        
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        
+        fetch(`{{ route('workouts.session', $session) }}/sets/${setId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            }
         })
         .then(response => response.json())
         .then(data => {
@@ -356,9 +438,9 @@ document.querySelectorAll('.log-set-form').forEach(form => {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error logging set. Please try again.');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-check-circle"></i> Log Set';
+            alert('Error deleting set. Please try again.');
+            this.disabled = false;
+            this.innerHTML = '<i class="bi bi-trash"></i>';
         });
     });
 });
