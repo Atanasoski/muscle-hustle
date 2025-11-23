@@ -48,7 +48,7 @@ class DashboardController extends Controller
             ->whereNotNull('completed_at')
             ->with(['workoutTemplate', 'setLogs.exercise'])
             ->latest('performed_at')
-            ->take(4)
+            ->take(1)
             ->get();
 
         // Calculate workout streak
