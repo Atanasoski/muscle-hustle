@@ -327,28 +327,32 @@ body.timer-active {
 let timerInterval = null;
 let timerSeconds = 0;
 
-// Audio notification function
+// Audio notification function - "Glass ding" sound
 function playTimerSound() {
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Create a pleasant notification sound (3 beeps)
-        for (let i = 0; i < 3; i++) {
+        // Create 3 "glass ding" sounds (like tapping a wine glass)
+        for (let i = 0; i < 1; i++) {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            oscillator.frequency.value = 800; // Frequency in Hz
+            // High frequency for glass-like "ding" sound
+            oscillator.frequency.value = 1200; // Higher = more glass-like
             oscillator.type = 'sine';
             
-            const startTime = audioContext.currentTime + (i * 0.3);
-            gainNode.gain.setValueAtTime(0.3, startTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+            const startTime = audioContext.currentTime + (i * 0.4);
+            
+            // Quick attack and fast decay (like glass resonance)
+            gainNode.gain.setValueAtTime(0, startTime);
+            gainNode.gain.linearRampToValueAtTime(0.4, startTime + 0.01); // Quick attack
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.8); // Slow fade like glass
             
             oscillator.start(startTime);
-            oscillator.stop(startTime + 0.2);
+            oscillator.stop(startTime + 0.8);
         }
     } catch (e) {
         console.log('Audio not supported');
