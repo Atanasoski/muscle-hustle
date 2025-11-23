@@ -12,6 +12,7 @@ class Exercise extends Model
         'user_id',
         'category_id',
         'name',
+        'image_url',
         'video_url',
         'pixabay_video_path',
         'default_rest_sec',

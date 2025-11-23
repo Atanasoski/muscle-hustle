@@ -29,12 +29,12 @@ class WorkoutTemplateSeeder extends Seeder
                 'description' => 'Upper body workout emphasizing pressing movements',
                 'day_of_week' => 0, // Monday
                 'exercises' => [
-                    ['name' => 'Barbell Bench Press', 'sets' => 4, 'reps' => 8, 'weight' => 60.00, 'rest' => 120],
-                    ['name' => 'Barbell Row', 'sets' => 4, 'reps' => 8, 'weight' => 50.00, 'rest' => 120],
-                    ['name' => 'Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => 20.00, 'rest' => 90],
-                    ['name' => 'Pull-ups', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Dumbbell Curl', 'sets' => 3, 'reps' => 12, 'weight' => 12.00, 'rest' => 60],
-                    ['name' => 'Overhead Tricep Extension', 'sets' => 3, 'reps' => 12, 'weight' => 15.00, 'rest' => 60],
+                    ['name' => 'Barbell Bench Press', 'sets' => 4, 'reps' => 8, 'weight' => 60.00, 'rest' => 1],
+                    ['name' => 'Barbell Row', 'sets' => 4, 'reps' => 8, 'weight' => 50.00, 'rest' => 1],
+                    ['name' => 'Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => 20.00, 'rest' => 1],
+                    ['name' => 'Pull-ups', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 1],
+                    ['name' => 'Dumbbell Curl', 'sets' => 3, 'reps' => 12, 'weight' => 12.00, 'rest' => 1],
+                    ['name' => 'Overhead Tricep Extension', 'sets' => 3, 'reps' => 12, 'weight' => 15.00, 'rest' => 1],
                 ],
             ],
             [
@@ -42,36 +42,36 @@ class WorkoutTemplateSeeder extends Seeder
                 'description' => 'Lower body workout with squat emphasis',
                 'day_of_week' => 1, // Tuesday
                 'exercises' => [
-                    ['name' => 'Barbell Squat', 'sets' => 4, 'reps' => 8, 'weight' => 80.00, 'rest' => 180],
-                    ['name' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10, 'weight' => 60.00, 'rest' => 120],
-                    ['name' => 'Leg Press', 'sets' => 3, 'reps' => 12, 'weight' => 100.00, 'rest' => 90],
-                    ['name' => 'Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => 40.00, 'rest' => 60],
-                    ['name' => 'Plank', 'sets' => 3, 'reps' => 45, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Barbell Squat', 'sets' => 4, 'reps' => 8, 'weight' => 80.00, 'rest' => 1],
+                    ['name' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10, 'weight' => 60.00, 'rest' => 1],
+                    ['name' => 'Leg Press', 'sets' => 3, 'reps' => 12, 'weight' => 100.00, 'rest' => 1],
+                    ['name' => 'Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => 40.00, 'rest' => 1],
+                    ['name' => 'Plank', 'sets' => 3, 'reps' => 45, 'weight' => null, 'rest' => 1],
                 ],
             ],
             [
                 'name' => 'Upper B - Pull Focus',
                 'description' => 'Upper body workout emphasizing pulling movements',
-                'day_of_week' => 3, // Thursday
+                'day_of_week' => 2, // Wednesday
                 'exercises' => [
-                    ['name' => 'Overhead Press', 'sets' => 4, 'reps' => 8, 'weight' => 40.00, 'rest' => 120],
-                    ['name' => 'Lat Pulldown', 'sets' => 4, 'reps' => 8, 'weight' => 50.00, 'rest' => 90],
-                    ['name' => 'Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => 25.00, 'rest' => 90],
-                    ['name' => 'Seated Cable Row', 'sets' => 3, 'reps' => 10, 'weight' => 45.00, 'rest' => 90],
-                    ['name' => 'Lateral Raises', 'sets' => 3, 'reps' => 15, 'weight' => 10.00, 'rest' => 60],
-                    ['name' => 'Dumbbell Curl', 'sets' => 3, 'reps' => 12, 'weight' => 12.00, 'rest' => 60],
+                    ['name' => 'Overhead Press', 'sets' => 4, 'reps' => 8, 'weight' => 40.00, 'rest' => 1],
+                    ['name' => 'Lat Pulldown', 'sets' => 4, 'reps' => 8, 'weight' => 50.00, 'rest' => 1],
+                    ['name' => 'Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => 25.00, 'rest' => 1],
+                    ['name' => 'Seated Cable Row', 'sets' => 3, 'reps' => 10, 'weight' => 45.00, 'rest' => 1],
+                    ['name' => 'Lateral Raises', 'sets' => 3, 'reps' => 15, 'weight' => 10.00, 'rest' => 1],
+                    ['name' => 'Dumbbell Curl', 'sets' => 3, 'reps' => 12, 'weight' => 12.00, 'rest' => 1],
                 ],
             ],
             [
                 'name' => 'Lower B - Deadlift Focus',
                 'description' => 'Lower body workout with deadlift emphasis',
-                'day_of_week' => 4, // Friday
+                'day_of_week' => 3, // Thursday
                 'exercises' => [
-                    ['name' => 'Deadlift', 'sets' => 3, 'reps' => 6, 'weight' => 100.00, 'rest' => 180],
-                    ['name' => 'Front Squat', 'sets' => 3, 'reps' => 10, 'weight' => 60.00, 'rest' => 120],
-                    ['name' => 'Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => 40.00, 'rest' => 60],
-                    ['name' => 'Leg Extension', 'sets' => 3, 'reps' => 12, 'weight' => 50.00, 'rest' => 60],
-                    ['name' => 'Hanging Leg Raises', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Deadlift', 'sets' => 3, 'reps' => 6, 'weight' => 100.00, 'rest' => 1],
+                    ['name' => 'Front Squat', 'sets' => 3, 'reps' => 10, 'weight' => 60.00, 'rest' => 1],
+                    ['name' => 'Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => 40.00, 'rest' => 1],
+                    ['name' => 'Leg Extension', 'sets' => 3, 'reps' => 12, 'weight' => 50.00, 'rest' => 1],
+                    ['name' => 'Hanging Leg Raises', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 1],
                 ],
             ],
         ];
