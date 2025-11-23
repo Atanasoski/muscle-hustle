@@ -232,7 +232,20 @@ class WorkoutSessionController extends Controller
             abort(403);
         }
 
-        // Simply delete the set
+        // Verify this is the last set for this exercise
+        $lastSet = SetLog::where('workout_session_id', $session->id)
+            ->where('exercise_id', $setLog->exercise_id)
+            ->orderBy('set_number', 'desc')
+            ->first();
+
+        if (! $lastSet || $lastSet->id !== $setLog->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only the last set can be deleted.',
+            ], 422);
+        }
+
+        // Delete the set
         $setLog->delete();
 
         return response()->json(['success' => true]);

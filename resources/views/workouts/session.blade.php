@@ -125,6 +125,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        // Find the last completed set for this exercise
+                                        $lastCompletedSet = null;
+                                        foreach($exerciseData['sets'] as $s) {
+                                            if ($s['is_completed']) {
+                                                $lastCompletedSet = $s['set_number'];
+                                            }
+                                        }
+                                    @endphp
                                     @foreach($exerciseData['sets'] as $set)
                                         <tr class="{{ $set['is_completed'] ? 'table-success' : ($set['is_active'] ? 'table-warning' : '') }}">
                                             <!-- Set Number -->
@@ -146,7 +155,7 @@
                                                 @elseif($set['is_active'])
                                                     <input type="number" 
                                                            class="form-control form-control-sm text-center weight-input-{{ $exerciseData['template_exercise']->exercise_id }}" 
-                                                           value="{{ number_format($set['default_weight'], 0) }}" 
+                                                           value="{{ $set['default_weight'] ? number_format($set['default_weight'], 0) : '' }}" 
                                                            step="1" 
                                                            min="0" 
                                                            placeholder="Weight"
@@ -154,7 +163,7 @@
                                                 @else
                                                     <input type="number" 
                                                            class="form-control form-control-sm text-center" 
-                                                           value="{{ number_format($set['default_weight'], 0) }}" 
+                                                           value="{{ $set['default_weight'] ? number_format($set['default_weight'], 0) : '' }}" 
                                                            disabled>
                                                 @endif
                                             </td>
@@ -181,11 +190,23 @@
                                             <!-- Action Button -->
                                             <td class="text-center">
                                                 @if($set['is_completed'])
-                                                    <button class="btn btn-sm btn-outline-danger delete-set-btn" 
-                                                            data-set-id="{{ $set['logged_set_id'] }}"
-                                                            data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
+                                                    <div class="d-flex gap-2 justify-content-center">
+                                                        <button class="btn btn-sm btn-outline-primary edit-set-btn" 
+                                                                data-set-id="{{ $set['logged_set_id'] }}"
+                                                                data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}"
+                                                                data-set-number="{{ $set['set_number'] }}"
+                                                                data-weight="{{ $set['current_weight'] }}"
+                                                                data-reps="{{ $set['current_reps'] }}">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        @if($set['set_number'] === $lastCompletedSet)
+                                                            <button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                                                    data-set-id="{{ $set['logged_set_id'] }}"
+                                                                    data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        @endif
+                                                    </div>
                                                 @elseif($set['is_active'])
                                                     <button class="btn btn-sm btn-success log-set-btn" 
                                                             data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}"
@@ -475,6 +496,16 @@ function handleLogSetClick() {
             if (data.success) {
                 // Find the current row (the one we just logged)
                 const currentRow = btn.closest('tr');
+                const tbody = currentRow.closest('tbody');
+                
+                // Remove delete button from previous last completed set (if any)
+                const allCompletedRows = tbody.querySelectorAll('tr.table-success');
+                allCompletedRows.forEach(row => {
+                    const deleteBtn = row.querySelector('.delete-set-btn');
+                    if (deleteBtn) {
+                        deleteBtn.remove();
+                    }
+                });
                 
                 // Mark current set as completed
                 currentRow.classList.remove('table-warning');
@@ -487,11 +518,21 @@ function handleLogSetClick() {
                 
                 weightCell.innerHTML = `<strong>${weight}</strong>`;
                 repsCell.innerHTML = `<strong>${reps}</strong>`;
-                actionCell.innerHTML = `<button class="btn btn-sm btn-outline-danger delete-set-btn" 
-                                            data-set-id="${data.set_log_id}"
-                                            data-exercise-id="${exerciseId}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>`;
+                actionCell.innerHTML = `<div class="d-flex gap-2 justify-content-center">
+                                            <button class="btn btn-sm btn-outline-primary edit-set-btn" 
+                                                    data-set-id="${data.set_log_id}"
+                                                    data-exercise-id="${exerciseId}"
+                                                    data-set-number="${setNumber}"
+                                                    data-weight="${weight}"
+                                                    data-reps="${reps}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                                    data-set-id="${data.set_log_id}"
+                                                    data-exercise-id="${exerciseId}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>`;
                 
                 // Update set number cell
                 const setCell = currentRow.querySelector('td:nth-child(1)');
@@ -548,8 +589,12 @@ function handleLogSetClick() {
                     exerciseNumber.innerHTML = '<i class="bi bi-check-lg"></i>';
                 }
                 
-                // Re-attach delete listener to new button
+                // Re-attach listeners to new buttons
+                const editBtn = actionCell.querySelector('.edit-set-btn');
                 const deleteBtn = actionCell.querySelector('.delete-set-btn');
+                if (editBtn) {
+                    editBtn.addEventListener('click', handleEditSetClick);
+                }
                 if (deleteBtn) {
                     deleteBtn.addEventListener('click', handleDeleteSetClick);
                 }
@@ -578,10 +623,10 @@ function handleDeleteSetClick() {
     const btn = this;
         if (!confirm('Delete this set?')) return;
         
-        const setId = this.dataset.setId;
+    const setId = btn.dataset.setId;
         
-        this.disabled = true;
-        this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
         
         fetch(`{{ route('workouts.session', $session) }}/sets/${setId}`, {
             method: 'DELETE',
@@ -592,13 +637,19 @@ function handleDeleteSetClick() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Reload the page to show the updated state
                 window.location.reload();
+            } else {
+                // Show error message from backend
+                alert(data.message || 'Error deleting set. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-trash"></i>';
             }
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Error deleting set. Please try again.');
-            this.disabled = false;
+            btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-trash"></i>';
         });
 }
@@ -606,6 +657,183 @@ function handleDeleteSetClick() {
 // Attach to all initial delete buttons
 document.querySelectorAll('.delete-set-btn').forEach(btn => {
     btn.addEventListener('click', handleDeleteSetClick);
+});
+
+// Handler function for editing sets
+function handleEditSetClick() {
+    const btn = this;
+    const setId = btn.dataset.setId;
+    const exerciseId = btn.dataset.exerciseId;
+    const setNumber = btn.dataset.setNumber;
+    const currentWeight = btn.dataset.weight;
+    const currentReps = btn.dataset.reps;
+    
+    const row = btn.closest('tr');
+    const weightCell = row.querySelector('td:nth-child(2)');
+    const repsCell = row.querySelector('td:nth-child(3)');
+    const actionCell = row.querySelector('td:nth-child(4)');
+    
+    // Convert to edit mode
+    row.classList.remove('table-success');
+    row.classList.add('table-warning');
+    
+    // Replace weight display with input
+    weightCell.innerHTML = `<input type="number" 
+                                   class="form-control form-control-sm text-center edit-weight-input" 
+                                   value="${currentWeight}" 
+                                   step="1" 
+                                   min="0">`;
+    
+    // Replace reps display with input
+    repsCell.innerHTML = `<input type="number" 
+                                 class="form-control form-control-sm text-center edit-reps-input" 
+                                 value="${currentReps}" 
+                                 min="0">`;
+    
+    // Replace buttons with save/cancel
+    actionCell.innerHTML = `<div class="d-flex gap-2 justify-content-center">
+                                <button class="btn btn-sm btn-success save-edit-btn" 
+                                        data-set-id="${setId}"
+                                        data-exercise-id="${exerciseId}"
+                                        data-set-number="${setNumber}">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary cancel-edit-btn"
+                                        data-weight="${currentWeight}"
+                                        data-reps="${currentReps}"
+                                        data-set-id="${setId}"
+                                        data-exercise-id="${exerciseId}"
+                                        data-set-number="${setNumber}">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>`;
+    
+    // Attach event listeners
+    actionCell.querySelector('.save-edit-btn').addEventListener('click', handleSaveEditClick);
+    actionCell.querySelector('.cancel-edit-btn').addEventListener('click', handleCancelEditClick);
+}
+
+// Save edited set
+function handleSaveEditClick() {
+    const btn = this;
+    const setId = btn.dataset.setId;
+    const exerciseId = btn.dataset.exerciseId;
+    const setNumber = btn.dataset.setNumber;
+    
+    const row = btn.closest('tr');
+    const weightInput = row.querySelector('.edit-weight-input');
+    const repsInput = row.querySelector('.edit-reps-input');
+    
+    const weight = parseFloat(weightInput.value);
+    const reps = parseInt(repsInput.value);
+    
+    // Validate
+    if (!weight || weight <= 0 || !reps || reps <= 0) {
+        alert('Please enter valid weight and reps');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    
+    fetch(`{{ route('workouts.session', $session) }}/sets/${setId}`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            weight: weight,
+            reps: reps,
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Convert back to completed state
+            row.classList.remove('table-warning');
+            row.classList.add('table-success');
+            
+            const weightCell = row.querySelector('td:nth-child(2)');
+            const repsCell = row.querySelector('td:nth-child(3)');
+            const actionCell = row.querySelector('td:nth-child(4)');
+            
+            weightCell.innerHTML = `<strong>${weight}</strong>`;
+            repsCell.innerHTML = `<strong>${reps}</strong>`;
+            actionCell.innerHTML = `<div class="d-flex gap-2 justify-content-center">
+                                        <button class="btn btn-sm btn-outline-primary edit-set-btn" 
+                                                data-set-id="${setId}"
+                                                data-exercise-id="${exerciseId}"
+                                                data-set-number="${setNumber}"
+                                                data-weight="${weight}"
+                                                data-reps="${reps}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                                data-set-id="${setId}"
+                                                data-exercise-id="${exerciseId}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>`;
+            
+            // Re-attach event listeners
+            actionCell.querySelector('.edit-set-btn').addEventListener('click', handleEditSetClick);
+            actionCell.querySelector('.delete-set-btn').addEventListener('click', handleDeleteSetClick);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating set. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+    });
+}
+
+// Cancel editing
+function handleCancelEditClick() {
+    const btn = this;
+    const setId = btn.dataset.setId;
+    const exerciseId = btn.dataset.exerciseId;
+    const setNumber = btn.dataset.setNumber;
+    const weight = btn.dataset.weight;
+    const reps = btn.dataset.reps;
+    
+    const row = btn.closest('tr');
+    
+    // Convert back to completed state
+    row.classList.remove('table-warning');
+    row.classList.add('table-success');
+    
+    const weightCell = row.querySelector('td:nth-child(2)');
+    const repsCell = row.querySelector('td:nth-child(3)');
+    const actionCell = row.querySelector('td:nth-child(4)');
+    
+    weightCell.innerHTML = `<strong>${weight}</strong>`;
+    repsCell.innerHTML = `<strong>${reps}</strong>`;
+    actionCell.innerHTML = `<div class="d-flex gap-2 justify-content-center">
+                                <button class="btn btn-sm btn-outline-primary edit-set-btn" 
+                                        data-set-id="${setId}"
+                                        data-exercise-id="${exerciseId}"
+                                        data-set-number="${setNumber}"
+                                        data-weight="${weight}"
+                                        data-reps="${reps}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                        data-set-id="${setId}"
+                                        data-exercise-id="${exerciseId}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>`;
+    
+    // Re-attach event listeners
+    actionCell.querySelector('.edit-set-btn').addEventListener('click', handleEditSetClick);
+    actionCell.querySelector('.delete-set-btn').addEventListener('click', handleDeleteSetClick);
+}
+
+// Attach to all initial edit buttons
+document.querySelectorAll('.edit-set-btn').forEach(btn => {
+    btn.addEventListener('click', handleEditSetClick);
 });
 </script>
 @endpush
