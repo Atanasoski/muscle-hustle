@@ -90,7 +90,7 @@
                                 </div>
                                 
                                 <a href="{{ route('workouts.today') }}" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
-                                    <i class="bi bi-play-circle-fill me-2"></i> Start Workout Now
+                                    <i class="bi bi-play-circle-fill me-2"></i> Start Workout
                                 </a>
                                 
                                 @if($recentWorkouts->count() > 0)

@@ -143,7 +143,7 @@
                                     <input type="hidden" name="template_id" value="{{ $template->id }}">
                                     <button type="submit" class="btn btn-success btn-lg w-100 py-2 py-md-3 shadow">
                                         <i class="bi bi-play-circle-fill me-2"></i> 
-                                        <span>Start Workout Now</span>
+                                        <span>Start Workout</span>
                                     </button>
                                 </form>
                             @endif
