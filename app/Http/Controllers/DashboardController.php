@@ -20,6 +20,12 @@ class DashboardController extends Controller
             ->with('exercises')
             ->first();
 
+        // Check if today's workout has been completed
+        $todayWorkoutCompleted = $user->workoutSessions()
+            ->whereNotNull('completed_at')
+            ->whereDate('performed_at', $today->toDateString())
+            ->exists();
+
         // Get this week's workouts
         $weekWorkouts = WorkoutTemplate::where('user_id', $user->id)
             ->whereNotNull('day_of_week')
@@ -48,7 +54,7 @@ class DashboardController extends Controller
         // Calculate workout streak
         $streak = $this->calculateStreak($user->id);
 
-        return view('dashboard', compact('todayWorkout', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'recentWorkouts', 'streak'));
+        return view('dashboard', compact('todayWorkout', 'todayWorkoutCompleted', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'recentWorkouts', 'streak'));
     }
 
     private function calculateStreak(int $userId): int

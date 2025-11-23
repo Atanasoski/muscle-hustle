@@ -89,9 +89,16 @@
                                     </div>
                                 </div>
                                 
-                                <a href="{{ route('workouts.today') }}" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
-                                    <i class="bi bi-play-circle-fill me-2"></i> Start Workout
-                                </a>
+                                @if(!$todayWorkoutCompleted)
+                                    <a href="{{ route('workouts.today') }}" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
+                                        <i class="bi bi-play-circle-fill me-2"></i> Start Workout
+                                    </a>
+                                @else
+                                    <div class="alert alert-success border-0 shadow-sm">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        <strong>Workout Completed!</strong> Great job today! 💪
+                                    </div>
+                                @endif
                                 
                                 @if($recentWorkouts->count() > 0)
                                     <div class="mt-4">
