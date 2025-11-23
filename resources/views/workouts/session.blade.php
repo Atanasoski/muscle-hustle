@@ -297,6 +297,11 @@
     transition: all 0.3s ease;
 }
 
+/* Make input fields wide enough for 3-digit numbers */
+.table input[type="number"] {
+    min-width: 80px;
+}
+
 .exercise-card:hover {
     transform: translateY(-2px);
 }
