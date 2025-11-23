@@ -284,6 +284,11 @@ let timerSeconds = 0;
 function startTimer(seconds) {
     stopTimer();
     timerSeconds = seconds;
+    
+    // Store timer end time in localStorage
+    const endTime = Date.now() + (seconds * 1000);
+    localStorage.setItem('workout_timer_end', endTime);
+    
     document.getElementById('timer-card').style.display = 'block';
     updateTimerDisplay();
     
@@ -307,6 +312,7 @@ function stopTimer() {
     }
     document.getElementById('timer-card').style.display = 'none';
     timerSeconds = 0;
+    localStorage.removeItem('workout_timer_end');
 }
 
 function updateTimerDisplay() {
@@ -315,6 +321,23 @@ function updateTimerDisplay() {
     document.getElementById('timer-display').textContent = 
         `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+
+// Check if timer should resume on page load
+function resumeTimerIfNeeded() {
+    const timerEndTime = localStorage.getItem('workout_timer_end');
+    if (timerEndTime) {
+        const remainingMs = parseInt(timerEndTime) - Date.now();
+        if (remainingMs > 0) {
+            const remainingSeconds = Math.ceil(remainingMs / 1000);
+            startTimer(remainingSeconds);
+        } else {
+            localStorage.removeItem('workout_timer_end');
+        }
+    }
+}
+
+// Resume timer on page load
+resumeTimerIfNeeded();
 
 // Event Listeners
 document.querySelectorAll('.start-timer').forEach(button => {
@@ -370,15 +393,14 @@ document.querySelectorAll('.log-set-btn').forEach(btn => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Start timer if rest time is set
+                // Store timer in localStorage so it starts after reload
                 if (restSeconds > 0) {
-                    startTimer(restSeconds);
+                    const endTime = Date.now() + (restSeconds * 1000);
+                    localStorage.setItem('workout_timer_end', endTime);
                 }
                 
-                // Reload page to show next set
-                setTimeout(() => {
+                // Reload page to show next set (timer will auto-start)
                 window.location.reload();
-                }, 500);
             }
         })
         .catch(error => {
