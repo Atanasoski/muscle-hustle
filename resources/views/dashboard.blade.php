@@ -67,7 +67,7 @@
         <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-header bg-gradient-primary text-white border-0 py-3">
-                    <h4 class="mb-0 d-flex align-items-center">
+                    <h4 class="mb-0 d-flex align-items-center text-white">
                         <i class="bi bi-calendar-day-fill me-2"></i> Today's Workout
                     </h4>
                 </div>
@@ -145,7 +145,7 @@
         <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-header bg-gradient-success text-white border-0 py-3">
-                    <h4 class="mb-0 d-flex align-items-center">
+                    <h4 class="mb-0 d-flex align-items-center text-white">
                         <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
                     </h4>
                 </div>
@@ -213,7 +213,7 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-gradient-dark text-white border-0 py-3">
-                    <h4 class="mb-0 d-flex align-items-center">
+                    <h4 class="mb-0 d-flex align-items-center text-white">
                         <i class="bi bi-calendar-range-fill me-2"></i> This Week's Training Plan
                     </h4>
                 </div>
