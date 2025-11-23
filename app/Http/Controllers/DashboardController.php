@@ -17,7 +17,7 @@ class DashboardController extends Controller
         // Get today's workout template
         $todayWorkout = WorkoutTemplate::where('user_id', $user->id)
             ->where('day_of_week', $dayOfWeek)
-            ->with('exercises')
+            ->with(['exercises', 'workoutTemplateExercises.exercise.category'])
             ->first();
 
         // Check if today's workout has been completed

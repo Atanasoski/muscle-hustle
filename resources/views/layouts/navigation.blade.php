@@ -15,11 +15,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('workouts.*') ? 'active' : '' }}" href="{{ route('workouts.today') }}">
-                            <i class="bi bi-play-circle-fill"></i> Today's Workout
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('workout-templates.*') ? 'active' : '' }}" href="{{ route('workout-templates.index') }}">
                             <i class="bi bi-journal-text"></i> Templates
                         </a>

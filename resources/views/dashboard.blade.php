@@ -89,10 +89,38 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Exercise List -->
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3 text-muted">
+                                        <i class="bi bi-list-ul"></i> Exercise Plan
+                                    </h6>
+                                    <div class="exercise-list">
+                                        @foreach($todayWorkout->workoutTemplateExercises->sortBy('order') as $index => $templateExercise)
+                                            <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded" style="background: rgba(0,0,0,0.02);">
+                                                <div class="fw-bold" style="min-width: 30px; color: #ff6b35; font-size: 1.25rem;">{{ $index + 1 }}</div>
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-semibold">{{ $templateExercise->exercise->name }}</div>
+                                                    <small class="text-muted">
+                                                        <span class="fw-bold" style="color: #ff6b35;">{{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}</span>
+                                                        @if($templateExercise->target_weight)
+                                                            @ <span class="fw-bold" style="color: #ff6b35;">{{ $templateExercise->target_weight }}kg</span>
+                                                        @endif
+                                                    </small>
+                                                </div>
+                                                <span class="badge bg-secondary">{{ $templateExercise->exercise->category->name }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                
                                 @if(!$todayWorkoutCompleted)
-                                    <a href="{{ route('workouts.today') }}" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
-                                        <i class="bi bi-play-circle-fill me-2"></i> Start Workout
-                                    </a>
+                                    <form action="{{ route('workouts.start') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="template_id" value="{{ $todayWorkout->id }}">
+                                        <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
+                                            <i class="bi bi-play-circle-fill me-2"></i> Start Workout
+                                        </button>
+                                    </form>
                                 @else
                                     <div class="alert alert-success border-0 shadow-sm">
                                         <i class="bi bi-check-circle-fill me-2"></i>
