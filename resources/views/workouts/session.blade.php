@@ -280,6 +280,34 @@
 let timerInterval = null;
 let timerSeconds = 0;
 
+// Audio notification function
+function playTimerSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create a pleasant notification sound (3 beeps)
+        for (let i = 0; i < 3; i++) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800; // Frequency in Hz
+            oscillator.type = 'sine';
+            
+            const startTime = audioContext.currentTime + (i * 0.3);
+            gainNode.gain.setValueAtTime(0.3, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.2);
+        }
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
 // Timer Functions
 function startTimer(seconds) {
     stopTimer();
@@ -298,6 +326,7 @@ function startTimer(seconds) {
         
         if (timerSeconds <= 0) {
             stopTimer();
+            playTimerSound();
             alert('Rest time is up! 💪');
         }
     }, 1000);
