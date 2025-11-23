@@ -79,9 +79,15 @@ class WorkoutSessionController extends Controller
             ? $session->workoutTemplate->workoutTemplateExercises
             : collect();
 
-        // Get last workout data for each exercise (all sets from the most recent workout)
-        $previousSets = [];
+        // Prepare exercise data with all sets pre-calculated
+        $exercisesData = [];
         foreach ($exercises as $templateExercise) {
+            // Get logged sets for this exercise in current session
+            $loggedSets = $session->setLogs
+                ->where('exercise_id', $templateExercise->exercise_id)
+                ->sortBy('set_number')
+                ->keyBy('set_number');
+
             // Find the most recent completed workout session with this exercise
             $lastSession = WorkoutSession::where('user_id', auth()->id())
                 ->where('id', '!=', $session->id)
@@ -92,20 +98,56 @@ class WorkoutSessionController extends Controller
                 ->orderBy('completed_at', 'desc')
                 ->first();
 
+            // Get previous sets
+            $previousSets = collect();
             if ($lastSession) {
-                // Get all sets from that workout for this exercise
-                $sets = SetLog::where('workout_session_id', $lastSession->id)
+                $previousSets = SetLog::where('workout_session_id', $lastSession->id)
                     ->where('exercise_id', $templateExercise->exercise_id)
                     ->orderBy('set_number')
-                    ->get();
-
-                $previousSets[$templateExercise->exercise_id] = $sets;
-            } else {
-                $previousSets[$templateExercise->exercise_id] = collect();
+                    ->get()
+                    ->keyBy('set_number');
             }
+
+            // Calculate current set number (next set to complete)
+            $currentSetNumber = $loggedSets->count() + 1;
+
+            // Build sets array with all data pre-calculated
+            $targetSets = $templateExercise->target_sets ?? 3;
+            $sets = [];
+
+            for ($setNum = 1; $setNum <= $targetSets; $setNum++) {
+                $previousSet = $previousSets->get($setNum);
+                $loggedSet = $loggedSets->get($setNum);
+
+                $sets[] = [
+                    'set_number' => $setNum,
+                    'is_completed' => $loggedSet !== null,
+                    'is_active' => $setNum === $currentSetNumber,
+                    'is_locked' => $setNum > $currentSetNumber,
+                    'previous_weight' => $previousSet?->weight,
+                    'previous_reps' => $previousSet?->reps,
+                    'current_weight' => $loggedSet?->weight,
+                    'current_reps' => $loggedSet?->reps,
+                    'logged_set_id' => $loggedSet?->id,
+                    'default_weight' => $previousSet?->weight ?? $templateExercise->target_weight ?? '',
+                    'default_reps' => $previousSet?->reps ?? $templateExercise->target_reps ?? '',
+                ];
+            }
+
+            $exercisesData[] = [
+                'template_exercise' => $templateExercise,
+                'sets' => $sets,
+                'rest_seconds' => $templateExercise->rest_seconds ?? 90,
+                'is_completed' => $loggedSets->count() >= $targetSets,
+            ];
         }
 
-        return view('workouts.session', compact('session', 'exercises', 'previousSets'));
+        // Calculate progress
+        $totalExercises = count($exercisesData);
+        $completedExercises = collect($exercisesData)->filter(fn ($ex) => $ex['is_completed'])->count();
+        $progressPercent = $totalExercises > 0 ? ($completedExercises / $totalExercises) * 100 : 0;
+
+        return view('workouts.session', compact('session', 'exercisesData', 'totalExercises', 'completedExercises', 'progressPercent'));
     }
 
     /**

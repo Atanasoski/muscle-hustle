@@ -33,13 +33,6 @@
                     </div>
                     
                     <!-- Progress Bar -->
-                    @php
-                        $totalExercises = $exercises->count();
-                        $completedExercises = $exercises->filter(function($ex) use ($session) {
-                            return $session->setLogs->where('exercise_id', $ex->exercise_id)->count() > 0;
-                        })->count();
-                        $progressPercent = $totalExercises > 0 ? ($completedExercises / $totalExercises) * 100 : 0;
-                    @endphp
                     <div class="mt-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <small class="text-white fw-semibold">Progress</small>
@@ -69,58 +62,53 @@
             </div>
 
             <!-- Exercises -->
-            @foreach($exercises as $index => $templateExercise)
-                @php
-                    $loggedSets = $session->setLogs->where('exercise_id', $templateExercise->exercise_id);
-                    $isCompleted = $loggedSets->count() >= ($templateExercise->target_sets ?? 1);
-                @endphp
-                
-                <div class="card border-0 shadow-sm mb-3 exercise-card {{ $isCompleted ? 'completed' : '' }}">
+            @foreach($exercisesData as $index => $exerciseData)
+                <div class="card border-0 shadow-sm mb-3 exercise-card {{ $exerciseData['is_completed'] ? 'completed' : '' }}">
                     <!-- Exercise Header -->
                     <div class="card-header bg-white border-bottom py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="exercise-number {{ $isCompleted ? 'bg-success' : 'bg-primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
-                                    @if($isCompleted)
+                                <div class="exercise-number {{ $exerciseData['is_completed'] ? 'bg-success' : 'bg-primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                    @if($exerciseData['is_completed'])
                                         <i class="bi bi-check-lg"></i>
                                     @else
                                         <span class="fw-bold">{{ $index + 1 }}</span>
                                     @endif
-                    </div>
+                                </div>
                                 <div>
-                                    <h5 class="mb-0 fw-bold">{{ $templateExercise->exercise->name }}</h5>
+                                    <h5 class="mb-0 fw-bold">{{ $exerciseData['template_exercise']->exercise->name }}</h5>
                                     <small class="text-muted">
-                                            @if($templateExercise->target_sets && $templateExercise->target_reps)
-                                                Target: {{ $templateExercise->target_sets }}×{{ $templateExercise->target_reps }}
-                                            @if($templateExercise->target_weight)
-                                                @ {{ $templateExercise->target_weight }}kg
+                                        @if($exerciseData['template_exercise']->target_sets && $exerciseData['template_exercise']->target_reps)
+                                            Target: {{ $exerciseData['template_exercise']->target_sets }}×{{ $exerciseData['template_exercise']->target_reps }}
+                                            @if($exerciseData['template_exercise']->target_weight)
+                                                @ {{ $exerciseData['template_exercise']->target_weight }}kg
                                             @endif
                                         @endif
                                     </small>
                                 </div>
-                                    </div>
+                            </div>
                             
                             <div class="d-flex gap-2">
-                                @if($templateExercise->exercise->video_url)
-                                    <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#video-{{ $templateExercise->id }}">
+                                @if($exerciseData['template_exercise']->exercise->video_url)
+                                    <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#video-{{ $exerciseData['template_exercise']->id }}">
                                         <i class="bi bi-play-circle"></i> <span class="d-none d-md-inline">Watch</span>
                                     </button>
                                 @endif
-                                    @if($templateExercise->rest_seconds)
-                                    <button class="btn btn-sm btn-info text-white start-timer" data-seconds="{{ $templateExercise->rest_seconds }}">
-                                            <i class="bi bi-stopwatch"></i> {{ $templateExercise->rest_seconds }}s
-                                        </button>
-                                    @endif
-                                </div>
+                                @if($exerciseData['rest_seconds'])
+                                    <button class="btn btn-sm btn-info text-white start-timer" data-seconds="{{ $exerciseData['rest_seconds'] }}">
+                                        <i class="bi bi-stopwatch"></i> {{ $exerciseData['rest_seconds'] }}s
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
                     <div class="card-body p-4">
                         <!-- Background Video (Pixabay) -->
-                        @if($templateExercise->exercise->pixabay_video_path)
+                        @if($exerciseData['template_exercise']->exercise->pixabay_video_path)
                             <div class="mb-4 position-relative rounded-3 overflow-hidden" style="height: 200px;">
                                 <video 
-                                    src="{{ Storage::url($templateExercise->exercise->pixabay_video_path) }}" 
+                                    src="{{ Storage::url($exerciseData['template_exercise']->exercise->pixabay_video_path) }}" 
                                     autoplay 
                                     loop 
                                     muted 
@@ -132,20 +120,15 @@
                         @endif
 
                         <!-- YouTube Tutorial Video -->
-                        @if($templateExercise->exercise->video_url)
-                            <div class="collapse mb-4" id="video-{{ $templateExercise->id }}">
+                        @if($exerciseData['template_exercise']->exercise->video_url)
+                            <div class="collapse mb-4" id="video-{{ $exerciseData['template_exercise']->id }}">
                                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
-                                    <iframe src="{{ str_replace('watch?v=', 'embed/', $templateExercise->exercise->video_url) }}" allowfullscreen></iframe>
-                                        </div>
-                                    </div>
-                                @endif
+                                    <iframe src="{{ str_replace('watch?v=', 'embed/', $exerciseData['template_exercise']->exercise->video_url) }}" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        @endif
 
                         <!-- All Sets Table -->
-                        @php
-                            $targetSets = $templateExercise->target_sets ?? 3;
-                            $currentSetNumber = $loggedSets->count() + 1;
-                            $previousExerciseSets = $previousSets[$templateExercise->exercise_id] ?? collect();
-                        @endphp
 
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -160,49 +143,42 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for($setNum = 1; $setNum <= $targetSets; $setNum++)
-                                        @php
-                                            $previousSet = $previousExerciseSets->firstWhere('set_number', $setNum);
-                                            $loggedSet = $loggedSets->firstWhere('set_number', $setNum);
-                                            $isCompleted = $loggedSet !== null;
-                                            $isActive = $setNum === $currentSetNumber;
-                                            $isLocked = $setNum > $currentSetNumber;
-                                        @endphp
-                                        <tr class="{{ $isCompleted ? 'table-success' : ($isActive ? 'table-warning' : '') }}">
+                                    @foreach($exerciseData['sets'] as $set)
+                                        <tr class="{{ $set['is_completed'] ? 'table-success' : ($set['is_active'] ? 'table-warning' : '') }}">
                                             <!-- Set Number -->
                                             <td class="text-center fw-bold">
-                                                @if($isCompleted)
+                                                @if($set['is_completed'])
                                                     <i class="bi bi-check-circle-fill text-success"></i>
-                                                @elseif($isActive)
+                                                @elseif($set['is_active'])
                                                     <i class="bi bi-arrow-right-circle-fill text-warning"></i>
                                                 @else
                                                     <i class="bi bi-lock-fill text-muted"></i>
                                                 @endif
-                                                {{ $setNum }}
+                                                {{ $set['set_number'] }}
                                             </td>
 
                                             <!-- Previous Weight -->
                                             <td class="text-center text-muted small">
-                                                {{ $previousSet ? $previousSet->weight . ' kg' : '—' }}
+                                                {{ $set['previous_weight'] ? $set['previous_weight'] . ' kg' : '—' }}
                                             </td>
 
                                             <!-- Previous Reps -->
                                             <td class="text-center text-muted small">
-                                                {{ $previousSet ? $previousSet->reps : '—' }}
+                                                {{ $set['previous_reps'] ?? '—' }}
                                             </td>
 
                                             <!-- Current Weight Input or Display -->
                                             <td class="text-center">
-                                                @if($isCompleted)
-                                                    <strong>{{ $loggedSet->weight }} kg</strong>
-                                                @elseif($isActive)
+                                                @if($set['is_completed'])
+                                                    <strong>{{ $set['current_weight'] }} kg</strong>
+                                                @elseif($set['is_active'])
                                                     <input type="number" 
-                                                           class="form-control form-control-sm text-center weight-input-{{ $templateExercise->exercise_id }}" 
-                                                           value="{{ $previousSet->weight ?? $templateExercise->target_weight ?? '' }}" 
+                                                           class="form-control form-control-sm text-center weight-input-{{ $exerciseData['template_exercise']->exercise_id }}" 
+                                                           value="{{ $set['default_weight'] }}" 
                                                            step="0.5" 
                                                            min="0" 
                                                            placeholder="0.0"
-                                                           data-set="{{ $setNum }}">
+                                                           data-set="{{ $set['set_number'] }}">
                                                 @else
                                                     <input type="number" class="form-control form-control-sm text-center" disabled placeholder="—">
                                                 @endif
@@ -210,15 +186,15 @@
 
                                             <!-- Current Reps Input or Display -->
                                             <td class="text-center">
-                                                @if($isCompleted)
-                                                    <strong>{{ $loggedSet->reps }}</strong>
-                                                @elseif($isActive)
+                                                @if($set['is_completed'])
+                                                    <strong>{{ $set['current_reps'] }}</strong>
+                                                @elseif($set['is_active'])
                                                     <input type="number" 
-                                                           class="form-control form-control-sm text-center reps-input-{{ $templateExercise->exercise_id }}" 
-                                                           value="{{ $previousSet->reps ?? $templateExercise->target_reps ?? '' }}" 
+                                                           class="form-control form-control-sm text-center reps-input-{{ $exerciseData['template_exercise']->exercise_id }}" 
+                                                           value="{{ $set['default_reps'] }}" 
                                                            min="0" 
                                                            placeholder="0"
-                                                           data-set="{{ $setNum }}">
+                                                           data-set="{{ $set['set_number'] }}">
                                                 @else
                                                     <input type="number" class="form-control form-control-sm text-center" disabled placeholder="—">
                                                 @endif
@@ -226,27 +202,27 @@
 
                                             <!-- Action Button -->
                                             <td class="text-center">
-                                                @if($isCompleted)
+                                                @if($set['is_completed'])
                                                     <button class="btn btn-sm btn-outline-danger delete-set-btn" 
-                                                            data-set-id="{{ $loggedSet->id }}"
-                                                            data-exercise-id="{{ $templateExercise->exercise_id }}">
+                                                            data-set-id="{{ $set['logged_set_id'] }}"
+                                                            data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
-                                                @elseif($isActive)
+                                                @elseif($set['is_active'])
                                                     <button class="btn btn-sm btn-success log-set-btn" 
-                                                            data-exercise-id="{{ $templateExercise->exercise_id }}"
-                                                            data-set-number="{{ $setNum }}"
-                                                            data-rest-seconds="{{ $templateExercise->rest_seconds ?? 90 }}">
+                                                            data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}"
+                                                            data-set-number="{{ $set['set_number'] }}"
+                                                            data-rest-seconds="{{ $exerciseData['rest_seconds'] }}">
                                                         <i class="bi bi-check-circle"></i> Log
                                                     </button>
                                                 @else
                                                     <button class="btn btn-sm btn-secondary" disabled>
                                                         <i class="bi bi-lock"></i>
-                                        </button>
+                                                    </button>
                                                 @endif
                                             </td>
                                         </tr>
-                                    @endfor
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
