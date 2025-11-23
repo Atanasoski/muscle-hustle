@@ -232,7 +232,31 @@ class WorkoutSessionController extends Controller
             abort(403);
         }
 
+        // Simply delete the set
         $setLog->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Update a set log
+     */
+    public function updateSet(Request $request, WorkoutSession $session, SetLog $setLog)
+    {
+        // Authorization check
+        if ($session->user_id !== auth()->id() || $setLog->workout_session_id !== $session->id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'weight' => 'required|numeric|min:0',
+            'reps' => 'required|integer|min:0',
+        ]);
+
+        $setLog->update([
+            'weight' => $request->weight,
+            'reps' => $request->reps,
+        ]);
 
         return response()->json(['success' => true]);
     }

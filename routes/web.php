@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/workouts/{session}/log-set', [WorkoutSessionController::class, 'logSet'])->name('workouts.log-set');
     Route::post('/workouts/{session}/complete', [WorkoutSessionController::class, 'complete'])->name('workouts.complete');
     Route::delete('/workouts/{session}/cancel', [WorkoutSessionController::class, 'cancel'])->name('workouts.cancel');
+    Route::put('/workouts/{session}/sets/{setLog}', [WorkoutSessionController::class, 'updateSet'])->name('workouts.update-set');
     Route::delete('/workouts/{session}/sets/{setLog}', [WorkoutSessionController::class, 'deleteSet'])->name('workouts.delete-set');
 
     // Profile
