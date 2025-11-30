@@ -87,8 +87,14 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="Profile" 
+                                     class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                            @else
+                                <i class="bi bi-person-circle me-1"></i>
+                            @endif
+                            {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}">
