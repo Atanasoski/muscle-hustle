@@ -26,4 +26,3 @@ class UserSeeder extends Seeder
         $this->command->info('User created: atanasoski992@gmail.com');
     }
 }
-

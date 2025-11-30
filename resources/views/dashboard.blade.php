@@ -180,9 +180,14 @@
         <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm hover-lift">
                 <div class="card-header bg-gradient-success text-white border-0 py-3">
-                    <h4 class="mb-0 d-flex align-items-center text-white">
-                        <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
-                    </h4>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 d-flex align-items-center text-white">
+                            <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
+                        </h4>
+                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#quickLogMealModal">
+                            <i class="bi bi-plus-circle me-1"></i> Quick Log
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     @if($todayMeals->count() > 0)
@@ -494,4 +499,237 @@
     }
 </style>
 @endpush
+
+<!-- Quick Log Meal Modal -->
+<div class="modal fade" id="quickLogMealModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ route('planner.meals.store') }}" method="POST">
+                @csrf
+                @php
+                    $today = \Carbon\Carbon::now();
+                    $dayOfWeek = $today->dayOfWeek === 0 ? 6 : $today->dayOfWeek - 1; // Convert Sunday from 0 to 6
+                @endphp
+                <input type="hidden" name="day_of_week" value="{{ $dayOfWeek }}">
+                
+                <div class="modal-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                    <h5 class="modal-title text-white">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>
+                        Quick Log Meal for Today
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <!-- Recipe Quick-Select (if user has recipes) -->
+                    @php
+                        $userRecipes = Auth::user()->recipes()->orderBy('is_favorite', 'desc')->orderBy('name')->get();
+                    @endphp
+                    
+                    @if($userRecipes->isNotEmpty())
+                        <div class="mb-4 p-3 rounded-3" style="background: linear-gradient(135deg, rgba(40,167,69,0.05) 0%, rgba(32,201,151,0.05) 100%); border: 1px solid rgba(40,167,69,0.2);">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-book-fill text-success"></i> Select from Saved Recipes
+                            </label>
+                            <select class="form-select" id="quickLogRecipeSelect">
+                                <option value="">Choose a recipe...</option>
+                                @foreach($userRecipes as $recipe)
+                                    @php $nutrition = $recipe->getNutritionPerServing(); @endphp
+                                    <option value="{{ $recipe->id }}" 
+                                            data-name="{{ $recipe->name }}"
+                                            data-servings="{{ $recipe->servings }}"
+                                            data-calories="{{ round($nutrition['calories']) }}"
+                                            data-protein="{{ round($nutrition['protein']) }}"
+                                            data-carbs="{{ round($nutrition['carbs']) }}"
+                                            data-fat="{{ round($nutrition['fat']) }}"
+                                            data-ingredients="{{ $recipe->recipeIngredients->pluck('food.name')->implode(', ') }}"
+                                            data-meal-type="{{ $recipe->meal_type }}">
+                                        {{ $recipe->is_favorite ? '⭐ ' : '' }}{{ $recipe->name }} ({{ round($nutrition['calories']) }} cal)
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                    
+                    <!-- AI Nutrition Calculator -->
+                    <div class="mb-4 p-3 rounded-3" style="background: linear-gradient(135deg, rgba(255,107,53,0.05) 0%, rgba(255,140,97,0.05) 100%); border: 1px solid rgba(255,107,53,0.2);">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-stars text-warning"></i> AI Nutrition Calculator
+                        </label>
+                        <p class="text-muted small mb-3">Describe what you ate and let AI calculate the nutrition!</p>
+                        <textarea class="form-control mb-2" id="quickLogAiInput" rows="3" 
+                                  placeholder="Example: 200g grilled chicken breast, 1 cup brown rice, steamed broccoli, 1 tbsp olive oil"></textarea>
+                        <button type="button" class="btn btn-warning btn-sm w-100" id="quickLogAiBtn">
+                            <i class="bi bi-magic me-2"></i> Calculate with AI
+                        </button>
+                        <div class="mt-2" id="quickLogAiLoading" style="display: none;">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm text-warning" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span class="ms-2 small">Analyzing...</span>
+                            </div>
+                        </div>
+                        <div class="alert alert-success mt-2" id="quickLogAiSuccess" style="display: none;">
+                            <i class="bi bi-check-circle me-2"></i> Nutrition calculated and filled!
+                        </div>
+                        <div class="alert alert-danger mt-2" id="quickLogAiError" style="display: none;">
+                            <i class="bi bi-exclamation-triangle me-2"></i> <span class="error-text"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Meal Type -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Meal Type <span class="text-danger">*</span></label>
+                        <select class="form-select" name="type" id="quickLogMealType" required>
+                            <option value="">Select type...</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="snack">Snack</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Meal Name -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Meal Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" id="quickLogMealName" 
+                               placeholder="e.g., Chicken & Rice Bowl" required>
+                    </div>
+                    
+                    <!-- Serving Size -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Serving / Portions</label>
+                        <input type="text" class="form-control" name="serving_size" id="quickLogServingSize"
+                               placeholder="e.g., 1 bowl, 300g total">
+                    </div>
+                    
+                    <!-- Nutrition -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Calories</label>
+                        <input type="number" class="form-control" name="calories" id="quickLogCalories" min="0">
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <label class="form-label fw-bold small">Protein (g)</label>
+                            <input type="number" class="form-control" name="protein" id="quickLogProtein" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-bold small">Carbs (g)</label>
+                            <input type="number" class="form-control" name="carbs" id="quickLogCarbs" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-bold small">Fat (g)</label>
+                            <input type="number" class="form-control" name="fat" id="quickLogFat" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i> Log Meal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+// Recipe Quick-Select for Dashboard
+document.getElementById('quickLogRecipeSelect')?.addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    
+    if (!selected.value) {
+        return;
+    }
+    
+    // Fill in the form
+    document.getElementById('quickLogMealName').value = selected.dataset.name;
+    document.getElementById('quickLogServingSize').value = `1 serving (of ${selected.dataset.servings} total)`;
+    document.getElementById('quickLogCalories').value = selected.dataset.calories;
+    document.getElementById('quickLogProtein').value = selected.dataset.protein;
+    document.getElementById('quickLogCarbs').value = selected.dataset.carbs;
+    document.getElementById('quickLogFat').value = selected.dataset.fat;
+    
+    // Set meal type if available
+    if (selected.dataset.mealType) {
+        document.getElementById('quickLogMealType').value = selected.dataset.mealType;
+    }
+});
+
+// AI Nutrition Calculator for Dashboard
+document.getElementById('quickLogAiBtn')?.addEventListener('click', function() {
+    const text = document.getElementById('quickLogAiInput').value.trim();
+    const loadingDiv = document.getElementById('quickLogAiLoading');
+    const successDiv = document.getElementById('quickLogAiSuccess');
+    const errorDiv = document.getElementById('quickLogAiError');
+    
+    if (!text) {
+        errorDiv.querySelector('.error-text').textContent = 'Please enter what you ate';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // Reset states
+    successDiv.style.display = 'none';
+    errorDiv.style.display = 'none';
+    loadingDiv.style.display = 'block';
+    this.disabled = true;
+    
+    // Call API
+    fetch('{{ route('nutrition.parse') }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.totals) {
+            // Fill form
+            document.getElementById('quickLogCalories').value = Math.round(data.totals.calories);
+            document.getElementById('quickLogProtein').value = Math.round(data.totals.protein);
+            document.getElementById('quickLogCarbs').value = Math.round(data.totals.carbs);
+            document.getElementById('quickLogFat').value = Math.round(data.totals.fat);
+            
+            // Auto-fill meal name if empty
+            if (!document.getElementById('quickLogMealName').value && data.items && data.items.length > 0) {
+                const itemNames = data.items.map(item => item.food).slice(0, 3).join(', ');
+                document.getElementById('quickLogMealName').value = itemNames;
+            }
+            
+            // Auto-fill serving size if empty
+            if (!document.getElementById('quickLogServingSize').value) {
+                document.getElementById('quickLogServingSize').value = text;
+            }
+            
+            successDiv.style.display = 'block';
+            
+            // Auto-hide success after 3s
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        } else if (data.message) {
+            errorDiv.querySelector('.error-text').textContent = data.message;
+            errorDiv.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorDiv.querySelector('.error-text').textContent = 'An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+    })
+    .finally(() => {
+        loadingDiv.style.display = 'none';
+        this.disabled = false;
+    });
+});
+</script>
+@endpush
+
 @endsection

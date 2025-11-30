@@ -24,6 +24,16 @@
                             <i class="bi bi-list-ul"></i> Exercises
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('recipes.*') ? 'active' : '' }}" href="{{ route('recipes.index') }}">
+                            <i class="bi bi-book"></i> Recipes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('foods.*') ? 'active' : '' }}" href="{{ route('foods.index') }}">
+                            <i class="bi bi-database"></i> Foods
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('planner.*') ? 'active' : '' }}" href="#" id="plannerDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-calendar-week-fill"></i> Planner

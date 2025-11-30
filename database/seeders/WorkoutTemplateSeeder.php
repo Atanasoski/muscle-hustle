@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Exercise;
+use App\Models\User;
 use App\Models\WorkoutTemplate;
 use App\Models\WorkoutTemplateExercise;
 use Illuminate\Database\Seeder;
@@ -17,8 +17,9 @@ class WorkoutTemplateSeeder extends Seeder
     {
         $demoUser = User::where('email', 'atanasoski992@gmail.com')->first();
 
-        if (!$demoUser) {
+        if (! $demoUser) {
             $this->command->error('User not found. Run UserSeeder first.');
+
             return;
         }
 
@@ -96,8 +97,9 @@ class WorkoutTemplateSeeder extends Seeder
             foreach ($templateData['exercises'] as $index => $exerciseData) {
                 $exercise = Exercise::where('name', $exerciseData['name'])->first();
 
-                if (!$exercise) {
+                if (! $exercise) {
                     $this->command->warn("Exercise '{$exerciseData['name']}' not found. Skipping.");
+
                     continue;
                 }
 
@@ -118,4 +120,3 @@ class WorkoutTemplateSeeder extends Seeder
         $this->command->info('Workout templates seeded successfully!');
     }
 }
-

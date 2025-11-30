@@ -5,10 +5,17 @@
 @section('content')
 <div class="container py-3 py-md-4">
     <div class="mb-4">
-        <h1 class="h3 h2-md fw-bold mb-2">
-            <i class="bi bi-egg-fried text-success"></i> Weekly Meal Planner
-        </h1>
-        <p class="text-muted mb-0 small">Week starting: {{ $weekStart->format('M d, Y') }}</p>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="h3 h2-md fw-bold mb-2">
+                    <i class="bi bi-egg-fried text-success"></i> Weekly Meal Planner
+                </h1>
+                <p class="text-muted mb-0 small">Week starting: {{ $weekStart->format('M d, Y') }}</p>
+            </div>
+            <a href="{{ route('planner.grocery-list') }}" class="btn btn-primary">
+                <i class="bi bi-cart3 me-2"></i> Generate Grocery List
+            </a>
+        </div>
     </div>
 
     @php
@@ -222,41 +229,114 @@
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
+                            <!-- Recipe Quick-Add -->
+                            @if($recipes->isNotEmpty())
+                                <div class="mb-4">
+                                    <div class="border rounded-3 p-3" style="background: linear-gradient(135deg, rgba(40,167,69,0.05) 0%, rgba(32,201,151,0.05) 100%);">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <i class="bi bi-book-fill text-success fs-5"></i>
+                                            <label class="form-label fw-bold mb-0">Quick Add from Recipes</label>
+                                        </div>
+                                        <p class="text-muted small mb-3">Select a saved recipe to auto-fill everything!</p>
+                                        
+                                        <select class="form-select recipe-selector" data-modal-id="{{ $dayIndex }}{{ $type }}">
+                                            <option value="">Choose a recipe...</option>
+                                            @foreach($recipes as $recipe)
+                                                @php $nutrition = $recipe->getNutritionPerServing(); @endphp
+                                                <option value="{{ $recipe->id }}" 
+                                                        data-name="{{ $recipe->name }}"
+                                                        data-servings="{{ $recipe->servings }}"
+                                                        data-calories="{{ round($nutrition['calories']) }}"
+                                                        data-protein="{{ round($nutrition['protein']) }}"
+                                                        data-carbs="{{ round($nutrition['carbs']) }}"
+                                                        data-fat="{{ round($nutrition['fat']) }}"
+                                                        data-ingredients="{{ $recipe->recipeIngredients->pluck('food.name')->implode(', ') }}">
+                                                    {{ $recipe->is_favorite ? '⭐ ' : '' }}{{ $recipe->name }} 
+                                                    ({{ round($nutrition['calories']) }} cal)
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        
+                                        <div class="alert alert-success mt-3" style="display: none;" id="recipeApplied{{ $dayIndex }}{{ $type }}">
+                                            <i class="bi bi-check-circle me-2"></i>
+                                            Recipe applied! Adjust servings if needed.
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Meal Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="name" 
+                                <input type="text" class="form-control meal-name-input" name="name" 
                                        value="{{ $mealGrid[$dayIndex][$type]->name ?? '' }}" 
                                        placeholder="e.g., Grilled Chicken Salad" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Serving Size / Portions</label>
-                                <input type="text" class="form-control" name="serving_size" 
+                                <input type="text" class="form-control meal-serving-input" name="serving_size" 
                                        value="{{ $mealGrid[$dayIndex][$type]->serving_size ?? '' }}" 
                                        placeholder="e.g., 200g salmon, 150g sweet potato, 100g broccoli">
                                 <small class="text-muted">Describe the portions/quantities</small>
                             </div>
+                            
+                            <!-- AI Nutrition Parser -->
+                            <div class="mb-4">
+                                <div class="border rounded-3 p-3" style="background: linear-gradient(135deg, rgba(255,107,53,0.05) 0%, rgba(255,140,97,0.05) 100%);">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="bi bi-stars text-warning fs-5"></i>
+                                        <label class="form-label fw-bold mb-0">AI Nutrition Calculator</label>
+                                    </div>
+                                    <p class="text-muted small mb-3">Paste what you ate and let AI calculate nutrition for you!</p>
+                                    
+                                    <textarea class="form-control mb-2" 
+                                              id="aiParseInput{{ $dayIndex }}{{ $type }}" 
+                                              rows="3" 
+                                              placeholder="Example: 2 chicken breasts, 1 cup brown rice, handful of broccoli, 1 tbsp olive oil"></textarea>
+                                    
+                                    <button type="button" 
+                                            class="btn btn-warning btn-sm w-100 ai-parse-btn" 
+                                            data-modal-id="{{ $dayIndex }}{{ $type }}">
+                                        <i class="bi bi-magic"></i> Calculate Nutrition with AI
+                                    </button>
+                                    
+                                    <div id="aiParseResult{{ $dayIndex }}{{ $type }}" class="mt-3" style="display: none;">
+                                        <div class="alert alert-success mb-0">
+                                            <i class="bi bi-check-circle me-2"></i>
+                                            <strong>Parsed successfully!</strong> Nutrition values filled below.
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="aiParseError{{ $dayIndex }}{{ $type }}" class="mt-3" style="display: none;">
+                                        <div class="alert alert-danger mb-0">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            <span class="error-message"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Calories</label>
-                                <input type="number" class="form-control" name="calories" 
+                                <input type="number" class="form-control meal-calories-input" name="calories" 
                                        value="{{ $mealGrid[$dayIndex][$type]->calories ?? '' }}" 
                                        placeholder="e.g., 450" min="0">
                             </div>
                             <div class="row g-2">
                                 <div class="col-4">
                                     <label class="form-label fw-bold small">Protein (g)</label>
-                                    <input type="number" class="form-control" name="protein" 
+                                    <input type="number" class="form-control meal-protein-input" name="protein" 
                                            value="{{ $mealGrid[$dayIndex][$type]->protein ?? '' }}" 
                                            placeholder="35" min="0">
                                 </div>
                                 <div class="col-4">
                                     <label class="form-label fw-bold small">Carbs (g)</label>
-                                    <input type="number" class="form-control" name="carbs" 
+                                    <input type="number" class="form-control meal-carbs-input" name="carbs" 
                                            value="{{ $mealGrid[$dayIndex][$type]->carbs ?? '' }}" 
                                            placeholder="45" min="0">
                                 </div>
                                 <div class="col-4">
                                     <label class="form-label fw-bold small">Fat (g)</label>
-                                    <input type="number" class="form-control" name="fat" 
+                                    <input type="number" class="form-control meal-fat-input" name="fat" 
                                            value="{{ $mealGrid[$dayIndex][$type]->fat ?? '' }}" 
                                            placeholder="12" min="0">
                                 </div>
@@ -315,6 +395,130 @@
     font-size: 0.65rem;
 }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+// Recipe Quick-Add
+document.querySelectorAll('.recipe-selector').forEach(select => {
+    select.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        
+        if (!selected.value) {
+            return; // No recipe selected
+        }
+        
+        const modalId = this.dataset.modalId;
+        const modal = this.closest('.modal');
+        
+        // Get recipe data from option attributes
+        const recipeName = selected.dataset.name;
+        const servings = selected.dataset.servings;
+        const calories = selected.dataset.calories;
+        const protein = selected.dataset.protein;
+        const carbs = selected.dataset.carbs;
+        const fat = selected.dataset.fat;
+        const ingredients = selected.dataset.ingredients;
+        
+        // Fill in the form fields
+        modal.querySelector('.meal-name-input').value = recipeName;
+        modal.querySelector('.meal-serving-input').value = `1 serving (of ${servings} total)`;
+        modal.querySelector('.meal-calories-input').value = calories;
+        modal.querySelector('.meal-protein-input').value = protein;
+        modal.querySelector('.meal-carbs-input').value = carbs;
+        modal.querySelector('.meal-fat-input').value = fat;
+        
+        // Show success message
+        const successMsg = document.getElementById(`recipeApplied${modalId}`);
+        if (successMsg) {
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Scroll to the form
+        modal.querySelector('.meal-name-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+});
+
+// AI Nutrition Parser
+document.querySelectorAll('.ai-parse-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const modalId = this.dataset.modalId;
+        const textArea = document.getElementById(`aiParseInput${modalId}`);
+        const resultDiv = document.getElementById(`aiParseResult${modalId}`);
+        const errorDiv = document.getElementById(`aiParseError${modalId}`);
+        const text = textArea.value.trim();
+        
+        // Validate
+        if (!text) {
+            alert('Please enter some food items to parse');
+            return;
+        }
+        
+        // Hide previous results/errors
+        resultDiv.style.display = 'none';
+        errorDiv.style.display = 'none';
+        
+        // Show loading
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Calculating...';
+        
+        // Call API
+        fetch('{{ route('nutrition.parse') }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Fill in the nutrition fields
+                const modal = this.closest('.modal');
+                const totals = data.data.totals;
+                
+                // Update form fields
+                modal.querySelector('input[name="calories"]').value = Math.round(totals.calories);
+                modal.querySelector('input[name="protein"]').value = Math.round(totals.protein);
+                modal.querySelector('input[name="carbs"]').value = Math.round(totals.carbs);
+                modal.querySelector('input[name="fat"]').value = Math.round(totals.fat);
+                
+                // Auto-fill serving size if empty
+                const servingSizeInput = modal.querySelector('input[name="serving_size"]');
+                if (!servingSizeInput.value) {
+                    servingSizeInput.value = text;
+                }
+                
+                // Show success message
+                resultDiv.style.display = 'block';
+                
+                // Auto-hide success message after 3 seconds
+                setTimeout(() => {
+                    resultDiv.style.display = 'none';
+                }, 3000);
+            } else {
+                // Show error
+                errorDiv.querySelector('.error-message').textContent = data.message || 'Failed to parse nutrition data';
+                errorDiv.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorDiv.querySelector('.error-message').textContent = 'Network error. Please try again.';
+            errorDiv.style.display = 'block';
+        })
+        .finally(() => {
+            // Reset button
+            this.disabled = false;
+            this.innerHTML = '<i class="bi bi-magic"></i> Calculate Nutrition with AI';
+        });
+    });
+});
+</script>
 @endpush
 @endsection
 

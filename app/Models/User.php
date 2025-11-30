@@ -77,4 +77,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Exercise::class);
     }
+
+    /**
+     * Get the recipes for the user.
+     */
+    public function recipes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Recipe::class);
+    }
 }

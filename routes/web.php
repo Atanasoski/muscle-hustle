@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\FoodController;
 use App\Http\Controllers\MealPlannerController;
+use App\Http\Controllers\NutritionParserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\WorkoutPlannerController;
 use App\Http\Controllers\WorkoutSessionController;
 use App\Http\Controllers\WorkoutTemplateController;
@@ -48,6 +51,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/planner/meals', [MealPlannerController::class, 'index'])->name('planner.meals');
     Route::post('/planner/meals', [MealPlannerController::class, 'store'])->name('planner.meals.store');
     Route::delete('/planner/meals/{meal}', [MealPlannerController::class, 'destroy'])->name('planner.meals.destroy');
+    Route::get('/planner/grocery-list', [MealPlannerController::class, 'groceryList'])->name('planner.grocery-list');
+
+    // Nutrition Parser
+    Route::post('/nutrition/parse', [NutritionParserController::class, 'parse'])->name('nutrition.parse');
+
+    // Recipes
+    Route::resource('recipes', RecipeController::class);
+    Route::post('/recipes/{recipe}/toggle-favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.toggle-favorite');
+
+    // Foods
+    Route::resource('foods', FoodController::class);
 
     // Workout Sessions
     Route::get('/workouts/today', [WorkoutSessionController::class, 'today'])->name('workouts.today');

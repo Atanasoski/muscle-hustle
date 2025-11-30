@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Meal;
 use App\Models\MealPlan;
+use App\Models\Recipe;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -74,7 +75,14 @@ class MealPlannerController extends Controller
             ? round($weeklyTotals['calories'] / $daysWithMeals)
             : 0;
 
-        return view('planner.meals', compact('mealPlan', 'mealGrid', 'weekStart', 'dailyTotals', 'weeklyTotals'));
+        // Fetch user's recipes for quick-add
+        $recipes = Recipe::where('user_id', auth()->id())
+            ->with('recipeIngredients.food')
+            ->orderBy('is_favorite', 'desc')
+            ->orderBy('name')
+            ->get();
+
+        return view('planner.meals', compact('mealPlan', 'mealGrid', 'weekStart', 'dailyTotals', 'weeklyTotals', 'recipes'));
     }
 
     /**
@@ -139,5 +147,62 @@ class MealPlannerController extends Controller
 
         return redirect()->route('planner.meals')
             ->with('success', 'Meal deleted successfully!');
+    }
+
+    /**
+     * Generate grocery list from weekly meals
+     */
+    public function groceryList()
+    {
+        $weekStart = Carbon::now()->startOfWeek();
+
+        // Get or create meal plan for this week
+        $mealPlan = MealPlan::where('user_id', auth()->id())
+            ->where('week_start_date', $weekStart->toDateString())
+            ->with('meals.recipe.recipeIngredients.food')
+            ->first();
+
+        if (! $mealPlan) {
+            return view('planner.grocery-list', [
+                'weekStart' => $weekStart,
+                'groceries' => collect(),
+                'totalRecipes' => 0,
+            ]);
+        }
+
+        // Collect all ingredients from recipes
+        $ingredients = collect();
+
+        foreach ($mealPlan->meals as $meal) {
+            if ($meal->recipe) {
+                $servingMultiplier = $meal->servings / $meal->recipe->servings;
+
+                foreach ($meal->recipe->recipeIngredients as $ingredient) {
+                    $key = $ingredient->food_id.'_'.$ingredient->unit;
+                    $quantity = $ingredient->quantity * $servingMultiplier;
+
+                    if ($ingredients->has($key)) {
+                        $ingredients[$key]['quantity'] += $quantity;
+                        $ingredients[$key]['meals'][] = $meal->name;
+                    } else {
+                        $ingredients[$key] = [
+                            'food' => $ingredient->food,
+                            'quantity' => $quantity,
+                            'unit' => $ingredient->unit,
+                            'meals' => [$meal->name],
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Group by category
+        $groceries = $ingredients->groupBy(function ($item) {
+            return $item['food']->category ?: 'Other';
+        })->sortKeys();
+
+        $totalRecipes = $mealPlan->meals->filter(fn ($meal) => $meal->recipe_id)->count();
+
+        return view('planner.grocery-list', compact('groceries', 'weekStart', 'totalRecipes'));
     }
 }

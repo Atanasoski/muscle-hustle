@@ -39,7 +39,7 @@ class WorkoutPlannerController extends Controller
         ]);
 
         $template = WorkoutTemplate::findOrFail($request->template_id);
-        
+
         // Authorization check
         if ($template->user_id !== auth()->id()) {
             abort(403);
@@ -68,7 +68,7 @@ class WorkoutPlannerController extends Controller
         ]);
 
         $template = WorkoutTemplate::findOrFail($request->template_id);
-        
+
         // Authorization check
         if ($template->user_id !== auth()->id()) {
             abort(403);
