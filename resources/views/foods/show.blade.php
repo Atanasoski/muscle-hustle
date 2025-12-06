@@ -47,19 +47,19 @@
                     <!-- Main Macros -->
                     <div class="row g-3 mb-4">
                         <div class="col-6 col-md-3 text-center">
-                            <div class="h2 fw-bold text-success mb-0">{{ $food->calories ?? 0 }}</div>
+                            <div class="h2 fw-bold text-success mb-0">{{ number_format($food->calories, 0) }}</div>
                             <small class="text-muted">Calories</small>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="h2 fw-bold text-primary mb-0">{{ $food->protein ?? 0 }}g</div>
+                            <div class="h2 fw-bold text-primary mb-0">{{ number_format($food->protein, 1) }}g</div>
                             <small class="text-muted">Protein</small>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="h2 fw-bold text-warning mb-0">{{ $food->carbs ?? 0 }}g</div>
+                            <div class="h2 fw-bold text-warning mb-0">{{ number_format($food->carbs, 1) }}g</div>
                             <small class="text-muted">Carbs</small>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="h2 fw-bold text-danger mb-0">{{ $food->fat ?? 0 }}g</div>
+                            <div class="h2 fw-bold text-danger mb-0">{{ number_format($food->fat, 1) }}g</div>
                             <small class="text-muted">Fat</small>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                             @if($food->fiber)
                                 <div class="col-6 text-center">
                                     <div class="bg-light rounded-3 p-3">
-                                        <div class="fw-bold">{{ $food->fiber }}g</div>
+                                        <div class="fw-bold">{{ number_format($food->fiber, 1) }}g</div>
                                         <small class="text-muted">Fiber</small>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@
                             @if($food->sugar)
                                 <div class="col-6 text-center">
                                     <div class="bg-light rounded-3 p-3">
-                                        <div class="fw-bold">{{ $food->sugar }}g</div>
+                                        <div class="fw-bold">{{ number_format($food->sugar, 1) }}g</div>
                                         <small class="text-muted">Sugar</small>
                                     </div>
                                 </div>

@@ -63,37 +63,37 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="calories" class="form-label fw-bold">Calories</label>
-                                <input type="number" class="form-control" id="calories" name="calories" 
+                                <input type="number" step="0.1" class="form-control" id="calories" name="calories" 
                                        value="{{ old('calories', $food->calories) }}" min="0">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="protein" class="form-label fw-bold">Protein (g)</label>
-                                <input type="number" class="form-control" id="protein" name="protein" 
+                                <input type="number" step="0.1" class="form-control" id="protein" name="protein" 
                                        value="{{ old('protein', $food->protein) }}" min="0">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="carbs" class="form-label fw-bold">Carbohydrates (g)</label>
-                                <input type="number" class="form-control" id="carbs" name="carbs" 
+                                <input type="number" step="0.1" class="form-control" id="carbs" name="carbs" 
                                        value="{{ old('carbs', $food->carbs) }}" min="0">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="fat" class="form-label fw-bold">Fat (g)</label>
-                                <input type="number" class="form-control" id="fat" name="fat" 
+                                <input type="number" step="0.1" class="form-control" id="fat" name="fat" 
                                        value="{{ old('fat', $food->fat) }}" min="0">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="fiber" class="form-label fw-bold">Fiber (g)</label>
-                                <input type="number" class="form-control" id="fiber" name="fiber" 
+                                <input type="number" step="0.1" class="form-control" id="fiber" name="fiber" 
                                        value="{{ old('fiber', $food->fiber) }}" min="0">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="sugar" class="form-label fw-bold">Sugar (g)</label>
-                                <input type="number" class="form-control" id="sugar" name="sugar" 
+                                <input type="number" step="0.1" class="form-control" id="sugar" name="sugar" 
                                        value="{{ old('sugar', $food->sugar) }}" min="0">
                             </div>
                         </div>

@@ -13,46 +13,35 @@ class FoodController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Food::query()
-            ->with('category')
-            ->where(function ($q) {
-                $q->whereNull('user_id')
-                    ->orWhere('user_id', auth()->id());
-            });
-
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('category', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        // Filter by category
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
-        }
-
-        // Filter by ownership
-        if ($request->filled('ownership')) {
-            if ($request->ownership === 'custom') {
-                $query->where('user_id', auth()->id());
-            } elseif ($request->ownership === 'global') {
-                $query->whereNull('user_id');
-            }
-        }
-
-        $foods = $query->orderBy('name')->paginate(50);
-
-        // Get food categories for filter
+        // Get categories with foods (similar to exercises)
         $categories = Category::food()
+            ->with(['foods' => function ($query) use ($request) {
+                $query->where(function ($q) {
+                    $q->whereNull('user_id')
+                        ->orWhere('user_id', auth()->id());
+                });
+
+                // Search
+                if ($request->filled('search')) {
+                    $search = $request->search;
+                    $query->where('name', 'like', "%{$search}%");
+                }
+
+                // Filter by ownership
+                if ($request->filled('ownership')) {
+                    if ($request->ownership === 'custom') {
+                        $query->where('user_id', auth()->id());
+                    } elseif ($request->ownership === 'global') {
+                        $query->whereNull('user_id');
+                    }
+                }
+
+                $query->orderBy('name');
+            }])
             ->orderBy('display_order')
             ->get();
 
-        return view('foods.index', compact('foods', 'categories'));
+        return view('foods.index', compact('categories'));
     }
 
     /**
