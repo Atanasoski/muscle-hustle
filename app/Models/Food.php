@@ -15,8 +15,8 @@ class Food extends Model
 
     protected $fillable = [
         'user_id',
+        'category_id',
         'name',
-        'category',
         'brand',
         'calories',
         'protein',
@@ -46,6 +46,14 @@ class Food extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the category that the food belongs to
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     /**

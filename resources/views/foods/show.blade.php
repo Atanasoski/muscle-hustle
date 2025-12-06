@@ -15,7 +15,9 @@
                     <div>
                         <h1 class="h3 fw-bold mb-0">{{ $food->name }}</h1>
                         @if($food->category)
-                            <span class="badge bg-secondary mt-2">{{ ucfirst($food->category) }}</span>
+                            <span class="badge mt-2" style="background-color: {{ $food->category->color }}">
+                                {{ $food->category->icon }} {{ $food->category->name }}
+                            </span>
                         @endif
                     </div>
                 </div>

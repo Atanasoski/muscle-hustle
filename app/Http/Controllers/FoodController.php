@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Food;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,7 @@ class FoodController extends Controller
     public function index(Request $request)
     {
         $query = Food::query()
+            ->with('category')
             ->where(function ($q) {
                 $q->whereNull('user_id')
                     ->orWhere('user_id', auth()->id());
@@ -23,13 +25,15 @@ class FoodController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('category', 'like', "%{$search}%");
+                    ->orWhereHas('category', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         // Filter by category
         if ($request->filled('category')) {
-            $query->where('category', $request->category);
+            $query->where('category_id', $request->category);
         }
 
         // Filter by ownership
@@ -43,16 +47,10 @@ class FoodController extends Controller
 
         $foods = $query->orderBy('name')->paginate(50);
 
-        // Get all categories for filter
-        $categories = Food::query()
-            ->where(function ($q) {
-                $q->whereNull('user_id')
-                    ->orWhere('user_id', auth()->id());
-            })
-            ->whereNotNull('category')
-            ->distinct()
-            ->pluck('category')
-            ->sort();
+        // Get food categories for filter
+        $categories = Category::food()
+            ->orderBy('display_order')
+            ->get();
 
         return view('foods.index', compact('foods', 'categories'));
     }
@@ -62,7 +60,11 @@ class FoodController extends Controller
      */
     public function create()
     {
-        return view('foods.create');
+        $categories = Category::food()
+            ->orderBy('display_order')
+            ->get();
+
+        return view('foods.create', compact('categories'));
     }
 
     /**
@@ -72,7 +74,7 @@ class FoodController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
+            'category_id' => 'nullable|exists:categories,id',
             'calories' => 'nullable|integer|min:0',
             'protein' => 'nullable|integer|min:0',
             'carbs' => 'nullable|integer|min:0',
@@ -86,7 +88,7 @@ class FoodController extends Controller
         Food::create([
             'user_id' => auth()->id(), // Custom food for this user
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'calories' => $request->calories,
             'protein' => $request->protein,
             'carbs' => $request->carbs,
@@ -124,7 +126,11 @@ class FoodController extends Controller
             abort(403, 'You can only edit your own custom foods.');
         }
 
-        return view('foods.edit', compact('food'));
+        $categories = Category::food()
+            ->orderBy('display_order')
+            ->get();
+
+        return view('foods.edit', compact('food', 'categories'));
     }
 
     /**
@@ -139,7 +145,7 @@ class FoodController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
+            'category_id' => 'nullable|exists:categories,id',
             'calories' => 'nullable|integer|min:0',
             'protein' => 'nullable|integer|min:0',
             'carbs' => 'nullable|integer|min:0',
@@ -152,7 +158,7 @@ class FoodController extends Controller
 
         $food->update([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'calories' => $request->calories,
             'protein' => $request->protein,
             'carbs' => $request->carbs,

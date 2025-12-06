@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
+            $table->enum('type', ['workout', 'food'])->default('workout');
+            $table->string('name');
+            $table->string('slug');
             $table->integer('display_order')->default(0);
             $table->string('icon')->nullable();
             $table->string('color')->nullable();
             $table->timestamps();
+
+            // Category names/slugs are unique per type
+            $table->unique(['type', 'name']);
+            $table->unique(['type', 'slug']);
+            $table->index('type');
         });
     }
 

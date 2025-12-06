@@ -37,8 +37,8 @@
                         <select class="form-select" name="category">
                             <option value="">All Categories</option>
                             @foreach($categories as $category)
-                                <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
-                                    {{ ucfirst($category) }}
+                                <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->icon }} {{ $category->name }}
                                 </option>
                             @endforeach
                         </select>
@@ -110,7 +110,9 @@
                                     <td class="fw-bold">{{ $food->name }}</td>
                                     <td>
                                         @if($food->category)
-                                            <span class="badge bg-secondary">{{ ucfirst($food->category) }}</span>
+                                            <span class="badge" style="background-color: {{ $food->category->color }}">
+                                                {{ $food->category->icon }} {{ $food->category->name }}
+                                            </span>
                                         @else
                                             <span class="text-muted small">-</span>
                                         @endif

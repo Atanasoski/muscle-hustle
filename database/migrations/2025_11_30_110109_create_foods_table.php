@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('foods', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // null = global food
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->string('name');
-            $table->string('category')->nullable(); // protein, carb, vegetable, fruit, fat, etc.
             $table->string('brand')->nullable();
 
             // Nutritional info per 100g
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['user_id', 'name']);
-            $table->index('category');
+            $table->index('category_id');
         });
     }
 

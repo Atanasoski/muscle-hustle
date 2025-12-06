@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Food;
 use Illuminate\Database\Seeder;
 
@@ -12,11 +13,18 @@ class FoodSeeder extends Seeder
      */
     public function run(): void
     {
+        // Get food categories
+        $proteinCategoryId = Category::food()->where('slug', 'protein')->value('id');
+        $vegetablesCategoryId = Category::food()->where('slug', 'vegetables')->value('id');
+        $fruitsCategoryId = Category::food()->where('slug', 'fruits')->value('id');
+        $grainsCategoryId = Category::food()->where('slug', 'grains')->value('id');
+        $fatsCategoryId = Category::food()->where('slug', 'fats-oils')->value('id');
+
         $foods = [
             // PROTEINS - MEAT & POULTRY
             [
                 'name' => 'Chicken Breast',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 165,
                 'protein' => 31,
                 'carbs' => 0,
@@ -28,7 +36,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Chicken Thigh',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 209,
                 'protein' => 26,
                 'carbs' => 0,
@@ -40,7 +48,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Ground Beef (90% lean)',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 176,
                 'protein' => 20,
                 'carbs' => 0,
@@ -52,7 +60,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Ground Turkey',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 150,
                 'protein' => 20,
                 'carbs' => 0,
@@ -64,7 +72,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Lean Steak',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 250,
                 'protein' => 26,
                 'carbs' => 0,
@@ -78,7 +86,7 @@ class FoodSeeder extends Seeder
             // PROTEINS - FISH & SEAFOOD
             [
                 'name' => 'Salmon',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 208,
                 'protein' => 20,
                 'carbs' => 0,
@@ -90,7 +98,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Tuna (canned in water)',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 116,
                 'protein' => 26,
                 'carbs' => 0,
@@ -102,7 +110,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Tilapia',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 96,
                 'protein' => 20,
                 'carbs' => 0,
@@ -114,7 +122,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Shrimp',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 99,
                 'protein' => 24,
                 'carbs' => 0.2,
@@ -128,7 +136,7 @@ class FoodSeeder extends Seeder
             // PROTEINS - EGGS & DAIRY
             [
                 'name' => 'Whole Eggs',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 155,
                 'protein' => 13,
                 'carbs' => 1.1,
@@ -140,7 +148,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Egg Whites',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 52,
                 'protein' => 11,
                 'carbs' => 0.7,
@@ -152,7 +160,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Greek Yogurt (non-fat)',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 59,
                 'protein' => 10,
                 'carbs' => 3.6,
@@ -164,7 +172,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Cottage Cheese (low-fat)',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 72,
                 'protein' => 12,
                 'carbs' => 4.3,
@@ -176,7 +184,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Whey Protein Powder',
-                'category' => 'protein',
+                'category_id' => $proteinCategoryId,
                 'calories' => 380,
                 'protein' => 80,
                 'carbs' => 10,
@@ -190,7 +198,7 @@ class FoodSeeder extends Seeder
             // CARBS - GRAINS
             [
                 'name' => 'Brown Rice (cooked)',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 112,
                 'protein' => 2.6,
                 'carbs' => 24,
@@ -202,7 +210,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'White Rice (cooked)',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 130,
                 'protein' => 2.7,
                 'carbs' => 28,
@@ -214,7 +222,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Oatmeal (dry)',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 389,
                 'protein' => 17,
                 'carbs' => 66,
@@ -226,7 +234,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Quinoa (cooked)',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 120,
                 'protein' => 4.4,
                 'carbs' => 21,
@@ -238,7 +246,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Whole Wheat Pasta (cooked)',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 124,
                 'protein' => 5.3,
                 'carbs' => 26,
@@ -252,7 +260,7 @@ class FoodSeeder extends Seeder
             // CARBS - BREAD & GRAINS
             [
                 'name' => 'Whole Wheat Bread',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 247,
                 'protein' => 13,
                 'carbs' => 41,
@@ -264,7 +272,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Sweet Potato',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 86,
                 'protein' => 1.6,
                 'carbs' => 20,
@@ -276,7 +284,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'White Potato',
-                'category' => 'carbs',
+                'category_id' => $grainsCategoryId,
                 'calories' => 77,
                 'protein' => 2,
                 'carbs' => 17,
@@ -290,7 +298,7 @@ class FoodSeeder extends Seeder
             // VEGETABLES
             [
                 'name' => 'Broccoli',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 34,
                 'protein' => 2.8,
                 'carbs' => 7,
@@ -302,7 +310,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Spinach',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 23,
                 'protein' => 2.9,
                 'carbs' => 3.6,
@@ -314,7 +322,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Asparagus',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 20,
                 'protein' => 2.2,
                 'carbs' => 3.9,
@@ -326,7 +334,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Bell Pepper',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 31,
                 'protein' => 1,
                 'carbs' => 6,
@@ -338,7 +346,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Green Beans',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 31,
                 'protein' => 1.8,
                 'carbs' => 7,
@@ -350,7 +358,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Cauliflower',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 25,
                 'protein' => 1.9,
                 'carbs' => 5,
@@ -362,7 +370,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Lettuce (Mixed Greens)',
-                'category' => 'vegetable',
+                'category_id' => $vegetablesCategoryId,
                 'calories' => 15,
                 'protein' => 1.4,
                 'carbs' => 2.9,
@@ -376,7 +384,7 @@ class FoodSeeder extends Seeder
             // FRUITS
             [
                 'name' => 'Banana',
-                'category' => 'fruit',
+                'category_id' => $fruitsCategoryId,
                 'calories' => 89,
                 'protein' => 1.1,
                 'carbs' => 23,
@@ -388,7 +396,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Apple',
-                'category' => 'fruit',
+                'category_id' => $fruitsCategoryId,
                 'calories' => 52,
                 'protein' => 0.3,
                 'carbs' => 14,
@@ -400,7 +408,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Blueberries',
-                'category' => 'fruit',
+                'category_id' => $fruitsCategoryId,
                 'calories' => 57,
                 'protein' => 0.7,
                 'carbs' => 14,
@@ -412,7 +420,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Strawberries',
-                'category' => 'fruit',
+                'category_id' => $fruitsCategoryId,
                 'calories' => 32,
                 'protein' => 0.7,
                 'carbs' => 7.7,
@@ -424,7 +432,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Orange',
-                'category' => 'fruit',
+                'category_id' => $fruitsCategoryId,
                 'calories' => 47,
                 'protein' => 0.9,
                 'carbs' => 12,
@@ -438,7 +446,7 @@ class FoodSeeder extends Seeder
             // FATS & OILS
             [
                 'name' => 'Olive Oil',
-                'category' => 'fat',
+                'category_id' => $fatsCategoryId,
                 'calories' => 884,
                 'protein' => 0,
                 'carbs' => 0,
@@ -450,7 +458,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Coconut Oil',
-                'category' => 'fat',
+                'category_id' => $fatsCategoryId,
                 'calories' => 862,
                 'protein' => 0,
                 'carbs' => 0,
@@ -462,7 +470,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Avocado',
-                'category' => 'fat',
+                'category_id' => $fatsCategoryId,
                 'calories' => 160,
                 'protein' => 2,
                 'carbs' => 9,
@@ -474,7 +482,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Almonds',
-                'category' => 'fat',
+                'category_id' => $fatsCategoryId,
                 'calories' => 579,
                 'protein' => 21,
                 'carbs' => 22,
@@ -486,7 +494,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Peanut Butter',
-                'category' => 'fat',
+                'category_id' => $fatsCategoryId,
                 'calories' => 588,
                 'protein' => 25,
                 'carbs' => 20,
@@ -498,7 +506,7 @@ class FoodSeeder extends Seeder
             ],
             [
                 'name' => 'Walnuts',
-                'category' => 'fat',
+                'category_id' => $fatsCategoryId,
                 'calories' => 654,
                 'protein' => 15,
                 'carbs' => 14,
@@ -514,5 +522,7 @@ class FoodSeeder extends Seeder
         foreach ($foods as $food) {
             Food::create(array_merge($food, ['user_id' => null]));
         }
+
+        $this->command->info('Foods seeded successfully!');
     }
 }

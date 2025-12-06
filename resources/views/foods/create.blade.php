@@ -37,18 +37,14 @@
                             </div>
                             
                             <div class="col-md-4">
-                                <label for="category" class="form-label fw-bold">Category</label>
-                                <select class="form-select" id="category" name="category">
+                                <label for="category_id" class="form-label fw-bold">Category</label>
+                                <select class="form-select" id="category_id" name="category_id">
                                     <option value="">Select...</option>
-                                    <option value="protein" {{ old('category') === 'protein' ? 'selected' : '' }}>Protein</option>
-                                    <option value="carb" {{ old('category') === 'carb' ? 'selected' : '' }}>Carb</option>
-                                    <option value="fat" {{ old('category') === 'fat' ? 'selected' : '' }}>Fat</option>
-                                    <option value="vegetable" {{ old('category') === 'vegetable' ? 'selected' : '' }}>Vegetable</option>
-                                    <option value="fruit" {{ old('category') === 'fruit' ? 'selected' : '' }}>Fruit</option>
-                                    <option value="dairy" {{ old('category') === 'dairy' ? 'selected' : '' }}>Dairy</option>
-                                    <option value="snack" {{ old('category') === 'snack' ? 'selected' : '' }}>Snack</option>
-                                    <option value="beverage" {{ old('category') === 'beverage' ? 'selected' : '' }}>Beverage</option>
-                                    <option value="other" {{ old('category') === 'other' ? 'selected' : '' }}>Other</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->icon }} {{ $category->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
