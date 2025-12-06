@@ -5,80 +5,88 @@
 @section('content')
 <div class="container py-4">
     <!-- Welcome Header -->
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
-            <h1 class="display-4 fw-bold mb-2">
-                <i class="bi bi-lightning-charge-fill"></i> Welcome back, {{ Auth::user()->name }}!
-            </h1>
-            <p class="text-muted fs-5">Let's crush your fitness goals today</p>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-lightning-charge-fill text-warning"></i> Welcome back, {{ Auth::user()->name }}!
+            </h2>
+            <p class="text-muted">Let's crush your fitness goals today</p>
         </div>
     </div>
 
     <!-- Stats Cards Row -->
-    <div class="row g-4 mb-4">
+    <div class="row g-3 mb-4">
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card h-100 border-0 shadow-lg">
-                <div class="card-body text-center">
-                    <div class="stat-icon mb-3">
-                        <i class="bi bi-calendar-check display-4"></i>
+            <div class="card stat-card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon-compact me-3">
+                        <i class="bi bi-calendar-check fs-3"></i>
                     </div>
-                    <h3 class="fw-bold mb-1 text-white">{{ $weekWorkouts->count() }}</h3>
-                    <p class="mb-0 text-white-50">Workouts This Week</p>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">{{ $weekWorkouts->count() }}</h4>
+                        <small class="text-white-50">Workouts This Week</small>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card-secondary h-100 border-0 shadow-lg">
-                <div class="card-body text-center">
-                    <div class="stat-icon mb-3">
-                        <i class="bi bi-fire display-4"></i>
+            <div class="card stat-card-secondary border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon-compact me-3">
+                        <i class="bi bi-fire fs-3"></i>
                     </div>
-                    <h3 class="fw-bold mb-1 text-white">{{ $streak }}</h3>
-                    <p class="mb-0 text-white-50">Day Streak</p>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">{{ $streak }}</h4>
+                        <small class="text-white-50">Day Streak</small>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card-success h-100 border-0 shadow-lg">
-                <div class="card-body text-center">
-                    <div class="stat-icon mb-3">
-                        <i class="bi bi-trophy display-4"></i>
+            <div class="card stat-card-success border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon-compact me-3">
+                        <i class="bi bi-trophy fs-3"></i>
                     </div>
-                    <h3 class="fw-bold mb-1 text-white">{{ $weekWorkouts->sum(function($w) { return $w->exercises->count(); }) }}</h3>
-                    <p class="mb-0 text-white-50">Exercises Planned</p>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">{{ $weekWorkouts->sum(function($w) { return $w->exercises->count(); }) }}</h4>
+                        <small class="text-white-50">Exercises Planned</small>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card-info h-100 border-0 shadow-lg">
-                <div class="card-body text-center">
-                    <div class="stat-icon mb-3">
-                        <i class="bi bi-journal-text display-4"></i>
+            <div class="card stat-card-info border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon-compact me-3">
+                        <i class="bi bi-journal-text fs-3"></i>
                     </div>
-                    <h3 class="fw-bold mb-1 text-white">{{ Auth::user()->workoutTemplates->count() }}</h3>
-                    <p class="mb-0 text-white-50">Templates</p>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">{{ Auth::user()->workoutTemplates->count() }}</h4>
+                        <small class="text-white-50">Templates</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-4">
+    <div class="row g-3 mb-4">
         <!-- Today's Workout -->
         <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-header bg-gradient-primary text-white border-0 py-3">
-                    <h4 class="mb-0 d-flex align-items-center text-white">
+                <div class="card-header bg-gradient-primary text-white border-0 py-2">
+                    <h5 class="mb-0 d-flex align-items-center text-white">
                         <i class="bi bi-calendar-day-fill me-2"></i> Today's Workout
-                    </h4>
+                    </h5>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     @if($todayWorkout)
                         <div class="workout-card">
-                            <h3 class="fw-bold mb-2">{{ $todayWorkout->name }}</h3>
-                            <p class="text-muted mb-3 fs-6">{{ $todayWorkout->description }}</p>
+                            <h5 class="fw-bold mb-1">{{ $todayWorkout->name }}</h5>
+                            <p class="text-muted mb-2 small">{{ $todayWorkout->description }}</p>
                             
                             @if($todayWorkout->exercises->count() > 0)
-                                <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
                                     <div class="badge-pill">
                                         <i class="bi bi-list-check me-1"></i>
                                         <strong>{{ $todayWorkout->exercises->count() }}</strong> exercises
@@ -90,14 +98,14 @@
                                 </div>
                                 
                                 <!-- Exercise List -->
-                                <div class="mb-4">
-                                    <h6 class="fw-bold mb-3 text-muted">
+                                <div class="mb-3">
+                                    <h6 class="fw-bold mb-2 text-muted small">
                                         <i class="bi bi-list-ul"></i> Exercise Plan
                                     </h6>
                                     <div class="exercise-list">
                                         @foreach($todayWorkout->workoutTemplateExercises->sortBy('order') as $index => $templateExercise)
-                                            <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded" style="background: rgba(0,0,0,0.02);">
-                                                <div class="fw-bold" style="min-width: 30px; color: #ff6b35; font-size: 1.25rem;">{{ $index + 1 }}</div>
+                                            <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded" style="background: rgba(0,0,0,0.02);">
+                                                <div class="fw-bold" style="min-width: 25px; color: #ff6b35; font-size: 1rem;">{{ $index + 1 }}</div>
                                                 <div class="flex-grow-1">
                                                     <div class="fw-semibold">{{ $templateExercise->exercise->name }}</div>
                                                     <small class="text-muted">
@@ -117,24 +125,24 @@
                                     <form action="{{ route('workouts.start') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="template_id" value="{{ $todayWorkout->id }}">
-                                        <button type="submit" class="btn btn-success btn-lg w-100 py-3 shadow-sm">
+                                        <button type="submit" class="btn btn-success w-100 py-2 shadow-sm">
                                             <i class="bi bi-play-circle-fill me-2"></i> Start Workout
                                         </button>
                                     </form>
                                 @else
-                                    <div class="alert alert-success border-0 shadow-sm">
+                                    <div class="alert alert-success border-0 shadow-sm mb-0 py-2">
                                         <i class="bi bi-check-circle-fill me-2"></i>
                                         <strong>Workout Completed!</strong> Great job today! 💪
                                     </div>
                                 @endif
                                 
                                 @if($recentWorkouts->count() > 0)
-                                    <div class="mt-4">
-                                        <h6 class="fw-bold mb-3">
+                                    <div class="mt-3">
+                                        <h6 class="fw-bold mb-2 small">
                                             <i class="bi bi-clock-history text-muted"></i> Recent Workouts
                                         </h6>
                                         @foreach($recentWorkouts as $workout)
-                                            <div class="p-3 bg-light border rounded-3 mb-2">
+                                            <div class="p-2 bg-light border rounded-3 mb-2">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <div>
                                                         <p class="mb-1 fw-bold">{{ $workout->workoutTemplate ? $workout->workoutTemplate->name : 'Free Workout' }}</p>
@@ -163,11 +171,11 @@
                             @endif
                         </div>
                     @else
-                        <div class="text-center py-4">
-                            <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
-                            <h5 class="text-muted mb-3">No workout scheduled for today</h5>
-                            <p class="text-muted mb-4">Rest day or time to plan your week?</p>
-                            <a href="{{ route('planner.workouts') }}" class="btn btn-primary btn-lg">
+                        <div class="text-center py-3">
+                            <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
+                            <h6 class="text-muted mb-2">No workout scheduled for today</h6>
+                            <p class="text-muted small mb-3">Rest day or time to plan your week?</p>
+                            <a href="{{ route('planner.workouts') }}" class="btn btn-primary">
                                 <i class="bi bi-calendar-plus me-2"></i> Plan Your Week
                             </a>
                         </div>
@@ -179,21 +187,21 @@
         <!-- Today's Meals -->
         <div class="col-lg-6">
             <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-header bg-gradient-success text-white border-0 py-3">
+                <div class="card-header bg-gradient-success text-white border-0 py-2">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0 d-flex align-items-center text-white">
+                        <h5 class="mb-0 d-flex align-items-center text-white">
                             <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
-                        </h4>
+                        </h5>
                         <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#quickLogMealModal">
                             <i class="bi bi-plus-circle me-1"></i> Quick Log
                         </button>
                     </div>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     @if($todayMeals->count() > 0)
-                        <div class="d-flex flex-column gap-3">
+                        <div class="d-flex flex-column gap-2">
                             @foreach($todayMeals as $meal)
-                                <div class="meal-card p-3 rounded-3 border">
+                                <div class="meal-card p-2 rounded-3 border">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div>
                                             <span class="badge bg-success mb-2">
@@ -235,9 +243,9 @@
                             </div>
                         </div>
                     @else
-                        <div class="text-center py-4">
-                            <i class="bi bi-egg display-1 text-muted mb-3"></i>
-                            <h5 class="text-muted mb-3">No meals planned for today</h5>
+                        <div class="text-center py-3">
+                            <i class="bi bi-egg fs-1 text-muted mb-2"></i>
+                            <h6 class="text-muted mb-3">No meals planned for today</h6>
                             <a href="{{ route('planner.meals') }}" class="btn btn-success">
                                 <i class="bi bi-plus-circle me-2"></i> Plan Your Meals
                             </a>
@@ -252,12 +260,12 @@
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-gradient-dark text-white border-0 py-3">
-                    <h4 class="mb-0 d-flex align-items-center text-white">
+                <div class="card-header bg-gradient-dark text-white border-0 py-2">
+                    <h5 class="mb-0 d-flex align-items-center text-white">
                         <i class="bi bi-calendar-range-fill me-2"></i> This Week's Training Plan
-                    </h4>
+                    </h5>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     @if($weekWorkouts->count() > 0)
                         <div class="row g-3">
                             @php
@@ -308,11 +316,11 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="text-center py-5">
-                            <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
-                            <h5 class="text-muted mb-3">No workouts planned this week</h5>
-                            <p class="text-muted mb-4">Get started by planning your weekly training schedule</p>
-                            <a href="{{ route('planner.workouts') }}" class="btn btn-primary btn-lg">
+                        <div class="text-center py-3">
+                            <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
+                            <h6 class="text-muted mb-2">No workouts planned this week</h6>
+                            <p class="text-muted small mb-3">Get started by planning your weekly training schedule</p>
+                            <a href="{{ route('planner.workouts') }}" class="btn btn-primary">
                                 <i class="bi bi-calendar-plus me-2"></i> Plan Your Week
                             </a>
                         </div>
@@ -325,50 +333,64 @@
 
 @push('styles')
 <style>
-    /* Stat Cards - Signature Colors */
+    /* Stat Cards - Compact Signature Colors */
     .stat-card {
         background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%); /* Orange */
         color: white;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
     .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(255, 107, 53, 0.4) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3) !important;
     }
     
     .stat-card-secondary {
         background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Navy */
         color: white;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
     .stat-card-secondary:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(44, 62, 80, 0.4) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3) !important;
     }
     
     .stat-card-success {
         background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%); /* Green */
         color: white;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
     .stat-card-success:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(68, 189, 50, 0.4) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(68, 189, 50, 0.3) !important;
     }
     
     .stat-card-info {
         background: linear-gradient(135deg, #4ecdc4 0%, #5dd9d1 100%); /* Teal */
         color: white;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
     .stat-card-info:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(78, 205, 196, 0.4) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3) !important;
     }
 
-    .stat-icon i {
-        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    .stat-icon-compact {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+    
+    .stat-icon-compact i {
+        text-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     /* Card Headers - Signature Colors */
