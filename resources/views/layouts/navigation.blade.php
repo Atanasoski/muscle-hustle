@@ -46,7 +46,7 @@
                     
                     <!-- Nutrition Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs(['recipes.*', 'foods.*', 'planner.meals', 'planner.grocery-list']) ? 'active' : '' }}" 
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs(['recipes.*', 'foods.*', 'planner.meals', 'planner.food-diary', 'planner.grocery-list']) ? 'active' : '' }}" 
                            href="#" id="nutritionDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-egg-fried"></i> Nutrition
                         </a>
@@ -55,6 +55,12 @@
                                 <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.meals') }}">
                                     <i class="bi bi-calendar-week fs-5 text-success"></i>
                                     <span>Meal Planner</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.food-diary') }}">
+                                    <i class="bi bi-journal-text fs-5 text-primary"></i>
+                                    <span>Food Diary</span>
                                 </a>
                             </li>
                             <li>

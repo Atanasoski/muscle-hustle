@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Meal;
 use App\Models\MealPlan;
 use App\Models\Recipe;
@@ -27,6 +28,7 @@ class MealPlannerController extends Controller
 
         // Get all meals for this plan organized by day and type
         $meals = $mealPlan->meals()
+            ->with('foods')
             ->orderBy('day_of_week')
             ->orderBy('type')
             ->get();
@@ -82,7 +84,20 @@ class MealPlannerController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('planner.meals', compact('mealPlan', 'mealGrid', 'weekStart', 'dailyTotals', 'weeklyTotals', 'recipes'));
+        // Fetch foods grouped by category for quick-add
+        $foodCategories = Category::food()
+            ->with(['foods' => function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('user_id')
+                        ->orWhere('user_id', auth()->id());
+                })
+                    ->orderBy('name')
+                    ->limit(50); // Limit for performance
+            }])
+            ->orderBy('display_order')
+            ->get();
+
+        return view('planner.meals', compact('mealPlan', 'mealGrid', 'weekStart', 'dailyTotals', 'weeklyTotals', 'recipes', 'foodCategories'));
     }
 
     /**
@@ -204,5 +219,88 @@ class MealPlannerController extends Controller
         $totalRecipes = $mealPlan->meals->filter(fn ($meal) => $meal->recipe_id)->count();
 
         return view('planner.grocery-list', compact('groceries', 'weekStart', 'totalRecipes'));
+    }
+
+    /**
+     * Show food diary - what you've actually eaten this week
+     */
+    public function foodDiary()
+    {
+        $weekStart = Carbon::now()->startOfWeek();
+
+        // Get or create meal plan for this week
+        $mealPlan = MealPlan::firstOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'week_start_date' => $weekStart->toDateString(),
+            ]
+        );
+
+        // Get all meals with logged foods
+        $meals = $mealPlan->meals()
+            ->with(['foods.category'])
+            ->whereHas('foods') // Only meals with logged foods
+            ->orderBy('day_of_week')
+            ->orderBy('type')
+            ->get();
+
+        // Organize by day
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $dayEmojis = ['💪', '🔥', '⚡', '🎯', '🚀', '😎', '🎉'];
+        $types = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+        $logsByDay = [];
+        for ($day = 0; $day < 7; $day++) {
+            $dayMeals = $meals->where('day_of_week', $day);
+
+            $logsByDay[$day] = [
+                'name' => $days[$day],
+                'emoji' => $dayEmojis[$day],
+                'date' => $weekStart->copy()->addDays($day),
+                'meals' => [],
+                'totals' => ['calories' => 0, 'protein' => 0, 'carbs' => 0, 'fat' => 0],
+            ];
+
+            foreach ($types as $type) {
+                $meal = $dayMeals->firstWhere('type', $type);
+                if ($meal && $meal->foods->count() > 0) {
+                    $nutrition = $meal->calculateNutrition();
+                    $logsByDay[$day]['meals'][$type] = [
+                        'meal' => $meal,
+                        'nutrition' => $nutrition,
+                    ];
+
+                    $logsByDay[$day]['totals']['calories'] += $nutrition['calories'];
+                    $logsByDay[$day]['totals']['protein'] += $nutrition['protein'];
+                    $logsByDay[$day]['totals']['carbs'] += $nutrition['carbs'];
+                    $logsByDay[$day]['totals']['fat'] += $nutrition['fat'];
+                }
+            }
+        }
+
+        // Calculate weekly totals
+        $weeklyTotals = [
+            'calories' => 0,
+            'protein' => 0,
+            'carbs' => 0,
+            'fat' => 0,
+            'foods_logged' => 0,
+        ];
+
+        foreach ($logsByDay as $day) {
+            $weeklyTotals['calories'] += $day['totals']['calories'];
+            $weeklyTotals['protein'] += $day['totals']['protein'];
+            $weeklyTotals['carbs'] += $day['totals']['carbs'];
+            $weeklyTotals['fat'] += $day['totals']['fat'];
+        }
+
+        $weeklyTotals['foods_logged'] = $meals->sum(function ($meal) {
+            return $meal->foods->count();
+        });
+
+        $daysWithLogs = collect($logsByDay)->filter(fn ($day) => count($day['meals']) > 0)->count();
+        $weeklyTotals['avg_calories'] = $daysWithLogs > 0 ? round($weeklyTotals['calories'] / $daysWithLogs) : 0;
+
+        return view('planner.food-diary', compact('logsByDay', 'weekStart', 'weeklyTotals'));
     }
 }

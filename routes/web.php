@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\MealLogController;
 use App\Http\Controllers\MealPlannerController;
 use App\Http\Controllers\NutritionParserController;
 use App\Http\Controllers\ProfileController;
@@ -52,6 +53,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/planner/meals', [MealPlannerController::class, 'store'])->name('planner.meals.store');
     Route::delete('/planner/meals/{meal}', [MealPlannerController::class, 'destroy'])->name('planner.meals.destroy');
     Route::get('/planner/grocery-list', [MealPlannerController::class, 'groceryList'])->name('planner.grocery-list');
+    Route::get('/planner/food-diary', [MealPlannerController::class, 'foodDiary'])->name('planner.food-diary');
+
+    // Meal Food Logging
+    Route::post('/meals/{meal}/foods', [MealLogController::class, 'addFood'])->name('meals.foods.add');
+    Route::delete('/meals/{meal}/foods/{food}', [MealLogController::class, 'removeFood'])->name('meals.foods.remove');
+    Route::put('/meals/{meal}/foods/{food}', [MealLogController::class, 'updateServings'])->name('meals.foods.update');
 
     // Nutrition Parser
     Route::post('/nutrition/parse', [NutritionParserController::class, 'parse'])->name('nutrition.parse');

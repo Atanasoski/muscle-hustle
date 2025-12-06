@@ -70,6 +70,30 @@
                                         <!-- Meal Name -->
                                         <h6 class="fw-bold mb-3">{{ $meal->name }}</h6>
                                         
+                                        <!-- Foods in Meal -->
+                                        @if($meal->foods->count() > 0)
+                                            <div class="mb-3">
+                                                @foreach($meal->foods as $food)
+                                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold">{{ $food->name }}</div>
+                                                            <small class="text-muted">
+                                                                {{ $food->pivot->servings }} × {{ $food->default_serving_size }}{{ $food->default_serving_unit }} 
+                                                                ({{ $food->pivot->grams }}g)
+                                                            </small>
+                                                        </div>
+                                                        <form action="{{ route('meals.foods.remove', [$meal, $food]) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">
+                                                                <i class="bi bi-x"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                        
                                         <!-- Serving Size -->
                                         @if($meal->serving_size)
                                             <div class="mb-3">
@@ -97,6 +121,11 @@
                                         
                                         <!-- Actions -->
                                         <div class="d-flex gap-2 mt-auto">
+                                            <button class="btn btn-outline-success btn-sm flex-fill" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#addFoodModal{{ $meal->id }}">
+                                                <i class="bi bi-plus-circle"></i> Add Food
+                                            </button>
                                             <button class="btn btn-outline-primary btn-sm flex-fill" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#editMealModal{{ $dayIndex }}{{ $type }}">
@@ -355,6 +384,93 @@
     @endforeach
 @endforeach
 
+<!-- Add Food to Meal Modals -->
+@foreach($days as $dayIndex => $dayName)
+    @foreach($types as $type)
+        @if(isset($mealGrid[$dayIndex][$type]) && $mealGrid[$dayIndex][$type])
+            @php $meal = $mealGrid[$dayIndex][$type]; @endphp
+            
+            <div class="modal fade" id="addFoodModal{{ $meal->id }}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-plus-circle text-success"></i> Add Food to {{ $dayName }} {{ ucfirst($type) }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('meals.foods.add', $meal) }}" method="POST" id="addFoodForm{{ $meal->id }}">
+                                @csrf
+                                
+                                <!-- Food Selection -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Select Food</label>
+                                    <select class="form-select food-selector" name="food_id" required data-meal-id="{{ $meal->id }}">
+                                        <option value="">Choose a food...</option>
+                                        @foreach($foodCategories as $category)
+                                            @if($category->foods->count() > 0)
+                                                <optgroup label="{{ $category->icon }} {{ $category->name }}">
+                                                    @foreach($category->foods as $food)
+                                                        <option value="{{ $food->id }}" 
+                                                                data-default-size="{{ $food->default_serving_size }}"
+                                                                data-default-unit="{{ $food->default_serving_unit }}"
+                                                                data-calories="{{ $food->calories }}"
+                                                                data-protein="{{ $food->protein }}"
+                                                                data-carbs="{{ $food->carbs }}"
+                                                                data-fat="{{ $food->fat }}">
+                                                            {{ $food->name }} ({{ $food->calories }}cal/100g)
+                                                        </option>
+                                                    @endforeach
+                                                </optgroup>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Servings Input -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Number of Servings</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="adjustServings('{{ $meal->id }}', -0.5)">-</button>
+                                        <input type="number" 
+                                               class="form-control text-center" 
+                                               name="servings" 
+                                               id="servings{{ $meal->id }}"
+                                               value="1" 
+                                               min="0.5" 
+                                               step="0.5" 
+                                               required>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="adjustServings('{{ $meal->id }}', 0.5)">+</button>
+                                    </div>
+                                    <small class="text-muted" id="servingInfo{{ $meal->id }}">Select a food to see serving size</small>
+                                </div>
+
+                                <!-- Nutrition Preview -->
+                                <div class="alert alert-info" id="nutritionPreview{{ $meal->id }}" style="display: none;">
+                                    <strong>Nutrition for this portion:</strong>
+                                    <div class="d-flex gap-3 mt-2 flex-wrap">
+                                        <span><strong id="previewCalories{{ $meal->id }}">0</strong> cal</span>
+                                        <span><strong id="previewProtein{{ $meal->id }}">0</strong>g protein</span>
+                                        <span><strong id="previewCarbs{{ $meal->id }}">0</strong>g carbs</span>
+                                        <span><strong id="previewFat{{ $meal->id }}">0</strong>g fat</span>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-plus-circle"></i> Add Food
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+@endforeach
 
 @push('scripts')
 <script>
@@ -475,6 +591,76 @@ document.querySelectorAll('.ai-parse-btn').forEach(btn => {
             this.disabled = false;
             this.innerHTML = '<i class="bi bi-magic"></i> Calculate Nutrition with AI';
         });
+    });
+});
+
+// Food Selection & Nutrition Preview
+document.querySelectorAll('.food-selector').forEach(select => {
+    select.addEventListener('change', function() {
+        const mealId = this.dataset.mealId;
+        const selected = this.options[this.selectedIndex];
+        
+        if (!selected.value) {
+            document.getElementById(`servingInfo${mealId}`).textContent = 'Select a food to see serving size';
+            document.getElementById(`nutritionPreview${mealId}`).style.display = 'none';
+            return;
+        }
+        
+        // Get food data
+        const defaultSize = parseFloat(selected.dataset.defaultSize);
+        const defaultUnit = selected.dataset.defaultUnit;
+        const calories = parseFloat(selected.dataset.calories);
+        const protein = parseFloat(selected.dataset.protein);
+        const carbs = parseFloat(selected.dataset.carbs);
+        const fat = parseFloat(selected.dataset.fat);
+        
+        // Update serving info
+        document.getElementById(`servingInfo${mealId}`).textContent = `1 serving = ${defaultSize}${defaultUnit}`;
+        
+        // Store food data for calculation
+        window[`foodData${mealId}`] = { defaultSize, calories, protein, carbs, fat };
+        
+        // Calculate and show nutrition
+        updateNutritionPreview(mealId);
+    });
+});
+
+// Servings adjustment
+function adjustServings(mealId, change) {
+    const input = document.getElementById(`servings${mealId}`);
+    const newValue = Math.max(0.5, parseFloat(input.value) + change);
+    input.value = newValue.toFixed(1);
+    updateNutritionPreview(mealId);
+}
+
+// Update nutrition preview
+function updateNutritionPreview(mealId) {
+    const foodData = window[`foodData${mealId}`];
+    if (!foodData) return;
+    
+    const servings = parseFloat(document.getElementById(`servings${mealId}`).value);
+    const grams = foodData.defaultSize * servings;
+    const multiplier = grams / 100; // Nutrition is per 100g
+    
+    // Calculate nutrition
+    const calories = Math.round(foodData.calories * multiplier);
+    const protein = Math.round(foodData.protein * multiplier);
+    const carbs = Math.round(foodData.carbs * multiplier);
+    const fat = Math.round(foodData.fat * multiplier);
+    
+    // Update preview
+    document.getElementById(`previewCalories${mealId}`).textContent = calories;
+    document.getElementById(`previewProtein${mealId}`).textContent = protein;
+    document.getElementById(`previewCarbs${mealId}`).textContent = carbs;
+    document.getElementById(`previewFat${mealId}`).textContent = fat;
+    document.getElementById(`nutritionPreview${mealId}`).style.display = 'block';
+}
+
+// Update servings input on change
+document.querySelectorAll('[id^="servings"]').forEach(input => {
+    input.addEventListener('input', function() {
+        const mealId = this.id.replace('servings', '');
+        updateNutritionPreview(mealId);
     });
 });
 </script>
