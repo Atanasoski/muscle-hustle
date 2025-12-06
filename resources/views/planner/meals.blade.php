@@ -50,7 +50,7 @@
                     <div class="row g-3">
                         @foreach($types as $type)
                             <div class="col-12 col-lg-6">
-                                <div class="meal-type-card border rounded-3 p-3 h-100 bg-white">
+                                <div class="card border rounded-3 p-3 h-100 shadow-sm" style="min-height: 220px;">
                                     <!-- Header -->
                                     <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                                         <div class="d-flex align-items-center gap-2">
@@ -83,15 +83,15 @@
                                         <!-- Macros -->
                                         @if($meal->protein || $meal->carbs || $meal->fat)
                                             <div class="d-flex flex-wrap gap-2 mb-3">
-                                                <div class="macro-badge protein">
-                                                    <i class="bi bi-lightning-charge-fill"></i> {{ $meal->protein }}g protein
-                                                </div>
-                                                <div class="macro-badge carbs">
-                                                    <i class="bi bi-droplet-fill"></i> {{ $meal->carbs }}g carbs
-                                                </div>
-                                                <div class="macro-badge fat">
-                                                    <i class="bi bi-circle-fill"></i> {{ $meal->fat }}g fat
-                                                </div>
+                                                <span class="badge rounded-pill border border-primary text-primary bg-white d-inline-flex align-items-center gap-1 px-3 py-1">
+                                                    <i class="bi bi-lightning-charge-fill" style="font-size: 0.65rem;"></i> {{ $meal->protein }}g protein
+                                                </span>
+                                                <span class="badge rounded-pill border border-warning text-warning bg-white d-inline-flex align-items-center gap-1 px-3 py-1">
+                                                    <i class="bi bi-droplet-fill" style="font-size: 0.65rem;"></i> {{ $meal->carbs }}g carbs
+                                                </span>
+                                                <span class="badge rounded-pill border border-danger text-danger bg-white d-inline-flex align-items-center gap-1 px-3 py-1">
+                                                    <i class="bi bi-circle-fill" style="font-size: 0.65rem;"></i> {{ $meal->fat }}g fat
+                                                </span>
                                             </div>
                                         @endif
                                         
@@ -355,47 +355,6 @@
     @endforeach
 @endforeach
 
-@push('styles')
-<style>
-.meal-type-card {
-    transition: all 0.2s ease;
-    min-height: 220px;
-    display: flex;
-    flex-direction: column;
-}
-.meal-type-card:hover {
-    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-.macro-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border: 1.5px solid;
-    background: white;
-    white-space: nowrap;
-}
-.macro-badge.protein {
-    color: #0d6efd;
-    border-color: #0d6efd;
-}
-.macro-badge.carbs {
-    color: #ffc107;
-    border-color: #ffc107;
-}
-.macro-badge.fat {
-    color: #dc3545;
-    border-color: #dc3545;
-}
-.macro-badge i {
-    font-size: 0.65rem;
-}
-</style>
-@endpush
 
 @push('scripts')
 <script>

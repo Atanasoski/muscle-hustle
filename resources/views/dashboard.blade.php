@@ -17,53 +17,53 @@
     <!-- Stats Cards Row -->
     <div class="row g-3 mb-4">
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card border-0 shadow-sm">
+            <div class="card bg-warning text-white border-0 shadow-sm">
                 <div class="card-body d-flex align-items-center p-3">
-                    <div class="stat-icon-compact me-3">
+                    <div class="bg-light bg-opacity-25 rounded p-2 me-3">
                         <i class="bi bi-calendar-check fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0 text-white">{{ $weekWorkouts->count() }}</h4>
-                        <small class="text-white-50">Workouts This Week</small>
+                        <h4 class="fw-bold mb-0">{{ $weekWorkouts->count() }}</h4>
+                        <small class="opacity-75">Workouts This Week</small>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card-secondary border-0 shadow-sm">
+            <div class="card bg-dark text-white border-0 shadow-sm">
                 <div class="card-body d-flex align-items-center p-3">
-                    <div class="stat-icon-compact me-3">
+                    <div class="bg-light bg-opacity-25 rounded p-2 me-3">
                         <i class="bi bi-fire fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0 text-white">{{ $streak }}</h4>
-                        <small class="text-white-50">Day Streak</small>
+                        <h4 class="fw-bold mb-0">{{ $streak }}</h4>
+                        <small class="opacity-75">Day Streak</small>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card-success border-0 shadow-sm">
+            <div class="card bg-success text-white border-0 shadow-sm">
                 <div class="card-body d-flex align-items-center p-3">
-                    <div class="stat-icon-compact me-3">
+                    <div class="bg-light bg-opacity-25 rounded p-2 me-3">
                         <i class="bi bi-trophy fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0 text-white">{{ $weekWorkouts->sum(function($w) { return $w->exercises->count(); }) }}</h4>
-                        <small class="text-white-50">Exercises Planned</small>
+                        <h4 class="fw-bold mb-0">{{ $weekWorkouts->sum(function($w) { return $w->exercises->count(); }) }}</h4>
+                        <small class="opacity-75">Exercises Planned</small>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
-            <div class="card stat-card-info border-0 shadow-sm">
+            <div class="card bg-info text-white border-0 shadow-sm">
                 <div class="card-body d-flex align-items-center p-3">
-                    <div class="stat-icon-compact me-3">
+                    <div class="bg-light bg-opacity-25 rounded p-2 me-3">
                         <i class="bi bi-journal-text fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0 text-white">{{ Auth::user()->workoutTemplates->count() }}</h4>
-                        <small class="text-white-50">Templates</small>
+                        <h4 class="fw-bold mb-0">{{ Auth::user()->workoutTemplates->count() }}</h4>
+                        <small class="opacity-75">Templates</small>
                     </div>
                 </div>
             </div>
@@ -73,9 +73,9 @@
     <div class="row g-3 mb-4">
         <!-- Today's Workout -->
         <div class="col-lg-6">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-header bg-gradient-primary text-white border-0 py-2">
-                    <h5 class="mb-0 d-flex align-items-center text-white">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-warning text-white border-0 py-2">
+                    <h5 class="mb-0 d-flex align-items-center">
                         <i class="bi bi-calendar-day-fill me-2"></i> Today's Workout
                     </h5>
                 </div>
@@ -87,11 +87,11 @@
                             
                             @if($todayWorkout->exercises->count() > 0)
                                 <div class="d-flex align-items-center gap-2 mb-3">
-                                    <div class="badge-pill">
+                                    <div class="badge bg-light text-dark rounded-pill px-3 py-2">
                                         <i class="bi bi-list-check me-1"></i>
                                         <strong>{{ $todayWorkout->exercises->count() }}</strong> exercises
                                     </div>
-                                    <div class="badge-pill">
+                                    <div class="badge bg-light text-dark rounded-pill px-3 py-2">
                                         <i class="bi bi-clock me-1"></i>
                                         ~{{ $todayWorkout->exercises->count() * 5 }} min
                                     </div>
@@ -186,10 +186,10 @@
 
         <!-- Today's Meals -->
         <div class="col-lg-6">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-header bg-gradient-success text-white border-0 py-2">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-success text-white border-0 py-2">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 d-flex align-items-center text-white">
+                        <h5 class="mb-0 d-flex align-items-center">
                             <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
                         </h5>
                         <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#quickLogMealModal">
@@ -201,7 +201,7 @@
                     @if($todayMeals->count() > 0)
                         <div class="d-flex flex-column gap-2">
                             @foreach($todayMeals as $meal)
-                                <div class="meal-card p-2 rounded-3 border">
+                                <div class="p-2 rounded-3 border bg-light">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div>
                                             <span class="badge bg-success mb-2">
@@ -260,8 +260,8 @@
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-gradient-dark text-white border-0 py-2">
-                    <h5 class="mb-0 d-flex align-items-center text-white">
+                <div class="card-header bg-dark text-white border-0 py-2">
+                    <h5 class="mb-0 d-flex align-items-center">
                         <i class="bi bi-calendar-range-fill me-2"></i> This Week's Training Plan
                     </h5>
                 </div>
@@ -279,34 +279,34 @@
                                 <div class="col-lg-3 col-md-4 col-sm-6">
                                     @if($workout)
                                         <a href="{{ route('workout-templates.edit', $workout) }}" class="text-decoration-none">
-                                            <div class="day-card {{ $isToday ? 'is-today' : '' }} has-workout">
-                                                <div class="day-card-header">
-                                                    <div class="day-name">{{ $day }}</div>
+                                            <div class="card h-100 border-2 {{ $isToday ? 'border-warning' : 'border-secondary' }}">
+                                                <div class="card-header bg-warning text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                                    <div class="fw-bold">{{ $day }}</div>
                                                     @if($isToday)
-                                                        <span class="badge bg-primary today-badge">Today</span>
+                                                        <span class="badge bg-primary">Today</span>
                                                     @endif
                                                 </div>
-                                                <div class="day-card-body">
-                                                    <div class="workout-name">{{ $workout->name }}</div>
+                                                <div class="card-body p-3">
+                                                    <h6 class="fw-semibold text-dark mb-1">{{ $workout->name }}</h6>
                                                     @if($workout->description)
-                                                        <div class="workout-description">{{ $workout->description }}</div>
+                                                        <p class="text-muted small mb-2">{{ $workout->description }}</p>
                                                     @endif
-                                                    <div class="workout-meta">
+                                                    <div class="text-secondary small">
                                                         <i class="bi bi-list-check"></i> {{ $workout->exercises->count() }} exercises
                                                     </div>
                                                 </div>
                                             </div>
                                         </a>
                                     @else
-                                        <div class="day-card {{ $isToday ? 'is-today' : '' }} rest-day">
-                                            <div class="day-card-header">
-                                                <div class="day-name">{{ $day }}</div>
+                                        <div class="card h-100 border-2 {{ $isToday ? 'border-warning' : '' }}">
+                                            <div class="card-header bg-secondary text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                                <div class="fw-bold">{{ $day }}</div>
                                                 @if($isToday)
-                                                    <span class="badge bg-primary today-badge">Today</span>
+                                                    <span class="badge bg-primary">Today</span>
                                                 @endif
                                             </div>
-                                            <div class="day-card-body">
-                                                <div class="rest-day-text">
+                                            <div class="card-body p-3">
+                                                <div class="text-secondary fst-italic small">
                                                     <i class="bi bi-moon-stars-fill"></i> Rest & Recovery
                                                 </div>
                                             </div>
@@ -331,227 +331,6 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-    /* Stat Cards - Compact Signature Colors */
-    .stat-card {
-        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%); /* Orange */
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3) !important;
-    }
-    
-    .stat-card-secondary {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Navy */
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .stat-card-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3) !important;
-    }
-    
-    .stat-card-success {
-        background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%); /* Green */
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .stat-card-success:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(68, 189, 50, 0.3) !important;
-    }
-    
-    .stat-card-info {
-        background: linear-gradient(135deg, #4ecdc4 0%, #5dd9d1 100%); /* Teal */
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .stat-card-info:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3) !important;
-    }
-
-    .stat-icon-compact {
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        flex-shrink: 0;
-    }
-    
-    .stat-icon-compact i {
-        text-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-
-    /* Card Headers - Signature Colors */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%); /* Orange */
-    }
-    
-    .bg-gradient-secondary {
-        background: linear-gradient(135deg, #4ecdc4 0%, #5dd9d1 100%); /* Teal */
-    }
-    
-    .bg-gradient-dark {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Navy */
-    }
-    
-    .bg-gradient-success {
-        background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%); /* Green */
-    }
-
-    /* Hover Lift Effect */
-    .hover-lift {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .hover-lift:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
-    }
-
-    /* Badge Pills */
-    .badge-pill {
-        background: var(--bg-tertiary);
-        color: var(--text-primary);
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        display: inline-flex;
-        align-items: center;
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-
-    /* Action Buttons */
-    .btn-action {
-        border-width: 2px;
-        padding: 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-action:hover {
-        transform: translateX(5px);
-    }
-    
-    .action-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-
-    /* Day Cards */
-    .day-card {
-        background: var(--card-bg);
-        border: 2px solid var(--border-color);
-        border-radius: 1rem;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-    
-    .day-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    
-    .day-card.is-today {
-        border-color: #ff6b35;
-        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
-    }
-    
-    .day-card.has-workout .day-card-header {
-        background: linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%);
-        color: white;
-    }
-    
-    .day-card.rest-day .day-card-header {
-        background: var(--bg-tertiary);
-        color: var(--text-secondary);
-    }
-    
-    .day-card-header {
-        padding: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .day-name {
-        font-weight: 700;
-        font-size: 1rem;
-        flex: 1;
-    }
-    
-    .today-badge {
-        font-size: 0.7rem;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .day-card-body {
-        padding: 1rem;
-    }
-    
-    .workout-name {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
-    }
-    
-    .workout-description {
-        color: var(--text-secondary);
-        font-size: 0.8rem;
-        margin-bottom: 0.5rem;
-        line-height: 1.4;
-    }
-    
-    .workout-meta {
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-    }
-    
-    .rest-day-text {
-        color: var(--text-secondary);
-        font-style: italic;
-        font-size: 0.9rem;
-    }
-    
-    /* Make workout cards clickable */
-    a:has(.day-card.has-workout) {
-        color: inherit;
-    }
-    
-    a:has(.day-card.has-workout):hover .day-card {
-        cursor: pointer;
-    }
-    
-    /* Meal Cards */
-    .meal-card {
-        background: var(--bg-secondary);
-        transition: all 0.3s ease;
-    }
-    
-    .meal-card:hover {
-        background: var(--bg-tertiary);
-        transform: translateX(3px);
-    }
-</style>
-@endpush
 
 <!-- Quick Log Meal Modal -->
 <div class="modal fade" id="quickLogMealModal" tabindex="-1">

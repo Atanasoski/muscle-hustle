@@ -48,12 +48,12 @@
 
             <!-- Exercises -->
             @foreach($exercisesData as $index => $exerciseData)
-                <div id="exercise-{{ $exerciseData['template_exercise']->exercise_id }}" class="card border-0 shadow-sm mb-3 exercise-card {{ $exerciseData['is_completed'] ? 'completed' : '' }}">
+                <div id="exercise-{{ $exerciseData['template_exercise']->exercise_id }}" class="card border-0 shadow-sm mb-3 {{ $exerciseData['is_completed'] ? 'opacity-75 bg-success bg-opacity-10' : '' }}">
                     <!-- Exercise Header -->
                     <div class="card-header bg-white border-bottom py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="exercise-number {{ $exerciseData['is_completed'] ? 'bg-success' : 'bg-primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                <div class="fs-5 {{ $exerciseData['is_completed'] ? 'bg-success' : 'bg-primary' }} text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
                                     @if($exerciseData['is_completed'])
                                         <i class="bi bi-check-lg"></i>
                                     @else
@@ -252,13 +252,13 @@
 </div>
 
 <!-- Fixed Rest Timer at Bottom -->
-<div id="timer-card" class="timer-bottom-bar" style="display: none;">
+<div id="timer-card" class="position-fixed bottom-0 start-0 end-0 bg-info shadow-lg" style="display: none; z-index: 1050;">
     <div class="container-fluid px-3 px-lg-4">
         <div class="row align-items-center">
             <div class="col-xl-10 offset-xl-1">
                 <div class="d-flex justify-content-between align-items-center py-3">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="timer-icon">
+                        <div class="bg-light bg-opacity-25 rounded d-flex align-items-center justify-content-center text-white fs-4" style="width: 50px; height: 50px;">
                             <i class="bi bi-stopwatch"></i>
                         </div>
                         <div>
@@ -283,62 +283,9 @@
 
 @push('styles')
 <style>
-.exercise-card {
-    transition: all 0.3s ease;
-}
-
-.exercise-card.completed {
-    opacity: 0.8;
-    background: linear-gradient(to right, rgba(25, 135, 84, 0.05) 0%, transparent 10%);
-}
-
-.exercise-number {
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-}
-
 /* Make input fields wide enough for 3-digit numbers */
 .table input[type="number"] {
     min-width: 80px;
-}
-
-.exercise-card:hover {
-    transform: translateY(-2px);
-}
-
-/* Fixed Bottom Timer Bar */
-.timer-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 1050;
-    animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.timer-icon {
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
 }
 
 /* Add padding to body when timer is visible to prevent content overlap */
@@ -585,10 +532,10 @@ function handleLogSetClick() {
                     }
                 } else {
                     // All sets completed - mark exercise as complete
-                    const exerciseCard = currentRow.closest('.exercise-card');
-                    exerciseCard.classList.add('completed');
+                    const exerciseCard = currentRow.closest('.card');
+                    exerciseCard.classList.add('opacity-75', 'bg-success', 'bg-opacity-10');
                     
-                    const exerciseNumber = exerciseCard.querySelector('.exercise-number');
+                    const exerciseNumber = exerciseCard.querySelector('.rounded-circle');
                     exerciseNumber.classList.remove('bg-primary');
                     exerciseNumber.classList.add('bg-success');
                     exerciseNumber.innerHTML = '<i class="bi bi-check-lg"></i>';
