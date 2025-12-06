@@ -269,26 +269,41 @@
                                     $isToday = $index === $dayOfWeek;
                                 @endphp
                                 <div class="col-lg-3 col-md-4 col-sm-6">
-                                    <div class="day-card {{ $isToday ? 'is-today' : '' }} {{ $workout ? 'has-workout' : 'rest-day' }}">
-                                        <div class="day-card-header">
-                                            <div class="day-name">{{ $day }}</div>
-                                            @if($isToday)
-                                                <span class="badge bg-primary today-badge">Today</span>
-                                            @endif
-                                        </div>
-                                        <div class="day-card-body">
-                                            @if($workout)
-                                                <div class="workout-name">{{ $workout->name }}</div>
-                                                <div class="workout-meta">
-                                                    <i class="bi bi-list-check"></i> {{ $workout->exercises->count() }} exercises
+                                    @if($workout)
+                                        <a href="{{ route('workout-templates.edit', $workout) }}" class="text-decoration-none">
+                                            <div class="day-card {{ $isToday ? 'is-today' : '' }} has-workout">
+                                                <div class="day-card-header">
+                                                    <div class="day-name">{{ $day }}</div>
+                                                    @if($isToday)
+                                                        <span class="badge bg-primary today-badge">Today</span>
+                                                    @endif
                                                 </div>
-                                            @else
+                                                <div class="day-card-body">
+                                                    <div class="workout-name">{{ $workout->name }}</div>
+                                                    @if($workout->description)
+                                                        <div class="workout-description">{{ $workout->description }}</div>
+                                                    @endif
+                                                    <div class="workout-meta">
+                                                        <i class="bi bi-list-check"></i> {{ $workout->exercises->count() }} exercises
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @else
+                                        <div class="day-card {{ $isToday ? 'is-today' : '' }} rest-day">
+                                            <div class="day-card-header">
+                                                <div class="day-name">{{ $day }}</div>
+                                                @if($isToday)
+                                                    <span class="badge bg-primary today-badge">Today</span>
+                                                @endif
+                                            </div>
+                                            <div class="day-card-body">
                                                 <div class="rest-day-text">
                                                     <i class="bi bi-moon-stars-fill"></i> Rest & Recovery
                                                 </div>
-                                            @endif
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
@@ -476,6 +491,13 @@
         font-size: 0.95rem;
     }
     
+    .workout-description {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
     .workout-meta {
         color: var(--text-secondary);
         font-size: 0.85rem;
@@ -485,6 +507,15 @@
         color: var(--text-secondary);
         font-style: italic;
         font-size: 0.9rem;
+    }
+    
+    /* Make workout cards clickable */
+    a:has(.day-card.has-workout) {
+        color: inherit;
+    }
+    
+    a:has(.day-card.has-workout):hover .day-card {
+        cursor: pointer;
     }
     
     /* Meal Cards */

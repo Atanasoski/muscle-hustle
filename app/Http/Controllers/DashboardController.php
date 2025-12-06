@@ -29,7 +29,7 @@ class DashboardController extends Controller
         // Get this week's workouts
         $weekWorkouts = WorkoutTemplate::where('user_id', $user->id)
             ->whereNotNull('day_of_week')
-            ->with('exercises')
+            ->with(['exercises', 'workoutTemplateExercises.exercise.category'])
             ->orderBy('day_of_week')
             ->get();
 

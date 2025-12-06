@@ -15,109 +15,113 @@
         </div>
     </div>
 
-    <!-- Template Details -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Template Details</h5>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('workout-templates.update', $workoutTemplate) }}" method="POST">
-                @csrf
-                @method('PUT')
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                               id="name" name="name" value="{{ old('name', $workoutTemplate->name) }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="day_of_week" class="form-label">Assigned Day</label>
-                        <select class="form-select" id="day_of_week" name="day_of_week">
-                            <option value="">Not assigned</option>
-                            <option value="0" {{ old('day_of_week', $workoutTemplate->day_of_week) == '0' ? 'selected' : '' }}>Monday</option>
-                            <option value="1" {{ old('day_of_week', $workoutTemplate->day_of_week) == '1' ? 'selected' : '' }}>Tuesday</option>
-                            <option value="2" {{ old('day_of_week', $workoutTemplate->day_of_week) == '2' ? 'selected' : '' }}>Wednesday</option>
-                            <option value="3" {{ old('day_of_week', $workoutTemplate->day_of_week) == '3' ? 'selected' : '' }}>Thursday</option>
-                            <option value="4" {{ old('day_of_week', $workoutTemplate->day_of_week) == '4' ? 'selected' : '' }}>Friday</option>
-                            <option value="5" {{ old('day_of_week', $workoutTemplate->day_of_week) == '5' ? 'selected' : '' }}>Saturday</option>
-                            <option value="6" {{ old('day_of_week', $workoutTemplate->day_of_week) == '6' ? 'selected' : '' }}>Sunday</option>
-                        </select>
-                    </div>
+    <div class="row g-4 mb-4">
+        <!-- Template Details -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Template Details</h5>
                 </div>
+                <div class="card-body">
+                    <form action="{{ route('workout-templates.update', $workoutTemplate) }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="2">{{ old('description', $workoutTemplate->description) }}</textarea>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                                   id="name" name="name" value="{{ old('name', $workoutTemplate->name) }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="day_of_week" class="form-label">Assigned Day</label>
+                            <select class="form-select" id="day_of_week" name="day_of_week">
+                                <option value="">Not assigned</option>
+                                <option value="0" {{ old('day_of_week', $workoutTemplate->day_of_week) == '0' ? 'selected' : '' }}>Monday</option>
+                                <option value="1" {{ old('day_of_week', $workoutTemplate->day_of_week) == '1' ? 'selected' : '' }}>Tuesday</option>
+                                <option value="2" {{ old('day_of_week', $workoutTemplate->day_of_week) == '2' ? 'selected' : '' }}>Wednesday</option>
+                                <option value="3" {{ old('day_of_week', $workoutTemplate->day_of_week) == '3' ? 'selected' : '' }}>Thursday</option>
+                                <option value="4" {{ old('day_of_week', $workoutTemplate->day_of_week) == '4' ? 'selected' : '' }}>Friday</option>
+                                <option value="5" {{ old('day_of_week', $workoutTemplate->day_of_week) == '5' ? 'selected' : '' }}>Saturday</option>
+                                <option value="6" {{ old('day_of_week', $workoutTemplate->day_of_week) == '6' ? 'selected' : '' }}>Sunday</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ old('description', $workoutTemplate->description) }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Update Template
+                        </button>
+                    </form>
                 </div>
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle"></i> Update Template
-                </button>
-            </form>
+            </div>
         </div>
-    </div>
 
-    <!-- Exercises List -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Exercises</h5>
-            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
-                <i class="bi bi-plus-circle"></i> Add Exercise
-            </button>
-        </div>
-        <div class="card-body">
-            @if($workoutTemplate->workoutTemplateExercises->count() > 0)
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> <strong>Tip:</strong> Drag exercises to reorder them
+        <!-- Exercises List -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Exercises</h5>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+                        <i class="bi bi-plus-circle"></i> Add Exercise
+                    </button>
                 </div>
-                <ul id="exercise-list" class="list-group">
-                    @foreach($workoutTemplate->workoutTemplateExercises as $templateExercise)
-                        <li class="list-group-item" data-id="{{ $templateExercise->id }}">
-                            <div class="d-flex align-items-center">
-                                <span class="handle me-3" style="cursor: move;">
-                                    <i class="bi bi-grip-vertical fs-4"></i>
-                                </span>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">{{ $templateExercise->exercise->name }}</h6>
-                                    <small class="text-muted">
-                                        @if($templateExercise->target_sets)
-                                            {{ $templateExercise->target_sets }} sets
-                                        @endif
-                                        @if($templateExercise->target_reps)
-                                            × {{ $templateExercise->target_reps }} reps
-                                        @endif
-                                        @if($templateExercise->target_weight)
-                                            @ {{ $templateExercise->target_weight }}kg
-                                        @endif
-                                        @if($templateExercise->rest_seconds)
-                                            | Rest: {{ $templateExercise->rest_seconds }}s
-                                        @endif
-                                    </small>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editExerciseModal{{ $templateExercise->id }}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <form action="{{ route('workout-templates.remove-exercise', [$workoutTemplate, $templateExercise]) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this exercise?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            @else
-                <p class="text-muted mb-0">No exercises added yet. Click "Add Exercise" to get started!</p>
-            @endif
+                <div class="card-body">
+                    @if($workoutTemplate->workoutTemplateExercises->count() > 0)
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> <strong>Tip:</strong> Drag exercises to reorder them
+                        </div>
+                        <ul id="exercise-list" class="list-group">
+                            @foreach($workoutTemplate->workoutTemplateExercises as $templateExercise)
+                                <li class="list-group-item" data-id="{{ $templateExercise->id }}">
+                                    <div class="d-flex align-items-center">
+                                        <span class="handle me-3" style="cursor: move;">
+                                            <i class="bi bi-grip-vertical fs-4"></i>
+                                        </span>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ $templateExercise->exercise->name }}</h6>
+                                            <small class="text-muted">
+                                                @if($templateExercise->target_sets)
+                                                    {{ $templateExercise->target_sets }} sets
+                                                @endif
+                                                @if($templateExercise->target_reps)
+                                                    × {{ $templateExercise->target_reps }} reps
+                                                @endif
+                                                @if($templateExercise->target_weight)
+                                                    @ {{ $templateExercise->target_weight }}kg
+                                                @endif
+                                                @if($templateExercise->rest_seconds)
+                                                    | Rest: {{ $templateExercise->rest_seconds }}s
+                                                @endif
+                                            </small>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editExerciseModal{{ $templateExercise->id }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form action="{{ route('workout-templates.remove-exercise', [$workoutTemplate, $templateExercise]) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this exercise?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-muted mb-0">No exercises added yet. Click "Add Exercise" to get started!</p>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>
