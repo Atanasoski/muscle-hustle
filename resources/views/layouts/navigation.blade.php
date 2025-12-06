@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('dashboard') }}">
-            <i class="bi bi-lightning-charge-fill"></i> Muscle Hustle
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <img src="{{ asset('images/muscle-hustle-logo.png') }}" alt="Muscle Hustle" style="height: 50px; width: auto;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>

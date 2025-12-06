@@ -25,6 +25,7 @@ class ExerciseSeeder extends Seeder
             ['name' => 'Decline Bench Press', 'category_id' => $categories['chest'], 'default_rest_sec' => 90],
             ['name' => 'Dumbbell Flyes', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
             ['name' => 'Cable Flyes', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
+            ['name' => 'Cable Chest Flyes', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
             ['name' => 'Push-ups', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
             ['name' => 'Dips (Chest)', 'category_id' => $categories['chest'], 'default_rest_sec' => 90],
 
@@ -32,11 +33,13 @@ class ExerciseSeeder extends Seeder
             ['name' => 'Deadlift', 'category_id' => $categories['back'], 'default_rest_sec' => 180],
             ['name' => 'Barbell Row', 'category_id' => $categories['back'], 'default_rest_sec' => 120],
             ['name' => 'Dumbbell Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
+            ['name' => 'Chest-Supported Dumbbell Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
             ['name' => 'Pull-ups', 'category_id' => $categories['back'], 'default_rest_sec' => 120],
             ['name' => 'Lat Pulldown', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
             ['name' => 'Seated Cable Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
             ['name' => 'T-Bar Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
             ['name' => 'Face Pulls', 'category_id' => $categories['back'], 'default_rest_sec' => 60],
+            ['name' => 'Reverse Cable Flyes', 'category_id' => $categories['back'], 'default_rest_sec' => 60],
             ['name' => 'Hyperextensions', 'category_id' => $categories['back'], 'default_rest_sec' => 60],
 
             // Legs
@@ -48,12 +51,16 @@ class ExerciseSeeder extends Seeder
             ['name' => 'Leg Extension', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
             ['name' => 'Walking Lunges', 'category_id' => $categories['legs'], 'default_rest_sec' => 90],
             ['name' => 'Bulgarian Split Squat', 'category_id' => $categories['legs'], 'default_rest_sec' => 90],
+            ['name' => 'Barbell Hip Thrust', 'category_id' => $categories['legs'], 'default_rest_sec' => 90],
             ['name' => 'Calf Raises', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
+            ['name' => 'Standing Calf Raises', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
 
             // Shoulders
             ['name' => 'Overhead Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 120],
             ['name' => 'Dumbbell Shoulder Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 90],
+            ['name' => 'Seated Dumbbell Shoulder Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 90],
             ['name' => 'Lateral Raises', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
+            ['name' => 'Cable Lateral Raises', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
             ['name' => 'Front Raises', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
             ['name' => 'Rear Delt Flyes', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
             ['name' => 'Arnold Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 90],
@@ -63,6 +70,7 @@ class ExerciseSeeder extends Seeder
             // Arms
             ['name' => 'Barbell Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
             ['name' => 'Dumbbell Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
+            ['name' => 'Incline Dumbbell Curls', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
             ['name' => 'Hammer Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
             ['name' => 'Preacher Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
             ['name' => 'Cable Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
@@ -75,6 +83,7 @@ class ExerciseSeeder extends Seeder
             // Core
             ['name' => 'Plank', 'category_id' => $categories['core'], 'default_rest_sec' => 60],
             ['name' => 'Crunches', 'category_id' => $categories['core'], 'default_rest_sec' => 45],
+            ['name' => 'Reverse Crunches', 'category_id' => $categories['core'], 'default_rest_sec' => 45],
             ['name' => 'Hanging Leg Raises', 'category_id' => $categories['core'], 'default_rest_sec' => 60],
             ['name' => 'Russian Twists', 'category_id' => $categories['core'], 'default_rest_sec' => 45],
             ['name' => 'Cable Crunches', 'category_id' => $categories['core'], 'default_rest_sec' => 60],

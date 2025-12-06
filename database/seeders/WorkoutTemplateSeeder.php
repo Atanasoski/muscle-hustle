@@ -26,53 +26,58 @@ class WorkoutTemplateSeeder extends Seeder
         // Define workout templates structure
         $templates = [
             [
-                'name' => 'Upper A - Push Focus',
-                'description' => 'Upper body workout emphasizing pressing movements',
+                'name' => 'Day 1 - Monday',
+                'description' => 'Push focus with quads',
                 'day_of_week' => 0, // Monday
                 'exercises' => [
-                    ['name' => 'Barbell Bench Press', 'sets' => 4, 'reps' => 8, 'weight' => 60.00, 'rest' => 1],
-                    ['name' => 'Barbell Row', 'sets' => 4, 'reps' => 8, 'weight' => 50.00, 'rest' => 1],
-                    ['name' => 'Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => 20.00, 'rest' => 1],
-                    ['name' => 'Pull-ups', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 1],
-                    ['name' => 'Dumbbell Curl', 'sets' => 3, 'reps' => 12, 'weight' => 12.00, 'rest' => 1],
-                    ['name' => 'Overhead Tricep Extension', 'sets' => 3, 'reps' => 12, 'weight' => 15.00, 'rest' => 1],
+                    ['name' => 'Incline Dumbbell Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Chest-Supported Dumbbell Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Barbell Squat', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 180],
+                    ['name' => 'Incline Dumbbell Curls', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 60],
                 ],
             ],
             [
-                'name' => 'Lower A - Squat Focus',
-                'description' => 'Lower body workout with squat emphasis',
+                'name' => 'Day 2 - Tuesday',
+                'description' => 'Shoulders, back, and hamstrings',
                 'day_of_week' => 1, // Tuesday
                 'exercises' => [
-                    ['name' => 'Barbell Squat', 'sets' => 4, 'reps' => 8, 'weight' => 80.00, 'rest' => 1],
-                    ['name' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10, 'weight' => 60.00, 'rest' => 1],
-                    ['name' => 'Leg Press', 'sets' => 3, 'reps' => 12, 'weight' => 100.00, 'rest' => 1],
-                    ['name' => 'Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => 40.00, 'rest' => 1],
-                    ['name' => 'Plank', 'sets' => 3, 'reps' => 45, 'weight' => null, 'rest' => 1],
+                    ['name' => 'Seated Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 120],
+                    ['name' => 'Incline Dumbbell Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
                 ],
             ],
             [
-                'name' => 'Upper B - Pull Focus',
-                'description' => 'Upper body workout emphasizing pulling movements',
+                'name' => 'Day 3 - Wednesday',
+                'description' => 'Chest, back, quads, and shoulders',
                 'day_of_week' => 2, // Wednesday
                 'exercises' => [
-                    ['name' => 'Overhead Press', 'sets' => 4, 'reps' => 8, 'weight' => 40.00, 'rest' => 1],
-                    ['name' => 'Lat Pulldown', 'sets' => 4, 'reps' => 8, 'weight' => 50.00, 'rest' => 1],
-                    ['name' => 'Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => 25.00, 'rest' => 1],
-                    ['name' => 'Seated Cable Row', 'sets' => 3, 'reps' => 10, 'weight' => 45.00, 'rest' => 1],
-                    ['name' => 'Lateral Raises', 'sets' => 3, 'reps' => 15, 'weight' => 10.00, 'rest' => 1],
-                    ['name' => 'Dumbbell Curl', 'sets' => 3, 'reps' => 12, 'weight' => 12.00, 'rest' => 1],
+                    ['name' => 'Barbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 120],
+                    ['name' => 'Dumbbell Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Leg Extension', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Cable Lateral Raises', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
                 ],
             ],
             [
-                'name' => 'Lower B - Deadlift Focus',
-                'description' => 'Lower body workout with deadlift emphasis',
+                'name' => 'Day 4 - Thursday',
+                'description' => 'Glutes, chest, rear delts, and biceps',
                 'day_of_week' => 3, // Thursday
                 'exercises' => [
-                    ['name' => 'Deadlift', 'sets' => 3, 'reps' => 6, 'weight' => 100.00, 'rest' => 1],
-                    ['name' => 'Front Squat', 'sets' => 3, 'reps' => 10, 'weight' => 60.00, 'rest' => 1],
-                    ['name' => 'Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => 40.00, 'rest' => 1],
-                    ['name' => 'Leg Extension', 'sets' => 3, 'reps' => 12, 'weight' => 50.00, 'rest' => 1],
-                    ['name' => 'Hanging Leg Raises', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 1],
+                    ['name' => 'Barbell Hip Thrust', 'sets' => 3, 'reps' => 12, 'weight' => 60.00, 'rest' => 90],
+                    ['name' => 'Cable Chest Flyes', 'sets' => 3, 'reps' => 10, 'weight' => 12.50, 'rest' => 60],
+                    ['name' => 'Reverse Cable Flyes', 'sets' => 3, 'reps' => 12, 'weight' => 10.00, 'rest' => 60],
+                    ['name' => 'Hammer Curl', 'sets' => 3, 'reps' => 12, 'weight' => 16.00, 'rest' => 60],
+                ],
+            ],
+            [
+                'name' => 'Day 5 - Friday',
+                'description' => 'Quads, glutes, core, calves, and triceps',
+                'day_of_week' => 4, // Friday
+                'exercises' => [
+                    ['name' => 'Walking Lunges', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Reverse Crunches', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 45],
+                    ['name' => 'Standing Calf Raises', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Tricep Pushdown', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
                 ],
             ],
         ];
