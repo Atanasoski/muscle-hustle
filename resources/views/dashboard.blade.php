@@ -537,10 +537,6 @@
         <div class="modal-content">
             <form action="{{ route('planner.meals.store') }}" method="POST">
                 @csrf
-                @php
-                    $today = \Carbon\Carbon::now();
-                    $dayOfWeek = $today->dayOfWeek === 0 ? 6 : $today->dayOfWeek - 1; // Convert Sunday from 0 to 6
-                @endphp
                 <input type="hidden" name="day_of_week" value="{{ $dayOfWeek }}">
                 
                 <div class="modal-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
@@ -553,10 +549,6 @@
                 
                 <div class="modal-body">
                     <!-- Recipe Quick-Select (if user has recipes) -->
-                    @php
-                        $userRecipes = Auth::user()->recipes()->orderBy('is_favorite', 'desc')->orderBy('name')->get();
-                    @endphp
-                    
                     @if($userRecipes->isNotEmpty())
                         <div class="mb-4 p-3 rounded-3" style="background: linear-gradient(135deg, rgba(40,167,69,0.05) 0%, rgba(32,201,151,0.05) 100%); border: 1px solid rgba(40,167,69,0.2);">
                             <label class="form-label fw-bold">

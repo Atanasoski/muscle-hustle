@@ -54,7 +54,13 @@ class DashboardController extends Controller
         // Calculate workout streak
         $streak = $this->calculateStreak($user->id);
 
-        return view('dashboard', compact('todayWorkout', 'todayWorkoutCompleted', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'recentWorkouts', 'streak'));
+        // Get user recipes for quick log modal
+        $userRecipes = $user->recipes()
+            ->orderBy('is_favorite', 'desc')
+            ->orderBy('name')
+            ->get();
+
+        return view('dashboard', compact('todayWorkout', 'todayWorkoutCompleted', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'recentWorkouts', 'streak', 'userRecipes'));
     }
 
     private function calculateStreak(int $userId): int
