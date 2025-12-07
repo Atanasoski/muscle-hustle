@@ -93,11 +93,7 @@
                         
                         <div class="mb-3">
                             <textarea class="form-control" id="ai-ingredient-input" rows="4" 
-                                      placeholder="Example:
-200g chicken breast
-1 cup brown rice  
-100g broccoli
-2 tbsp olive oil" 
+                                      placeholder="Example: 200g chicken breast, 1 cup brown rice, 100g broccoli, 2 tbsp olive oil" 
                                       style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3);">{{ old('ai_ingredient_text') }}</textarea>
                         </div>
                         
@@ -258,19 +254,19 @@ document.getElementById('parse-ai-ingredients-btn').addEventListener('click', fu
     .then(data => {
         if (data.message) {
             showError(data.message);
-        } else if (data.items && data.items.length > 0) {
+        } else if (data.success && data.data && data.data.items && data.data.items.length > 0) {
             // Parse each item and try to match to foods in database
             let added = 0;
             let notFound = [];
             
-            data.items.forEach(item => {
-                const matchedFood = findFoodByName(item.food);
+            data.data.items.forEach(item => {
+                const matchedFood = findFoodByName(item.name);
                 
                 if (matchedFood) {
-                    addIngredientRow(matchedFood.id, item.quantity, extractUnit(item.quantity), item.food);
+                    addIngredientRow(matchedFood.id, item.quantity, item.unit, item.name);
                     added++;
                 } else {
-                    notFound.push(item.food);
+                    notFound.push(item.name);
                 }
             });
             

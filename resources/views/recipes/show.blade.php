@@ -7,35 +7,29 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <!-- Header -->
-            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-                <div class="d-flex align-items-center">
-                    <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary btn-sm me-3">
+            <div class="mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-arrow-left"></i> Back
                     </a>
-                    <div>
-                        <h1 class="h3 fw-bold mb-0">
-                            {{ $recipe->name }}
-                            @if($recipe->is_favorite)
-                                <i class="bi bi-heart-fill text-danger ms-2"></i>
-                            @endif
-                        </h1>
-                        @if($recipe->description)
-                            <p class="text-muted small mb-0">{{ $recipe->description }}</p>
-                        @endif
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
                     </div>
                 </div>
                 
-                <div class="d-flex gap-2">
-                    <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-primary">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this recipe permanently?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
+                <div>
+                    <h1 class="h3 fw-bold mb-1">
+                        {{ $recipe->name }}
+                        @if($recipe->is_favorite)
+                            <i class="bi bi-heart-fill text-danger ms-2"></i>
+                        @endif
+                    </h1>
+                    @if($recipe->description)
+                        <p class="text-muted mb-0">{{ $recipe->description }}</p>
+                    @endif
                 </div>
             </div>
 
