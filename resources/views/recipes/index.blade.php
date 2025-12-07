@@ -22,7 +22,7 @@
     </div>
 
     <!-- Search & Filters -->
-    @if($recipes->isNotEmpty() || request()->has(['search', 'meal_type', 'favorites']))
+    @if($recipes->isNotEmpty() || request('search') || request('meal_type') || request('favorites'))
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
                 <form action="{{ route('recipes.index') }}" method="GET">
@@ -73,12 +73,33 @@
         <!-- Empty State -->
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5">
-                <i class="bi bi-book display-1 text-muted mb-3"></i>
-                <h4 class="fw-bold mb-2">No Recipes Yet</h4>
-                <p class="text-muted mb-4">Create your first recipe and start building your meal library!</p>
-                <a href="{{ route('recipes.create') }}" class="btn btn-success btn-lg">
-                    <i class="bi bi-plus-circle me-2"></i> Create Your First Recipe
-                </a>
+                @if(request('search') || request('meal_type') || request('favorites'))
+                    <!-- No Search Results -->
+                    <i class="bi bi-search display-1 text-muted mb-3"></i>
+                    <h4 class="fw-bold mb-2">No Recipes Found</h4>
+                    <p class="text-muted mb-4">
+                        No recipes match your current filters.
+                        @if(request('search'))
+                            <br>Try a different search term or 
+                        @else
+                            <br>Try 
+                        @endif
+                        <a href="{{ route('recipes.index') }}" class="text-decoration-none">clear your filters</a>.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-2"></i> Clear Filters
+                        </a>
+                    </div>
+                @else
+                    <!-- Truly No Recipes -->
+                    <i class="bi bi-book display-1 text-muted mb-3"></i>
+                    <h4 class="fw-bold mb-2">No Recipes Yet</h4>
+                    <p class="text-muted mb-4">Create your first recipe and start building your meal library!</p>
+                    <a href="{{ route('recipes.create') }}" class="btn btn-success btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i> Create Your First Recipe
+                    </a>
+                @endif
             </div>
         </div>
     @else
