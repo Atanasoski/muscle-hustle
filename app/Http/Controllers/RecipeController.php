@@ -50,10 +50,15 @@ class RecipeController extends Controller
             $query->whereNull('user_id')
                 ->orWhere('user_id', auth()->id());
         })
-            ->orderBy('category')
+            ->with('category')
             ->orderBy('name')
             ->get()
-            ->groupBy('category');
+            ->sortBy(function ($food) {
+                return $food->category?->name ?? 'Uncategorized';
+            })
+            ->groupBy(function ($food) {
+                return $food->category?->name ?? 'Uncategorized';
+            });
 
         return view('recipes.create', compact('foods'));
     }
@@ -143,10 +148,15 @@ class RecipeController extends Controller
             $query->whereNull('user_id')
                 ->orWhere('user_id', auth()->id());
         })
-            ->orderBy('category')
+            ->with('category')
             ->orderBy('name')
             ->get()
-            ->groupBy('category');
+            ->sortBy(function ($food) {
+                return $food->category?->name ?? 'Uncategorized';
+            })
+            ->groupBy(function ($food) {
+                return $food->category?->name ?? 'Uncategorized';
+            });
 
         return view('recipes.edit', compact('recipe', 'foods'));
     }
