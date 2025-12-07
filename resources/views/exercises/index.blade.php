@@ -72,7 +72,7 @@
                                         </td>
                                         <td class="text-center">
                                             @if($exercise->user_id)
-                                                <span class="badge bg-info">Custom</span>
+                                                <span class="badge bg-info text-white">Custom</span>
                                             @else
                                                 <span class="badge bg-secondary">Global</span>
                                             @endif
@@ -194,7 +194,7 @@
                                 <label class="form-label fw-bold d-flex align-items-center justify-content-between">
                                     <span>Background Video (Pixabay)</span>
                                     @if($exercise->pixabay_video_path)
-                                        <span class="badge bg-success">✓ Downloaded</span>
+                                        <span class="badge bg-success text-white">✓ Downloaded</span>
                                     @endif
                                 </label>
                                 <div class="d-flex gap-2">

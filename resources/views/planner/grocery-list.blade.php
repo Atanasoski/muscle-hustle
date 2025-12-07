@@ -83,7 +83,7 @@
                                                     Used in: {{ implode(', ', array_unique($item['meals'])) }}
                                                 </div>
                                             </div>
-                                            <span class="badge bg-primary px-3 py-2">
+                                            <span class="badge bg-primary text-white px-3 py-2">
                                                 {{ round($item['quantity'], 1) }} {{ $item['unit'] }}
                                             </span>
                                         </div>

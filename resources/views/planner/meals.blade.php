@@ -58,7 +58,7 @@
                                             <span class="text-uppercase fw-bold text-success" style="font-size: 0.9rem; letter-spacing: 1px;">{{ $type }}</span>
                                         </div>
                                         @if(isset($mealGrid[$dayIndex][$type]) && $mealGrid[$dayIndex][$type] && $mealGrid[$dayIndex][$type]->calories)
-                                            <span class="badge bg-success px-3 py-2">
+                                            <span class="badge bg-success text-white px-3 py-2">
                                                 <i class="bi bi-fire"></i> {{ $mealGrid[$dayIndex][$type]->calories }} cal
                                             </span>
                                         @endif

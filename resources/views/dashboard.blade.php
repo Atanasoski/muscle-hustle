@@ -151,7 +151,7 @@
                                                         </small>
                                                     </div>
                                                     <div class="text-end">
-                                                        <span class="badge bg-success">
+                                                        <span class="badge bg-success text-white">
                                                             {{ $workout->setLogs->count() }} sets
                                                         </span>
                                                     </div>
@@ -204,7 +204,7 @@
                                 <div class="p-2 rounded-3 border bg-light">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div>
-                                            <span class="badge bg-success mb-2">
+                                            <span class="badge bg-success text-white mb-2">
                                                 {{ ucfirst($meal->type) }}
                                             </span>
                                             <h6 class="fw-bold mb-0">{{ $meal->name }}</h6>
@@ -283,7 +283,7 @@
                                                 <div class="card-header bg-warning text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                     <div class="fw-bold">{{ $day }}</div>
                                                     @if($isToday)
-                                                        <span class="badge bg-primary">Today</span>
+                                                        <span class="badge bg-primary text-white">Today</span>
                                                     @endif
                                                 </div>
                                                 <div class="card-body p-3">
@@ -302,7 +302,7 @@
                                             <div class="card-header bg-secondary text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <div class="fw-bold">{{ $day }}</div>
                                                 @if($isToday)
-                                                    <span class="badge bg-primary">Today</span>
+                                                    <span class="badge bg-primary text-white">Today</span>
                                                 @endif
                                             </div>
                                             <div class="card-body p-3">

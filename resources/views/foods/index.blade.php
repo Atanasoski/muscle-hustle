@@ -103,19 +103,19 @@
                                             <br><small class="text-muted">per 100g</small>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge bg-primary">{{ number_format($food->protein, 1) }}g</span>
+                                            <span class="badge bg-primary text-white">{{ number_format($food->protein, 1) }}g</span>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge bg-warning text-dark">{{ number_format($food->carbs, 1) }}g</span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge bg-danger">{{ number_format($food->fat, 1) }}g</span>
+                                            <span class="badge bg-danger text-white">{{ number_format($food->fat, 1) }}g</span>
                                         </td>
                                         <td class="text-center">
                                             @if($food->user_id)
-                                                <span class="badge bg-success"><i class="bi bi-person-fill"></i> Custom</span>
+                                                <span class="badge bg-success text-white"><i class="bi bi-person-fill"></i> Custom</span>
                                             @else
-                                                <span class="badge bg-info"><i class="bi bi-globe"></i> Global</span>
+                                                <span class="badge bg-info text-white"><i class="bi bi-globe"></i> Global</span>
                                             @endif
                                         </td>
                                         <td class="text-end">

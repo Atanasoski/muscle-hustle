@@ -96,7 +96,7 @@
                             <div>
                                 <strong>{{ $template->name }}</strong>
                                 @if($template->day_of_week !== null)
-                                    <span class="badge bg-primary ms-2">{{ $days[$template->day_of_week] }}</span>
+                                    <span class="badge bg-primary text-white ms-2">{{ $days[$template->day_of_week] }}</span>
                                 @endif
                             </div>
                             <a href="{{ route('workout-templates.edit', $template) }}" class="btn btn-sm btn-outline-primary">

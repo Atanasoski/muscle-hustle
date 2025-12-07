@@ -109,7 +109,7 @@
                             <!-- Tags/Type -->
                             <div class="d-flex flex-wrap gap-2 mb-3">
                                 @if($recipe->meal_type)
-                                    <span class="badge bg-success">{{ ucfirst($recipe->meal_type) }}</span>
+                                    <span class="badge bg-success text-white">{{ ucfirst($recipe->meal_type) }}</span>
                                 @endif
                                 @if($recipe->tags)
                                     @foreach($recipe->tags as $tag)

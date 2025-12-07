@@ -29,7 +29,7 @@
                                     $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                                     $dayIcons = ['📅', '📅', '📅', '📅', '📅', '📅', '📅'];
                                 @endphp
-                                <span class="badge bg-danger">
+                                <span class="badge bg-danger text-white">
                                     {{ $dayIcons[$template->day_of_week] }} {{ $days[$template->day_of_week] }}
                                 </span>
                             @else

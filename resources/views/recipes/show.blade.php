@@ -12,14 +12,12 @@
                     <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-arrow-left"></i> Back
                     </a>
-                    
                     <div class="d-flex align-items-center gap-2">
                         <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
                     </div>
                 </div>
-                
                 <div>
                     <h1 class="h3 fw-bold mb-1">
                         {{ $recipe->name }}
@@ -62,7 +60,7 @@
                                 <hr>
                                 <div class="d-flex flex-wrap gap-2">
                                     @if($recipe->meal_type)
-                                        <span class="badge bg-success">{{ ucfirst($recipe->meal_type) }}</span>
+                                        <span class="badge bg-success text-white">{{ ucfirst($recipe->meal_type) }}</span>
                                     @endif
                                     @if($recipe->tags)
                                         @foreach($recipe->tags as $tag)
