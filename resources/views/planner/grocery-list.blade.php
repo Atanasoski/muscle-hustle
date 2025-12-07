@@ -31,11 +31,34 @@
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5">
                 <i class="bi bi-cart-x display-1 text-muted mb-3"></i>
-                <h4 class="fw-bold mb-2">No Recipes with Ingredients</h4>
-                <p class="text-muted mb-4">Add recipes to your meal plan to generate a grocery list.</p>
-                <a href="{{ route('planner.meals') }}" class="btn btn-success btn-lg">
-                    <i class="bi bi-plus-circle me-2"></i> Plan Your Meals
-                </a>
+                <h4 class="fw-bold mb-3">No Meals Planned This Week</h4>
+                <div class="alert alert-info mx-auto" style="max-width: 600px;">
+                    <div class="d-flex align-items-start gap-3">
+                        <i class="bi bi-info-circle-fill fs-4"></i>
+                        <div class="text-start">
+                            <h6 class="fw-bold mb-2">Your Grocery List is Empty</h6>
+                            <p class="mb-2">Add meals to your weekly planner to generate a shopping list!</p>
+                            <div class="mt-3 p-2 bg-success bg-opacity-10 rounded">
+                                <small class="text-dark">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    The grocery list includes both:
+                                </small>
+                                <ul class="small mb-0 mt-2">
+                                    <li>Ingredients from saved recipes</li>
+                                    <li>Individual foods added to meals</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <a href="{{ route('recipes.index') }}" class="btn btn-outline-success">
+                        <i class="bi bi-book me-2"></i> View My Recipes
+                    </a>
+                    <a href="{{ route('planner.meals') }}" class="btn btn-success">
+                        <i class="bi bi-calendar-week me-2"></i> Plan This Week
+                    </a>
+                </div>
             </div>
         </div>
     @else
@@ -52,8 +75,8 @@
                         <small class="opacity-75">Categories</small>
                     </div>
                     <div class="col-md-4">
-                        <div class="h2 fw-bold mb-0">{{ $totalRecipes }}</div>
-                        <small class="opacity-75">Recipes</small>
+                        <div class="h2 fw-bold mb-0">{{ $totalMeals }}</div>
+                        <small class="opacity-75">Planned Meals</small>
                     </div>
                 </div>
             </div>

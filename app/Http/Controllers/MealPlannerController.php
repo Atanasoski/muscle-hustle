@@ -174,7 +174,7 @@ class MealPlannerController extends Controller
         // Get or create meal plan for this week
         $mealPlan = MealPlan::where('user_id', auth()->id())
             ->where('week_start_date', $weekStart->toDateString())
-            ->with('meals.recipe.recipeIngredients.food')
+            ->with(['meals.recipe.recipeIngredients.food.category', 'meals.foods.category'])
             ->first();
 
         if (! $mealPlan) {
@@ -182,13 +182,15 @@ class MealPlannerController extends Controller
                 'weekStart' => $weekStart,
                 'groceries' => collect(),
                 'totalRecipes' => 0,
+                'totalMeals' => 0,
             ]);
         }
 
-        // Collect all ingredients from recipes
-        $ingredients = collect();
+        // Collect all ingredients from recipes AND individual foods
+        $ingredients = [];
 
         foreach ($mealPlan->meals as $meal) {
+            // Add ingredients from recipes
             if ($meal->recipe) {
                 $servingMultiplier = $meal->servings / $meal->recipe->servings;
 
@@ -196,7 +198,7 @@ class MealPlannerController extends Controller
                     $key = $ingredient->food_id.'_'.$ingredient->unit;
                     $quantity = $ingredient->quantity * $servingMultiplier;
 
-                    if ($ingredients->has($key)) {
+                    if (isset($ingredients[$key])) {
                         $ingredients[$key]['quantity'] += $quantity;
                         $ingredients[$key]['meals'][] = $meal->name;
                     } else {
@@ -209,16 +211,38 @@ class MealPlannerController extends Controller
                     }
                 }
             }
+
+            // Add individual foods from meal
+            foreach ($meal->foods as $food) {
+                // Convert to grams/serving size
+                $quantity = $food->pivot->grams;
+                $unit = 'g';
+
+                $key = $food->id.'_'.$unit;
+
+                if (isset($ingredients[$key])) {
+                    $ingredients[$key]['quantity'] += $quantity;
+                    $ingredients[$key]['meals'][] = $meal->name;
+                } else {
+                    $ingredients[$key] = [
+                        'food' => $food,
+                        'quantity' => $quantity,
+                        'unit' => $unit,
+                        'meals' => [$meal->name],
+                    ];
+                }
+            }
         }
 
         // Group by category
-        $groceries = $ingredients->groupBy(function ($item) {
-            return $item['food']->category ?: 'Other';
+        $groceries = collect($ingredients)->groupBy(function ($item) {
+            return $item['food']->category?->name ?: 'Other';
         })->sortKeys();
 
         $totalRecipes = $mealPlan->meals->filter(fn ($meal) => $meal->recipe_id)->count();
+        $totalMeals = $mealPlan->meals->count();
 
-        return view('planner.grocery-list', compact('groceries', 'weekStart', 'totalRecipes'));
+        return view('planner.grocery-list', compact('groceries', 'weekStart', 'totalRecipes', 'totalMeals'));
     }
 
     /**

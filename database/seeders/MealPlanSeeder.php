@@ -23,6 +23,14 @@ class MealPlanSeeder extends Seeder
             return;
         }
 
+        // Get some foods to attach to meals
+        $foods = \App\Models\Food::all();
+        if ($foods->isEmpty()) {
+            $this->command->error('No foods found. Run FoodSeeder first.');
+
+            return;
+        }
+
         // Get next Monday as week start
         $weekStart = Carbon::now()->startOfWeek();
 
@@ -90,10 +98,10 @@ class MealPlanSeeder extends Seeder
             ],
         ];
 
-        // Insert all meals
+        // Insert all meals and attach random foods
         foreach ($mealsData as $dayMeals) {
             foreach ($dayMeals as $mealData) {
-                Meal::create([
+                $meal = Meal::create([
                     'meal_plan_id' => $mealPlan->id,
                     'day_of_week' => $mealData['day'],
                     'type' => $mealData['type'],
@@ -104,10 +112,20 @@ class MealPlanSeeder extends Seeder
                     'carbs' => $mealData['carbs'],
                     'fat' => $mealData['fat'],
                 ]);
+
+                // Attach 2-4 random foods to each meal for the grocery list
+                $randomFoods = $foods->random(rand(2, 4));
+                foreach ($randomFoods as $food) {
+                    $meal->foods()->attach($food->id, [
+                        'servings' => rand(1, 3),
+                        'grams' => rand(50, 200),
+                    ]);
+                }
             }
         }
 
         $this->command->info("Meal plan seeded for week starting {$weekStart->toDateString()}");
         $this->command->info('Total meals created: '.(7 * 4).' (7 days × 4 meals)');
+        $this->command->info('Foods attached to meals for grocery list');
     }
 }
