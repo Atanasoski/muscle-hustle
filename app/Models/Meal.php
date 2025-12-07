@@ -49,7 +49,7 @@ class Meal extends Model
      */
     public function foods(): BelongsToMany
     {
-        return $this->belongsToMany(Food::class, 'meal_food')
+        return $this->belongsToMany(Food::class, 'food_meal')
             ->withPivot('servings', 'grams')
             ->withTimestamps();
     }

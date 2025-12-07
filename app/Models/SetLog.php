@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SetLog extends Model
 {
+    protected $table = 'workout_set_logs';
+
     protected $fillable = [
         'workout_session_id',
         'exercise_id',

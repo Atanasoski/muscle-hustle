@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('workout_template_exercises', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workout_template_id')->constrained()->onDelete('cascade');
-            $table->foreignId('exercise_id')->constrained()->onDelete('cascade');
+            $table->foreignId('exercise_id')->constrained('workout_exercises')->onDelete('cascade');
             $table->integer('order')->default(0);
             $table->integer('target_sets')->nullable();
             $table->integer('target_reps')->nullable();

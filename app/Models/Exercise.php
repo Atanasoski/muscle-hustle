@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Exercise extends Model
 {
+    protected $table = 'workout_exercises';
+
     protected $fillable = [
         'user_id',
         'category_id',
