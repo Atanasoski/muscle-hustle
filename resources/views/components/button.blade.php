@@ -7,12 +7,17 @@
     if (!$hasCustomBtnClass) {
         $baseClasses .= ' ' . $getDefaultVariantClass();
     }
+    
+    // Check if slot has visible content (not just visually-hidden)
+    $slotContent = trim($slot->toHtml());
+    $hasVisibleContent = $slotContent && !str_contains($slotContent, 'visually-hidden');
+    $iconMargin = $hasVisibleContent ? 'me-2' : '';
 @endphp
 
 @if($href)
     <a {{ $attributes->merge(['href' => $href, 'class' => $baseClasses]) }}>
         @if($getIcon())
-            <i class="bi {{ $getIcon() }} me-2"></i>
+            <i class="bi {{ $getIcon() }} {{ $iconMargin }}"></i>
         @endif
         {{ $slot }}
     </a>
@@ -24,7 +29,7 @@
         @endif
     >
         @if($getIcon())
-            <i class="bi {{ $getIcon() }} me-2"></i>
+            <i class="bi {{ $getIcon() }} {{ $iconMargin }}"></i>
         @endif
         {{ $slot }}
     </button>
