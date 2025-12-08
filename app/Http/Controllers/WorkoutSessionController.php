@@ -161,7 +161,7 @@ class WorkoutSessionController extends Controller
         }
 
         $request->validate([
-            'exercise_id' => 'required|exists:exercises,id',
+            'exercise_id' => 'required|exists:workout_exercises,id',
             'set_number' => 'required|integer|min:1',
             'weight' => 'required|numeric|min:0',
             'reps' => 'required|integer|min:0',

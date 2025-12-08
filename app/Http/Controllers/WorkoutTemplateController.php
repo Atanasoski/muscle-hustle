@@ -123,7 +123,7 @@ class WorkoutTemplateController extends Controller
         }
 
         $request->validate([
-            'exercise_id' => 'required|exists:exercises,id',
+            'exercise_id' => 'required|exists:workout_exercises,id',
             'target_sets' => 'nullable|integer|min:1',
             'target_reps' => 'nullable|integer|min:1',
             'target_weight' => 'nullable|numeric|min:0',
