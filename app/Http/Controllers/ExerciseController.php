@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CategoryType;
 use App\Models\Category;
 use App\Models\Exercise;
 use App\Services\PixabayService;
@@ -11,9 +12,10 @@ class ExerciseController extends Controller
 {
     public function index()
     {
-        $categories = Category::with(['exercises' => function ($query) {
-            $query->orderBy('name');
-        }])
+        $categories = Category::where('type', CategoryType::Workout)
+            ->with(['exercises' => function ($query) {
+                $query->orderBy('name');
+            }])
             ->orderBy('display_order')
             ->get();
 
@@ -24,7 +26,16 @@ class ExerciseController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => [
+                'required',
+                'exists:categories,id',
+                function ($attribute, $value, $fail) {
+                    $category = Category::find($value);
+                    if ($category && $category->type !== CategoryType::Workout) {
+                        $fail('The selected category must be a workout category.');
+                    }
+                },
+            ],
             'video_url' => 'nullable|url',
             'default_rest_sec' => 'nullable|integer|min:0',
         ]);
@@ -50,7 +61,16 @@ class ExerciseController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => [
+                'required',
+                'exists:categories,id',
+                function ($attribute, $value, $fail) {
+                    $category = Category::find($value);
+                    if ($category && $category->type !== CategoryType::Workout) {
+                        $fail('The selected category must be a workout category.');
+                    }
+                },
+            ],
             'video_url' => 'nullable|url',
             'default_rest_sec' => 'nullable|integer|min:0',
         ]);
