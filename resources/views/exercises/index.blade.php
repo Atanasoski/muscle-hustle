@@ -16,9 +16,23 @@
         </button>
     </div>
 
+    <!-- Search Bar -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="exercise-search" class="form-control" 
+                       placeholder="Search exercises by name..." autocomplete="off">
+            </div>
+        </div>
+    </div>
+
     <!-- Exercises by Category -->
     @foreach($categories as $category)
         @if($category->exercises->count() > 0)
+        <div class="exercise-category" data-category="{{ $category->name }}">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header py-3" style="background: {{ $category->color }}; color: white;">
                     <h5 class="mb-0 fw-bold">
@@ -40,7 +54,7 @@
                             </thead>
                             <tbody>
                                 @foreach($category->exercises as $exercise)
-                                    <tr>
+                                    <tr class="exercise-row" data-name="{{ strtolower($exercise->name) }}">
                                         <td>
                                             <strong>{{ $exercise->name }}</strong>
                                             @if($exercise->user_id)
@@ -96,6 +110,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         @endif
     @endforeach
 </div>
@@ -117,7 +132,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
-                        <select class="form-select" name="category_id" required>
+                        <input type="text" id="category-search-create" class="form-control mb-2" placeholder="🔍 Search categories..." autocomplete="off">
+                        <select class="form-select" id="category-select-create" name="category_id" required size="6">
                             <option value="">Select category...</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->icon }} {{ $cat->name }}</option>
@@ -428,6 +444,75 @@ document.getElementById('videoPreviewModal')?.addEventListener('hidden.bs.modal'
         pixabayModal.show();
     }
 });
+
+// Exercise search functionality
+const exerciseSearchInput = document.getElementById('exercise-search');
+if (exerciseSearchInput) {
+    exerciseSearchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        const exerciseRows = document.querySelectorAll('.exercise-row');
+        const categories = document.querySelectorAll('.exercise-category');
+        
+        // Filter exercise rows
+        exerciseRows.forEach(row => {
+            const exerciseName = row.getAttribute('data-name');
+            if (exerciseName.includes(searchTerm)) {
+                row.classList.remove('d-none');
+            } else {
+                row.classList.add('d-none');
+            }
+        });
+        
+        // Hide categories with no visible exercises
+        categories.forEach(category => {
+            const card = category.querySelector('.card');
+            if (!card) return;
+            
+            const tbody = card.querySelector('tbody');
+            if (!tbody) return;
+            
+            const visibleRows = tbody.querySelectorAll('.exercise-row:not(.d-none)');
+            if (visibleRows.length === 0) {
+                category.classList.add('d-none');
+            } else {
+                category.classList.remove('d-none');
+            }
+        });
+    });
+}
+
+// Category search in Create Exercise modal
+const categorySearchCreate = document.getElementById('category-search-create');
+const categorySelectCreate = document.getElementById('category-select-create');
+
+if (categorySearchCreate && categorySelectCreate) {
+    categorySearchCreate.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const options = categorySelectCreate.querySelectorAll('option');
+        
+        options.forEach(option => {
+            if (option.value === '') return; // Keep placeholder
+            
+            const text = option.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    });
+    
+    // Reset on modal close
+    const createModal = document.getElementById('createExerciseModal');
+    if (createModal) {
+        createModal.addEventListener('hidden.bs.modal', function() {
+            categorySearchCreate.value = '';
+            categorySelectCreate.querySelectorAll('option').forEach(opt => {
+                opt.style.display = '';
+            });
+        });
+    }
+}
 </script>
 @endpush
 

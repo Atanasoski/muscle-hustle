@@ -185,19 +185,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Exercise <span class="text-danger">*</span></label>
-                        <select class="form-select" name="exercise_id" required>
-                            <option value="">Select exercise...</option>
-                            @foreach($exercises as $categoryName => $categoryExercises)
-                                <optgroup label="{{ $categoryName }}">
-                                    @foreach($categoryExercises as $exercise)
-                                <option value="{{ $exercise->id }}">{{ $exercise->name }}</option>
-                                    @endforeach
-                                </optgroup>
-                            @endforeach
-                        </select>
-                    </div>
+                    <label class="form-label">Exercise <span class="text-danger">*</span></label>
+                    <x-exercise-selector 
+                        :exercises="$exercises" 
+                        name="exercise_id"
+                        id="workout-template-exercise-selector"
+                        :required="true"
+                        placeholder="Search exercises..."
+                    />
                     <div class="mb-3">
                         <label class="form-label">Target Sets</label>
                         <input type="number" class="form-control" name="target_sets" min="1" placeholder="e.g., 3">
@@ -228,6 +223,15 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Reset exercise selector when modal closes
+    const addExerciseModal = document.getElementById('addExerciseModal');
+    if (addExerciseModal) {
+        addExerciseModal.addEventListener('hidden.bs.modal', function() {
+            const clearBtn = document.getElementById('workout-template-exercise-selector-clear');
+            if (clearBtn) clearBtn.click();
+        });
+    }
+    
     const list = document.getElementById('exercise-list');
     if (list) {
         let originalOrder = [];
