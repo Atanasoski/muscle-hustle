@@ -1,14 +1,23 @@
-<div class="exercise-selector-component">
+<div class="exercise-selector-component" style="position: relative;">
     <input type="hidden" id="{{ $id }}-input" name="{{ $name }}" value="{{ $selected }}" {{ $required ? 'required' : '' }}>
     
     <div class="mb-3">
         <input type="text" 
                id="{{ $id }}-search" 
-               class="form-control mb-2" 
+               class="form-control" 
                placeholder="🔍 {{ $placeholder }}" 
-               autocomplete="off">
+               autocomplete="off"
+               @if($selected)
+                   @foreach($exercises as $categoryExercises)
+                       @foreach($categoryExercises as $exercise)
+                           @if($exercise->id == $selected)
+                               value="{{ $exercise->name }}"
+                           @endif
+                       @endforeach
+                   @endforeach
+               @endif>
         
-        <div id="{{ $id }}-list" class="list-group" style="max-height: 300px; overflow-y: auto;">
+        <div id="{{ $id }}-list" class="list-group" style="position: absolute; z-index: 1050; width: 100%; max-height: 300px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             @foreach($exercises as $categoryName => $categoryExercises)
                 <div class="exercise-category" data-category="{{ $categoryName }}">
                     <div class="list-group-item bg-light fw-bold text-primary small py-2 border-0">
@@ -25,22 +34,6 @@
                 </div>
             @endforeach
         </div>
-        
-        <div id="{{ $id }}-selected" class="mt-2 {{ $selected ? '' : 'd-none' }}">
-            <small class="text-muted">Selected:</small> 
-            <span class="badge bg-primary" id="{{ $id }}-selected-name">
-                @if($selected)
-                    @foreach($exercises as $categoryExercises)
-                        @foreach($categoryExercises as $exercise)
-                            @if($exercise->id == $selected)
-                                {{ $exercise->name }}
-                            @endif
-                        @endforeach
-                    @endforeach
-                @endif
-            </span>
-            <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" id="{{ $id }}-clear">Clear</button>
-        </div>
     </div>
 </div>
 
@@ -53,15 +46,16 @@ function initExerciseSelector(selectorId) {
     const exerciseOptions = document.querySelectorAll(`#${selectorId}-list .exercise-option`);
     const categories = document.querySelectorAll(`#${selectorId}-list .exercise-category`);
     const selectedInput = document.getElementById(`${selectorId}-input`);
-    const selectedDiv = document.getElementById(`${selectorId}-selected`);
-    const selectedName = document.getElementById(`${selectorId}-selected-name`);
-    const clearBtn = document.getElementById(`${selectorId}-clear`);
+    const listContainer = document.getElementById(`${selectorId}-list`);
     
     if (!searchInput) return;
     
-    // Search functionality
+    // Search functionality - show list when typing
     searchInput.addEventListener('input', function() {
         const searchTerm = this.value.toLowerCase();
+        
+        // Show the list when user starts typing
+        listContainer.style.display = 'block';
         
         exerciseOptions.forEach(option => {
             const text = option.getAttribute('data-name').toLowerCase();
@@ -83,6 +77,15 @@ function initExerciseSelector(selectorId) {
         });
     });
     
+    // Show list when focusing on input and reset filters
+    searchInput.addEventListener('focus', function() {
+        listContainer.style.display = 'block';
+        
+        // Show all exercises when opening the list
+        exerciseOptions.forEach(opt => opt.classList.remove('d-none'));
+        categories.forEach(cat => cat.classList.remove('d-none'));
+    });
+    
     // Exercise selection
     exerciseOptions.forEach(option => {
         option.addEventListener('click', function(e) {
@@ -97,25 +100,21 @@ function initExerciseSelector(selectorId) {
             // Set hidden input value
             selectedInput.value = this.getAttribute('data-id');
             
-            // Show selected exercise badge
-            selectedName.textContent = this.getAttribute('data-name');
-            selectedDiv.classList.remove('d-none');
+            // Populate search input with selected exercise name
+            searchInput.value = this.getAttribute('data-name');
+            
+            // Hide the list after selection
+            listContainer.style.display = 'none';
         });
     });
     
-    // Clear selection
-    if (clearBtn) {
-        clearBtn.addEventListener('click', function() {
-            exerciseOptions.forEach(opt => opt.classList.remove('active'));
-            selectedInput.value = '';
-            selectedDiv.classList.add('d-none');
-            searchInput.value = '';
-            
-            // Show all exercises
-            exerciseOptions.forEach(opt => opt.classList.remove('d-none'));
-            categories.forEach(cat => cat.classList.remove('d-none'));
-        });
-    }
+    // Close list when clicking outside
+    document.addEventListener('click', function(e) {
+        const component = searchInput.closest('.exercise-selector-component');
+        if (component && !component.contains(e.target)) {
+            listContainer.style.display = 'none';
+        }
+    });
 }
 
 // Auto-initialize all exercise selectors on page load
@@ -130,3 +129,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @endpush
 @endonce
+

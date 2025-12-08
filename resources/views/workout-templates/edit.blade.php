@@ -136,14 +136,18 @@
                         @csrf
                         @method('PUT')
                         <div class="modal-header">
-                            <h5 class="modal-title">Edit {{ $templateExercise->exercise->name }}</h5>
+                            <h5 class="modal-title">Edit Exercise</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">Video URL (YouTube)</label>
-                                <input type="url" class="form-control" name="video_url" value="{{ $templateExercise->exercise->video_url }}" placeholder="https://www.youtube.com/watch?v=...">
-                                <small class="text-muted">Add a YouTube video link for proper form demonstration</small>
+                                <label class="form-label fw-bold">Exercise <span class="text-danger">*</span></label>
+                                <x-exercise-selector 
+                                    :exercises="$exercises" 
+                                    name="exercise_id"
+                                    id="edit-exercise-selector-{{ $templateExercise->id }}"
+                                    :selected="$templateExercise->exercise_id"
+                                    placeholder="Search exercises..." />
                             </div>
                             <hr>
                             <div class="mb-3">
@@ -152,15 +156,15 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Target Reps</label>
-                                <input type="number" class="form-control" name="target_reps" value="{{ $templateExercise->target_reps }}" min="1">
+                                <input type="number" class="form-control" name="target_reps" value="{{ $templateExercise->target_reps }}" min="1" placeholder="e.g., 10">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Target Weight (kg)</label>
-                                <input type="number" class="form-control" name="target_weight" value="{{ $templateExercise->target_weight }}" step="0.5" min="0">
+                                <input type="number" class="form-control" name="target_weight" value="{{ $templateExercise->target_weight }}" step="0.5" min="0" placeholder="e.g., 60">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Rest (seconds)</label>
-                                <input type="number" class="form-control" name="rest_seconds" value="{{ $templateExercise->rest_seconds }}" min="0">
+                                <input type="number" class="form-control" name="rest_seconds" value="{{ $templateExercise->rest_seconds }}" min="0" placeholder="e.g., 90">
                             </div>
                         </div>
                         <div class="modal-footer">
