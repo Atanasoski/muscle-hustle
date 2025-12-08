@@ -9,9 +9,9 @@
             <h1><i class="bi bi-pencil"></i> Edit: {{ $workoutTemplate->name }}</h1>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ route('workout-templates.index') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
+            <x-button variant="cancel" href="{{ route('workout-templates.index') }}" icon="bi-arrow-left">
+                Back
+            </x-button>
         </div>
     </div>
 
@@ -55,9 +55,9 @@
                             <textarea class="form-control" id="description" name="description" rows="3">{{ old('description', $workoutTemplate->description) }}</textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-check-circle"></i> Update Template
-                        </button>
+                        <x-button variant="save" type="submit" class="w-100">
+                            Update Template
+                        </x-button>
                     </form>
                 </div>
             </div>
@@ -68,9 +68,9 @@
             <div class="card shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Exercises</h5>
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
-                        <i class="bi bi-plus-circle"></i> Add Exercise
-                    </button>
+                    <x-button variant="create" size="sm" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+                        Add Exercise
+                    </x-button>
                 </div>
                 <div class="card-body">
                     @if($workoutTemplate->workoutTemplateExercises->count() > 0)
@@ -102,15 +102,15 @@
                                             </small>
                                         </div>
                                         <div class="btn-group">
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editExerciseModal{{ $templateExercise->id }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
+                                            <x-button variant="edit" size="sm" class="btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editExerciseModal{{ $templateExercise->id }}">
+                                                <span class="visually-hidden">Edit</span>
+                                            </x-button>
                                             <form action="{{ route('workout-templates.remove-exercise', [$workoutTemplate, $templateExercise]) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this exercise?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <x-button variant="delete" size="sm" type="submit" class="btn-outline-danger">
+                                                    <span class="visually-hidden">Delete</span>
+                                                </x-button>
                                             </form>
                                         </div>
                                     </div>
@@ -164,8 +164,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                            <x-button variant="save" type="submit">Save Changes</x-button>
                         </div>
                     </form>
                 </div>
@@ -211,8 +211,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Exercise</button>
+                    <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                    <x-button variant="create" type="submit">Add Exercise</x-button>
                 </div>
             </form>
         </div>

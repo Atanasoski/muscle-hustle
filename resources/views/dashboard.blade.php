@@ -125,9 +125,9 @@
                                     <form action="{{ route('workouts.start') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="template_id" value="{{ $todayWorkout->id }}">
-                                        <button type="submit" class="btn btn-success w-100 py-2 shadow-sm">
-                                            <i class="bi bi-play-circle-fill me-2"></i> Start Workout
-                                        </button>
+                                        <x-button variant="success" type="submit" class="w-100 py-2 shadow-sm" icon="bi-play-circle-fill">
+                                            Start Workout
+                                        </x-button>
                                     </form>
                                 @else
                                     <div class="alert alert-success border-0 shadow-sm mb-0 py-2">
@@ -165,9 +165,9 @@
                                     <i class="bi bi-exclamation-triangle me-2"></i>
                                     No exercises added yet to this template.
                                 </div>
-                                <a href="{{ route('workout-templates.edit', $todayWorkout) }}" class="btn btn-primary w-100">
-                                    <i class="bi bi-plus-circle me-2"></i> Add Exercises
-                                </a>
+                                <x-button variant="create" href="{{ route('workout-templates.edit', $todayWorkout) }}" class="w-100">
+                                    Add Exercises
+                                </x-button>
                             @endif
                         </div>
                     @else
@@ -192,9 +192,9 @@
                         <h5 class="mb-0 d-flex align-items-center">
                             <i class="bi bi-egg-fried me-2"></i> Today's Nutrition
                         </h5>
-                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#quickLogMealModal">
-                            <i class="bi bi-plus-circle me-1"></i> Quick Log
-                        </button>
+                        <x-button variant="secondary" size="sm" class="btn-light" data-bs-toggle="modal" data-bs-target="#quickLogMealModal">
+                            Quick Log
+                        </x-button>
                     </div>
                 </div>
                 <div class="card-body p-3">
@@ -246,9 +246,9 @@
                         <div class="text-center py-3">
                             <i class="bi bi-egg fs-1 text-muted mb-2"></i>
                             <h6 class="text-muted mb-3">No meals planned for today</h6>
-                            <a href="{{ route('planner.meals') }}" class="btn btn-success">
-                                <i class="bi bi-plus-circle me-2"></i> Plan Your Meals
-                            </a>
+                            <x-button variant="create" href="{{ route('planner.meals') }}">
+                                Plan Your Meals
+                            </x-button>
                         </div>
                     @endif
                 </div>
@@ -320,9 +320,9 @@
                             <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
                             <h6 class="text-muted mb-2">No workouts planned this week</h6>
                             <p class="text-muted small mb-3">Get started by planning your weekly training schedule</p>
-                            <a href="{{ route('planner.workouts') }}" class="btn btn-primary">
-                                <i class="bi bi-calendar-plus me-2"></i> Plan Your Week
-                            </a>
+                            <x-button variant="primary" href="{{ route('planner.workouts') }}" icon="bi-calendar-plus">
+                                Plan Your Week
+                            </x-button>
                         </div>
                     @endif
                 </div>
@@ -383,9 +383,9 @@
                         <p class="text-muted small mb-3">Describe what you ate and let AI calculate the nutrition!</p>
                         <textarea class="form-control mb-2" id="quickLogAiInput" rows="3" 
                                   placeholder="Example: 200g grilled chicken breast, 1 cup brown rice, steamed broccoli, 1 tbsp olive oil"></textarea>
-                        <button type="button" class="btn btn-warning btn-sm w-100" id="quickLogAiBtn">
-                            <i class="bi bi-magic me-2"></i> Calculate with AI
-                        </button>
+                        <x-button variant="warning" size="sm" class="w-100" id="quickLogAiBtn" icon="bi-magic">
+                            Calculate with AI
+                        </x-button>
                         <div class="mt-2" id="quickLogAiLoading" style="display: none;">
                             <div class="text-center">
                                 <div class="spinner-border spinner-border-sm text-warning" role="status">
@@ -450,10 +450,10 @@
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle me-1"></i> Log Meal
-                    </button>
+                    <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                    <x-button variant="save" type="submit">
+                        Log Meal
+                    </x-button>
                 </div>
             </form>
         </div>

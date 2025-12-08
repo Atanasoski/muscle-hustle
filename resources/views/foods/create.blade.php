@@ -8,9 +8,9 @@
         <div class="col-lg-8">
             <!-- Header -->
             <div class="d-flex align-items-center mb-4">
-                <a href="{{ route('foods.index') }}" class="btn btn-outline-secondary btn-sm me-3">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
+                <x-button variant="cancel" size="sm" href="{{ route('foods.index') }}" class="btn-outline-secondary me-3" icon="bi-arrow-left">
+                    Back
+                </x-button>
                 <div>
                     <h1 class="h3 fw-bold mb-0">Add Custom Food</h1>
                     <p class="text-muted small mb-0">Add a new food item to your personal database</p>
@@ -126,10 +126,10 @@
 
                 <!-- Submit Buttons -->
                 <div class="d-flex gap-3">
-                    <button type="submit" class="btn btn-success btn-lg flex-fill">
-                        <i class="bi bi-check-circle me-2"></i> Add Food
-                    </button>
-                    <a href="{{ route('foods.index') }}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                    <x-button variant="create" type="submit" size="lg" class="flex-fill">
+                        Add Food
+                    </x-button>
+                    <x-button variant="cancel" size="lg" href="{{ route('foods.index') }}" class="btn-outline-secondary">Cancel</x-button>
                 </div>
             </form>
         </div>

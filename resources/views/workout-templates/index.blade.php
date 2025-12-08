@@ -12,9 +12,9 @@
             <p class="text-muted">Create and manage your workout routines</p>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ route('workout-templates.create') }}" class="btn btn-danger btn-lg shadow">
-                <i class="bi bi-plus-circle me-2"></i> New Template
-            </a>
+            <x-button variant="create" size="lg" href="{{ route('workout-templates.create') }}" class="btn-danger shadow">
+                New Template
+            </x-button>
         </div>
     </div>
 
@@ -56,15 +56,15 @@
                         </div>
                         <div class="card-footer bg-white border-0 p-3">
                             <div class="d-flex gap-2">
-                                <a href="{{ route('workout-templates.edit', $template) }}" class="btn btn-outline-danger flex-fill">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
+                                <x-button variant="edit" href="{{ route('workout-templates.edit', $template) }}" class="btn-outline-danger flex-fill">
+                                    Edit
+                                </x-button>
                                 <form action="{{ route('workout-templates.destroy', $template) }}" method="POST" onsubmit="return confirm('Delete this template?')" class="flex-fill">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-secondary w-100">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
+                                    <x-button variant="delete" type="submit" class="btn-outline-secondary w-100">
+                                        Delete
+                                    </x-button>
                                 </form>
                             </div>
                         </div>
@@ -80,9 +80,9 @@
                         <i class="bi bi-inbox display-1 text-muted opacity-50 mb-4"></i>
                         <h4 class="mb-3">No Templates Yet</h4>
                         <p class="text-muted mb-4">Create your first workout template to get started!</p>
-                        <a href="{{ route('workout-templates.create') }}" class="btn btn-danger btn-lg">
-                            <i class="bi bi-plus-circle me-2"></i> Create Template
-                        </a>
+                        <x-button variant="create" size="lg" href="{{ route('workout-templates.create') }}" class="btn-danger">
+                            Create Template
+                        </x-button>
                     </div>
                 </div>
             </div>

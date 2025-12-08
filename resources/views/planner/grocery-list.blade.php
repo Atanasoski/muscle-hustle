@@ -15,12 +15,12 @@
                     <p class="text-muted mb-0">Week of {{ $weekStart->format('M d, Y') }}</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('planner.meals') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Back to Meals
-                    </a>
-                    <button onclick="window.print()" class="btn btn-primary">
-                        <i class="bi bi-printer"></i> Print List
-                    </button>
+                    <x-button variant="cancel" href="{{ route('planner.meals') }}" class="btn-outline-secondary" icon="bi-arrow-left">
+                        Back to Meals
+                    </x-button>
+                    <x-button variant="primary" onclick="window.print()" icon="bi-printer">
+                        Print List
+                    </x-button>
                 </div>
             </div>
         </div>
@@ -52,12 +52,12 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2 justify-content-center mt-4">
-                    <a href="{{ route('recipes.index') }}" class="btn btn-outline-success">
-                        <i class="bi bi-book me-2"></i> View My Recipes
-                    </a>
-                    <a href="{{ route('planner.meals') }}" class="btn btn-success">
-                        <i class="bi bi-calendar-week me-2"></i> Plan This Week
-                    </a>
+                    <x-button variant="success" href="{{ route('recipes.index') }}" class="btn-outline-success" icon="bi-book">
+                        View My Recipes
+                    </x-button>
+                    <x-button variant="create" href="{{ route('planner.meals') }}" icon="bi-calendar-week">
+                        Plan This Week
+                    </x-button>
                 </div>
             </div>
         </div>

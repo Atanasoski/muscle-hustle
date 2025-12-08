@@ -134,17 +134,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a href="{{ route('workouts.session', $session) }}" class="btn btn-success btn-lg w-100 py-2 py-md-3 shadow">
-                                    <i class="bi bi-play-circle-fill me-2"></i> Continue Workout
-                                </a>
+                                <x-button variant="success" size="lg" href="{{ route('workouts.session', $session) }}" class="w-100 py-2 py-md-3 shadow" icon="bi-play-circle-fill">
+                                    Continue Workout
+                                </x-button>
                             @else
                                 <form action="{{ route('workouts.start') }}" method="POST" class="mt-3 mt-md-4">
                                     @csrf
                                     <input type="hidden" name="template_id" value="{{ $template->id }}">
-                                    <button type="submit" class="btn btn-success btn-lg w-100 py-2 py-md-3 shadow">
-                                        <i class="bi bi-play-circle-fill me-2"></i> 
-                                        <span>Start Workout</span>
-                                    </button>
+                                    <x-button variant="success" type="submit" size="lg" class="w-100 py-2 py-md-3 shadow" icon="bi-play-circle-fill">
+                                        Start Workout
+                                    </x-button>
                                 </form>
                             @endif
                         @else
@@ -152,9 +151,9 @@
                                 <i class="bi bi-inbox display-1 text-muted mb-3"></i>
                                 <h5 class="text-muted mb-3">No Exercises Added</h5>
                                 <p class="text-muted mb-4">This template doesn't have any exercises yet. Let's add some!</p>
-                                <a href="{{ route('workout-templates.edit', $template) }}" class="btn btn-danger btn-lg">
-                                    <i class="bi bi-plus-circle me-2"></i> Add Exercises
-                                </a>
+                                <x-button variant="create" size="lg" href="{{ route('workout-templates.edit', $template) }}" class="btn-danger">
+                                    Add Exercises
+                                </x-button>
                             </div>
                         @endif
                     </div>
@@ -247,9 +246,9 @@
                         <p class="text-muted mb-4">
                             Assign workout templates to specific days of the week and stay on track with your fitness goals.
                         </p>
-                        <a href="{{ route('planner.workouts') }}" class="btn btn-danger btn-lg px-5">
-                            <i class="bi bi-calendar-plus me-2"></i> Go to Workout Planner
-                        </a>
+                        <x-button variant="primary" size="lg" href="{{ route('planner.workouts') }}" class="btn-danger px-5" icon="bi-calendar-plus">
+                            Go to Workout Planner
+                        </x-button>
                     </div>
                 </div>
             </div>

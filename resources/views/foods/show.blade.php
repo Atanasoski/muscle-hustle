@@ -9,9 +9,9 @@
             <!-- Header -->
             <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
                 <div class="d-flex align-items-center">
-                    <a href="{{ route('foods.index') }}" class="btn btn-outline-secondary btn-sm me-3">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
+                    <x-button variant="cancel" size="sm" href="{{ route('foods.index') }}" class="btn-outline-secondary me-3" icon="bi-arrow-left">
+                        Back
+                    </x-button>
                     <div>
                         <h1 class="h3 fw-bold mb-0">{{ $food->name }}</h1>
                         @if($food->category)
@@ -24,15 +24,15 @@
                 
                 @if($food->user_id === auth()->id())
                     <div class="d-flex gap-2">
-                        <a href="{{ route('foods.edit', $food) }}" class="btn btn-primary">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
+                        <x-button variant="edit" href="{{ route('foods.edit', $food) }}">
+                            Edit
+                        </x-button>
                         <form action="{{ route('foods.destroy', $food) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this food?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            <x-button variant="delete" type="submit" class="btn-outline-danger">
+                                <span class="visually-hidden">Delete</span>
+                            </x-button>
                         </form>
                     </div>
                 @endif

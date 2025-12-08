@@ -30,15 +30,15 @@
                             <p class="card-text text-muted mb-3">{{ $weeklyPlan[$index]->description ?: 'No description provided' }}</p>
                             
                             <div class="d-flex gap-2">
-                                <a href="{{ route('workout-templates.edit', $weeklyPlan[$index]) }}" class="btn btn-sm btn-info text-white flex-fill">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
+                                <x-button variant="edit" size="sm" href="{{ route('workout-templates.edit', $weeklyPlan[$index]) }}" class="flex-fill">
+                                    Edit
+                                </x-button>
                                 <form action="{{ route('planner.workouts.unassign') }}" method="POST" class="flex-fill" onsubmit="return confirm('Remove this workout from {{ $day }}?')">
                                     @csrf
                                     <input type="hidden" name="template_id" value="{{ $weeklyPlan[$index]->id }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
-                                        <i class="bi bi-x-circle"></i> Remove
-                                    </button>
+                                    <x-button variant="cancel" size="sm" type="submit" class="btn-outline-secondary w-100" icon="bi-x-circle">
+                                        Remove
+                                    </x-button>
                                 </form>
                             </div>
                         @else
@@ -46,9 +46,9 @@
                                 <p class="text-muted mb-3">
                                     <i class="bi bi-dash-circle"></i> No workout assigned
                                 </p>
-                                <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#assignModal{{ $index }}">
-                                    <i class="bi bi-plus-circle me-2"></i> Assign Workout
-                                </button>
+                                <x-button variant="info" data-bs-toggle="modal" data-bs-target="#assignModal{{ $index }}">
+                                    Assign Workout
+                                </x-button>
                             </div>
                         @endif
                     </div>
@@ -76,8 +76,8 @@
                                 </select>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Assign</button>
+                                <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                                <x-button variant="save" type="submit">Assign</x-button>
                             </div>
                         </form>
                     </div>
@@ -99,9 +99,9 @@
                                     <span class="badge bg-primary text-white ms-2">{{ $days[$template->day_of_week] }}</span>
                                 @endif
                             </div>
-                            <a href="{{ route('workout-templates.edit', $template) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-pencil"></i>
-                            </a>
+                            <x-button variant="edit" size="sm" href="{{ route('workout-templates.edit', $template) }}" class="btn-outline-primary">
+                                <span class="visually-hidden">Edit</span>
+                            </x-button>
                         </div>
                     @endforeach
                 </div>

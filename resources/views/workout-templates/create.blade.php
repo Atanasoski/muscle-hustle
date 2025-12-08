@@ -50,12 +50,12 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('workout-templates.index') }}" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Create Template
-                            </button>
+                            <x-button variant="cancel" href="{{ route('workout-templates.index') }}" icon="bi-arrow-left">
+                                Cancel
+                            </x-button>
+                            <x-button variant="create" type="submit">
+                                Create Template
+                            </x-button>
                         </div>
                     </form>
                 </div>

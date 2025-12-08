@@ -12,9 +12,9 @@
                 </h1>
                 <p class="text-muted mb-0 small">Week starting: {{ $weekStart->format('M d, Y') }}</p>
             </div>
-            <a href="{{ route('planner.grocery-list') }}" class="btn btn-primary">
-                <i class="bi bi-cart3 me-2"></i> Generate Grocery List
-            </a>
+            <x-button variant="primary" href="{{ route('planner.grocery-list') }}" icon="bi-cart3">
+                Generate Grocery List
+            </x-button>
         </div>
     </div>
 
@@ -85,9 +85,9 @@
                                                         <form action="{{ route('meals.foods.remove', [$meal, $food]) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">
-                                                                <i class="bi bi-x"></i>
-                                                            </button>
+                                                            <x-button variant="delete" size="sm" type="submit" class="btn-outline-danger" title="Remove">
+                                                                <span class="visually-hidden">Remove</span>
+                                                            </x-button>
                                                         </form>
                                                     </div>
                                                 @endforeach
@@ -121,24 +121,24 @@
                                         
                                         <!-- Actions -->
                                         <div class="d-flex gap-2 mt-auto">
-                                            <button class="btn btn-outline-success btn-sm flex-fill" 
+                                            <x-button variant="create" size="sm" class="btn-outline-success flex-fill" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#addFoodModal{{ $meal->id }}">
-                                                <i class="bi bi-plus-circle"></i> Add Food
-                                            </button>
-                                            <button class="btn btn-outline-primary btn-sm flex-fill" 
+                                                Add Food
+                                            </x-button>
+                                            <x-button variant="edit" size="sm" class="btn-outline-primary flex-fill" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#editMealModal{{ $dayIndex }}{{ $type }}">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </button>
+                                                Edit
+                                            </x-button>
                                             <form action="{{ route('planner.meals.destroy', $meal) }}" 
                                                   method="POST" class="flex-fill" 
                                                   onsubmit="return confirm('Delete this meal?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                                    <i class="bi bi-trash"></i> Delete
-                                                </button>
+                                                <x-button variant="delete" size="sm" type="submit" class="btn-outline-danger w-100">
+                                                    Delete
+                                                </x-button>
                                             </form>
                                         </div>
                                     @else
@@ -146,11 +146,11 @@
                                         <div class="text-center py-4">
                                             <i class="bi bi-{{ $typeIcons[$type] }} text-muted mb-2" style="font-size: 2rem;"></i>
                                             <p class="text-muted mb-3 small">No meal planned</p>
-                                            <button class="btn btn-outline-success btn-sm" 
+                                            <x-button variant="create" size="sm" class="btn-outline-success"
                                                     data-bs-toggle="modal" 
-                                                    data-bs-target="#addMealModal{{ $dayIndex }}{{ $type }}">
-                                                <i class="bi bi-plus-lg"></i> Add Meal
-                                            </button>
+                                                    data-bs-target="#addMealModal{{ $dayIndex }}{{ $type }}" icon="bi-plus-lg">
+                                                Add Meal
+                                            </x-button>
                                         </div>
                                     @endif
                                 </div>
@@ -322,11 +322,10 @@
                                               rows="3" 
                                               placeholder="Example: 2 chicken breasts, 1 cup brown rice, handful of broccoli, 1 tbsp olive oil"></textarea>
                                     
-                                    <button type="button" 
-                                            class="btn btn-warning btn-sm w-100 ai-parse-btn" 
-                                            data-modal-id="{{ $dayIndex }}{{ $type }}">
-                                        <i class="bi bi-magic"></i> Calculate Nutrition with AI
-                                    </button>
+                                    <x-button variant="warning" size="sm" class="w-100 ai-parse-btn"
+                                            data-modal-id="{{ $dayIndex }}{{ $type }}" icon="bi-magic">
+                                        Calculate Nutrition with AI
+                                    </x-button>
                                     
                                     <div id="aiParseResult{{ $dayIndex }}{{ $type }}" class="mt-3" style="display: none;">
                                         <div class="alert alert-success mb-0">
@@ -372,10 +371,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-check-circle me-1"></i> Save Meal
-                            </button>
+                            <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                            <x-button variant="save" type="submit">
+                                Save Meal
+                            </x-button>
                         </div>
                     </form>
                 </div>
@@ -458,10 +457,10 @@
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-plus-circle"></i> Add Food
-                                    </button>
+                                    <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                                    <x-button variant="create" type="submit">
+                                        Add Food
+                                    </x-button>
                                 </div>
                             </form>
                         </div>

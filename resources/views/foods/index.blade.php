@@ -12,9 +12,9 @@
             </h1>
             <p class="text-muted mb-0 small">Browse and manage nutrition information</p>
         </div>
-        <a href="{{ route('foods.create') }}" class="btn btn-success">
-            <i class="bi bi-plus-circle me-2"></i> Add Custom Food
-        </a>
+        <x-button variant="create" href="{{ route('foods.create') }}">
+            Add Custom Food
+        </x-button>
     </div>
 
     <!-- Search & Filters -->
@@ -41,18 +41,18 @@
                         </select>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-search"></i> Filter
-                        </button>
+                        <x-button variant="primary" type="submit" class="w-100" icon="bi-search">
+                            Filter
+                        </x-button>
                     </div>
                 </div>
             </form>
             
             @if(request()->has(['search', 'ownership']) && (request('search') || request('ownership')))
                 <div class="mt-3">
-                    <a href="{{ route('foods.index') }}" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-x-circle"></i> Clear Filters
-                    </a>
+                    <x-button variant="cancel" size="sm" href="{{ route('foods.index') }}" class="btn-outline-secondary" icon="bi-x-circle">
+                        Clear Filters
+                    </x-button>
                 </div>
             @endif
         </div>
@@ -113,19 +113,19 @@
                                         </td>
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <a href="{{ route('foods.show', $food) }}" class="btn btn-outline-primary" title="View">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
+                                                <x-button variant="primary" href="{{ route('foods.show', $food) }}" class="btn-outline-primary" icon="bi-eye" title="View">
+                                                    <span class="visually-hidden">View</span>
+                                                </x-button>
                                                 @if($food->user_id === auth()->id())
-                                                    <a href="{{ route('foods.edit', $food) }}" class="btn btn-outline-secondary" title="Edit">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
+                                                    <x-button variant="edit" href="{{ route('foods.edit', $food) }}" class="btn-outline-secondary" title="Edit">
+                                                        <span class="visually-hidden">Edit</span>
+                                                    </x-button>
                                                     <form action="{{ route('foods.destroy', $food) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this food?')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
+                                                        <x-button variant="delete" type="submit" class="btn-outline-danger" title="Delete">
+                                                            <span class="visually-hidden">Delete</span>
+                                                        </x-button>
                                                     </form>
                                                 @endif
                                             </div>

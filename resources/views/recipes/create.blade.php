@@ -8,9 +8,9 @@
         <div class="col-lg-10">
             <!-- Header -->
             <div class="d-flex align-items-center mb-4">
-                <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary btn-sm me-3">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
+                <x-button variant="cancel" size="sm" href="{{ route('recipes.index') }}" class="btn-outline-secondary me-3" icon="bi-arrow-left">
+                    Back
+                </x-button>
                 <div>
                     <h1 class="h3 fw-bold mb-0">Create New Recipe</h1>
                     <p class="text-muted small mb-0">Build your recipe from scratch or use AI to parse ingredients</p>
@@ -97,9 +97,9 @@
                                       style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3);">{{ old('ai_ingredient_text') }}</textarea>
                         </div>
                         
-                        <button type="button" class="btn btn-light btn-lg w-100" id="parse-ai-ingredients-btn">
-                            <i class="bi bi-magic me-2"></i> Parse Ingredients with AI
-                        </button>
+                        <x-button variant="secondary" size="lg" class="btn-light w-100" id="parse-ai-ingredients-btn" icon="bi-magic">
+                            Parse Ingredients with AI
+                        </x-button>
                         
                         <div class="ai-loading-spinner text-center mt-3" style="display: none;">
                             <div class="spinner-border text-light" role="status">
@@ -118,9 +118,9 @@
                     <div class="card-header bg-white border-0 py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold mb-0"><i class="bi bi-list-check me-2"></i> Ingredients</h5>
-                            <button type="button" class="btn btn-sm btn-success" id="add-ingredient-btn">
-                                <i class="bi bi-plus"></i> Add Ingredient
-                            </button>
+                            <x-button variant="create" size="sm" id="add-ingredient-btn" icon="bi-plus">
+                                Add Ingredient
+                            </x-button>
                         </div>
                     </div>
                     <div class="card-body p-4">
@@ -161,9 +161,9 @@
                                                        name="ingredients[{{ $index }}][notes]" value="{{ $ingredient['notes'] ?? '' }}" placeholder="optional">
                                             </div>
                                             <div class="col-md-1 d-flex align-items-end">
-                                                <button type="button" class="btn btn-sm btn-outline-danger remove-ingredient-btn w-100">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <x-button variant="delete" size="sm" class="btn-outline-danger remove-ingredient-btn w-100">
+                                                    <span class="visually-hidden">Remove</span>
+                                                </x-button>
                                             </div>
                                         </div>
                                     </div>
@@ -193,10 +193,10 @@
 
                 <!-- Submit Buttons -->
                 <div class="d-flex gap-3">
-                    <button type="submit" class="btn btn-success btn-lg flex-fill">
-                        <i class="bi bi-check-circle me-2"></i> Create Recipe
-                    </button>
-                    <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                    <x-button variant="create" type="submit" size="lg" class="flex-fill">
+                        Create Recipe
+                    </x-button>
+                    <x-button variant="cancel" size="lg" href="{{ route('recipes.index') }}" class="btn-outline-secondary">Cancel</x-button>
                 </div>
             </form>
         </div>
@@ -331,9 +331,9 @@ function addIngredientRow(foodId = '', quantity = '', unit = '', notes = '') {
                            name="ingredients[${ingredientIndex}][notes]" value="${notes}" placeholder="optional">
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-ingredient-btn w-100">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <x-button variant="delete" size="sm" class="btn-outline-danger remove-ingredient-btn w-100">
+                        <span class="visually-hidden">Remove</span>
+                    </x-button>
                 </div>
             </div>
         </div>

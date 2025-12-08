@@ -9,13 +9,13 @@
             <!-- Header -->
             <div class="mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
+                    <x-button variant="cancel" size="sm" href="{{ route('recipes.index') }}" icon="bi-arrow-left" class="btn-outline-secondary">
+                        Back
+                    </x-button>
                     <div class="d-flex align-items-center gap-2">
-                        <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
+                        <x-button variant="edit" size="sm" href="{{ route('recipes.edit', $recipe) }}">
+                            Edit
+                        </x-button>
                     </div>
                 </div>
                 <div>

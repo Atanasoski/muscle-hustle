@@ -14,9 +14,9 @@
                     </h1>
                     <p class="text-muted mb-0">Create and manage your favorite meals</p>
                 </div>
-                <a href="{{ route('recipes.create') }}" class="btn btn-success">
-                    <i class="bi bi-plus-circle me-2"></i> Create Recipe
-                </a>
+                <x-button variant="create" href="{{ route('recipes.create') }}">
+                    Create Recipe
+                </x-button>
             </div>
         </div>
     </div>
@@ -51,18 +51,18 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-search"></i> Filter
-                            </button>
+                            <x-button variant="primary" type="submit" class="w-100" icon="bi-search">
+                                Filter
+                            </x-button>
                         </div>
                     </div>
                 </form>
                 
                 @if(request()->has(['search', 'meal_type', 'favorites']) && (request('search') || request('meal_type') || request('favorites')))
                     <div class="mt-3">
-                        <a href="{{ route('recipes.index') }}" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-x-circle"></i> Clear Filters
-                        </a>
+                        <x-button variant="cancel" size="sm" href="{{ route('recipes.index') }}" class="btn-outline-secondary" icon="bi-x-circle">
+                            Clear Filters
+                        </x-button>
                     </div>
                 @endif
             </div>
@@ -87,18 +87,18 @@
                         <a href="{{ route('recipes.index') }}" class="text-decoration-none">clear your filters</a>.
                     </p>
                     <div class="d-flex gap-2 justify-content-center">
-                        <a href="{{ route('recipes.index') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-circle me-2"></i> Clear Filters
-                        </a>
+                        <x-button variant="cancel" href="{{ route('recipes.index') }}" class="btn-outline-secondary" icon="bi-x-circle">
+                            Clear Filters
+                        </x-button>
                     </div>
                 @else
                     <!-- Truly No Recipes -->
                     <i class="bi bi-book display-1 text-muted mb-3"></i>
                     <h4 class="fw-bold mb-2">No Recipes Yet</h4>
                     <p class="text-muted mb-4">Create your first recipe and start building your meal library!</p>
-                    <a href="{{ route('recipes.create') }}" class="btn btn-success btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i> Create Your First Recipe
-                    </a>
+                    <x-button variant="create" size="lg" href="{{ route('recipes.create') }}">
+                        Create Your First Recipe
+                    </x-button>
                 @endif
             </div>
         </div>
@@ -185,18 +185,18 @@
 
                             <!-- Actions -->
                             <div class="d-flex gap-2">
-                                <a href="{{ route('recipes.show', $recipe) }}" class="btn btn-outline-primary btn-sm flex-fill">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                                <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-outline-secondary btn-sm flex-fill">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this recipe?')">
+                                <x-button variant="primary" size="sm" href="{{ route('recipes.show', $recipe) }}" class="btn-outline-primary flex-fill">
+                                    View
+                                </x-button>
+                                <x-button variant="edit" size="sm" href="{{ route('recipes.edit', $recipe) }}" class="btn-outline-info flex-fill">
+                                    Edit
+                                </x-button>
+                                <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" onsubmit="return confirm('Delete this recipe?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <x-button variant="delete" size="sm" type="submit" class="btn-outline-danger">
+                                        <span class="visually-hidden">Delete</span>
+                                    </x-button>
                                 </form>
                             </div>
                         </div>

@@ -25,9 +25,9 @@
                             <form action="{{ route('workouts.cancel', $session) }}" method="POST" onsubmit="return confirm('Cancel workout? All logged sets will be deleted.')" class="d-inline">
                             @csrf
                             @method('DELETE')
-                                <button type="submit" class="btn btn-light btn-sm">
-                                    <i class="bi bi-x-circle"></i> Cancel
-                            </button>
+                                <x-button variant="cancel" type="submit" size="sm" class="btn-light">
+                                    Cancel
+                            </x-button>
                         </form>
                         </div>
                     </div>
@@ -191,29 +191,29 @@
                                             <td class="text-center">
                                                 @if($set['is_completed'])
                                                     <div class="d-flex gap-2 justify-content-center">
-                                                        <button class="btn btn-sm btn-outline-primary edit-set-btn" 
+                                                        <x-button variant="edit" size="sm" class="btn-outline-primary edit-set-btn" 
                                                                 data-set-id="{{ $set['logged_set_id'] }}"
                                                                 data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}"
                                                                 data-set-number="{{ $set['set_number'] }}"
                                                                 data-weight="{{ $set['current_weight'] }}"
                                                                 data-reps="{{ $set['current_reps'] }}">
-                                                            <i class="bi bi-pencil"></i>
-                                                        </button>
+                                                            <span class="visually-hidden">Edit</span>
+                                                        </x-button>
                                                         @if($set['set_number'] === $lastCompletedSet)
-                                                            <button class="btn btn-sm btn-outline-danger delete-set-btn" 
+                                                            <x-button variant="delete" size="sm" class="btn-outline-danger delete-set-btn" 
                                                                     data-set-id="{{ $set['logged_set_id'] }}"
                                                                     data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
+                                                                <span class="visually-hidden">Delete</span>
+                                                            </x-button>
                                                         @endif
                                                     </div>
                                                 @elseif($set['is_active'])
-                                                    <button class="btn btn-sm btn-success log-set-btn" 
+                                                    <x-button variant="save" size="sm" class="btn-success log-set-btn" 
                                                             data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}"
                                                             data-set-number="{{ $set['set_number'] }}"
-                                                            data-rest-seconds="{{ $exerciseData['rest_seconds'] }}">
-                                                        <i class="bi bi-check-circle"></i> Log
-                                                    </button>
+                                                            data-rest-seconds="{{ $exerciseData['rest_seconds'] }}" icon="bi-check-circle">
+                                                        Log
+                                                    </x-button>
                                                 @else
                                                     <button class="btn btn-sm btn-secondary" disabled>
                                                         <i class="bi bi-lock"></i>
@@ -240,10 +240,10 @@
                         <textarea class="form-control mb-4" name="notes" rows="4" 
                                   placeholder="How did it go? Any observations or notes...">{{ $session->notes }}</textarea>
                         
-                        <button type="submit" class="btn btn-danger btn-lg w-100 py-3 shadow" 
-                                onclick="return confirm('Complete this workout?')">
-                            <i class="bi bi-check-circle-fill me-2"></i> Complete Workout
-                        </button>
+                        <x-button variant="danger" type="submit" size="lg" class="w-100 py-3 shadow" 
+                                confirm="Complete this workout?" icon="bi-check-circle-fill">
+                            Complete Workout
+                        </x-button>
                     </form>
                 </div>
             </div>

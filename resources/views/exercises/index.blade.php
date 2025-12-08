@@ -11,9 +11,9 @@
             </h1>
             <p class="text-muted mb-0 small">Manage your exercises and video tutorials</p>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createExerciseModal">
-            <i class="bi bi-plus-circle me-2"></i> Add Custom Exercise
-        </button>
+        <x-button variant="create" data-bs-toggle="modal" data-bs-target="#createExerciseModal">
+            Add Custom Exercise
+        </x-button>
     </div>
 
     <!-- Search Bar -->
@@ -85,11 +85,13 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary" 
+                                            <x-button variant="edit" 
+                                                    size="sm"
+                                                    class="btn-outline-primary"
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#editExerciseModal{{ $exercise->id }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
+                                                <span class="visually-hidden">Edit</span>
+                                            </x-button>
                                             @if($exercise->user_id)
                                                 <form action="{{ route('exercises.destroy', $exercise) }}" 
                                                       method="POST" 
@@ -97,9 +99,9 @@
                                                       onsubmit="return confirm('Delete this exercise?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
+                                                    <x-button variant="delete" size="sm" type="submit" class="btn-outline-danger">
+                                                        <span class="visually-hidden">Delete</span>
+                                                    </x-button>
                                                 </form>
                                             @endif
                                         </td>
@@ -151,10 +153,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Create Exercise
-                    </button>
+                    <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                    <x-button variant="create" type="submit">
+                        Create Exercise
+                    </x-button>
                 </div>
             </form>
         </div>
@@ -222,10 +224,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi btn-check-circle me-1"></i> Save Changes
-                            </button>
+                            <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
+                            <x-button variant="save" type="submit">
+                                Save Changes
+                            </x-button>
                         </div>
                     </form>
                 </div>
