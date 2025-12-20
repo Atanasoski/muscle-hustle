@@ -24,6 +24,9 @@ class UserResource extends JsonResource
                     'id' => $this->partner->id,
                     'name' => $this->partner->name,
                     'slug' => $this->partner->slug,
+                    'visual_identity' => $this->partner->identity
+                        ? new PartnerVisualIdentityResource($this->partner->identity)
+                        : null,
                 ];
             }),
             'email_verified_at' => $this->email_verified_at,
