@@ -92,7 +92,15 @@
                     <div>
                         <span class="font-semibold block mb-2">Logo:</span>
                         @if($partner->identity->logo)
-                            <code class="text-sm">{{ $partner->identity->logo }}</code>
+                            <div class="flex items-start gap-4">
+                                <img src="{{ asset($partner->identity->logo) }}" alt="{{ $partner->name }} Logo" class="w-24 h-24 object-contain rounded-lg border border-gray-200 p-2 bg-white">
+                                <div class="flex-1">
+                                    <code class="text-xs text-gray-600 block mb-2 break-all">{{ $partner->identity->logo }}</code>
+                                    <a href="{{ asset($partner->identity->logo) }}" target="_blank" class="text-sm text-blue-600 hover:underline">
+                                        View full size
+                                    </a>
+                                </div>
+                            </div>
                         @else
                             <span class="text-gray-400">Not set</span>
                         @endif
