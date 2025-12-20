@@ -84,6 +84,13 @@
                             </li>
                         </ul>
                     </li>
+
+                    <!-- Partners (Admin) -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" href="{{ route('partners.index') }}">
+                            <i class="bi bi-building"></i> Partners
+                        </a>
+                    </li>
                 @endauth
             </ul>
             <ul class="navbar-nav align-items-center">

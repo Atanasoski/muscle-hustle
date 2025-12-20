@@ -7,6 +7,10 @@
 
     <title>{{ config('app.name', 'Muscle Hustle') }} - @yield('title', 'Fitness Tracker')</title>
 
+    <!-- BladewindUI CSS -->
+    <link href="{{ asset('vendor/bladewind/css/animate.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('vendor/bladewind/css/bladewind-ui.min.css') }}" rel="stylesheet" />
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -372,6 +376,9 @@
     <main class="py-4">
         @yield('content')
     </main>
+
+    <!-- BladewindUI JS -->
+    <script src="{{ asset('vendor/bladewind/js/helpers.js') }}"></script>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

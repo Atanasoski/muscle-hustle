@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             WorkoutTemplateSeeder::class, // Create workout templates with exercises
             FoodSeeder::class,           // Create global food database
             MealPlanSeeder::class,       // Create meal plans with meals
+            PartnerSeeder::class,        // Create partners with identities
         ]);
 
         $this->command->info('');

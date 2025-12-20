@@ -21,6 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Partner Management
+    Route::resource('partners', \App\Http\Controllers\PartnerController::class);
+
     // Workout Templates CRUD
     Route::resource('workout-templates', WorkoutTemplateController::class);
 

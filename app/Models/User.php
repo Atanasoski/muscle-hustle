@@ -86,4 +86,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Recipe::class);
     }
+
+    /**
+     * Get the partner that the user belongs to.
+     */
+    public function partner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Partner::class);
+    }
 }
