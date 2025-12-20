@@ -27,9 +27,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
     Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
     Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
-    Route::get('/exercises/pixabay/search', [ExerciseController::class, 'searchPixabay'])->name('exercises.pixabay.search');
-    Route::post('/exercises/{exercise}/pixabay/download', [ExerciseController::class, 'downloadPixabayVideo'])->name('exercises.pixabay.download');
-    Route::delete('/exercises/{exercise}/pixabay', [ExerciseController::class, 'deletePixabayVideo'])->name('exercises.pixabay.delete');
 
     // Workout Template Exercise Management
     Route::post('/workout-templates/{workoutTemplate}/exercises', [WorkoutTemplateController::class, 'addExercise'])

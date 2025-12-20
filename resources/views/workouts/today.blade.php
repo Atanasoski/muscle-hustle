@@ -68,16 +68,6 @@
                                                             {{ $exercise->exercise->name }}
                                                         </h6>
                                                         <div class="d-flex align-items-center gap-2">
-                                                            @if($exercise->exercise->video_url)
-                                                                <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" 
-                                                                        type="button" 
-                                                                        data-bs-toggle="collapse" 
-                                                                        data-bs-target="#video-preview-{{ $exercise->id }}"
-                                                                        style="white-space: nowrap;">
-                                                                    <i class="bi bi-play-circle"></i>
-                                                                    <span class="d-none d-md-inline">Watch</span>
-                                                                </button>
-                                                            @endif
                                                             @if($exercise->exercise->category)
                                                                 <span class="badge bg-light text-dark" style="font-size: 0.7rem;">
                                                                     {{ $exercise->exercise->category->name }}
@@ -86,15 +76,6 @@
                                                         </div>
                                                     </div>
                                                     
-                                                    <!-- Video Player (Collapsible) -->
-                                                    @if($exercise->exercise->video_url)
-                                                        <div class="collapse mb-3" id="video-preview-{{ $exercise->id }}">
-                                                            <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                                                                <iframe src="{{ str_replace('watch?v=', 'embed/', $exercise->exercise->video_url) }}" 
-                                                                        allowfullscreen></iframe>
-                                                            </div>
-                                                        </div>
-                                                    @endif
                                                     <div class="d-flex flex-wrap gap-1 gap-md-2 mt-2">
                                                         @if($exercise->target_sets)
                                                             <span class="badge bg-secondary">

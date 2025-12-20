@@ -35,8 +35,4 @@ return [
         ],
     ],
 
-    'pixabay' => [
-        'key' => env('PIXABAY_API_KEY'),
-    ],
-
 ];

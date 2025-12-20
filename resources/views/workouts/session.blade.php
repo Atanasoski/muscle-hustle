@@ -74,11 +74,6 @@
                             </div>
                             
                             <div class="d-flex gap-2">
-                                @if($exerciseData['template_exercise']->exercise->video_url)
-                                    <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#video-{{ $exerciseData['template_exercise']->id }}">
-                                        <i class="bi bi-play-circle"></i> <span class="d-none d-md-inline">Watch</span>
-                                    </button>
-                                @endif
                                 @if($exerciseData['rest_seconds'])
                                     <button class="btn btn-sm btn-info text-white start-timer" data-seconds="{{ $exerciseData['rest_seconds'] }}">
                                         <i class="bi bi-stopwatch"></i> {{ $exerciseData['rest_seconds'] }}s
@@ -89,30 +84,6 @@
                     </div>
 
                     <div class="card-body p-4">
-                        <!-- Background Video (Pixabay) -->
-                        @if($exerciseData['template_exercise']->exercise->pixabay_video_path)
-                            <div class="mb-4 position-relative rounded-3 overflow-hidden" style="height: 200px;">
-                                <video 
-                                    src="{{ Storage::url($exerciseData['template_exercise']->exercise->pixabay_video_path) }}" 
-                                    autoplay 
-                                    loop 
-                                    muted 
-                                    playsinline
-                                    class="w-100 h-100 object-fit-cover">
-                                </video>
-                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
-                            </div>
-                        @endif
-
-                        <!-- YouTube Tutorial Video -->
-                        @if($exerciseData['template_exercise']->exercise->video_url)
-                            <div class="collapse mb-4" id="video-{{ $exerciseData['template_exercise']->id }}">
-                                <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
-                                    <iframe src="{{ str_replace('watch?v=', 'embed/', $exerciseData['template_exercise']->exercise->video_url) }}" allowfullscreen></iframe>
-                                </div>
-                            </div>
-                        @endif
-
                         <!-- All Sets Table -->
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
