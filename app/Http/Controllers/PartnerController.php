@@ -14,8 +14,9 @@ class PartnerController extends Controller
      * Display a listing of the partners.
      */
     public function index(): View
-    {
-        $partners = Partner::with('identity')->latest()->get();
+    { 
+        $partners = Partner::with(['identity', 'users'])->latest()->get();
+
         return view('partners.index', compact('partners'));
     }
 
@@ -43,7 +44,7 @@ class PartnerController extends Controller
         // Handle logo upload
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('partners', 'public');
-            $identityData['logo'] = 'storage/' . $logoPath;
+            $identityData['logo'] = 'storage/'.$logoPath;
         }
 
         $partner->identity()->create($identityData);
@@ -94,7 +95,7 @@ class PartnerController extends Controller
             }
 
             $logoPath = $request->file('logo')->store('partners', 'public');
-            $identityData['logo'] = 'storage/' . $logoPath;
+            $identityData['logo'] = 'storage/'.$logoPath;
         }
 
         if ($partner->identity) {

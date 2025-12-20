@@ -13,7 +13,4 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth endpoints
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-
-    // API Resources
-    Route::apiResource('partners', PartnerController::class);
 });

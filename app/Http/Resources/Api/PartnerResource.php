@@ -21,12 +21,10 @@ class PartnerResource extends JsonResource
             'domain' => $this->domain,
             'is_active' => $this->is_active,
             'identity' => $this->whenLoaded('identity', function () {
-                return [
-                    'primary_color' => $this->identity->primary_color,
-                    'secondary_color' => $this->identity->secondary_color,
-                    'logo' => $this->identity->logo,
-                    'font_family' => $this->identity->font_family,
-                ];
+                return new PartnerVisualIdentityResource($this->identity);
+            }),
+            'users' => $this->whenLoaded('users', function () {
+                return UserResource::collection($this->users);
             }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

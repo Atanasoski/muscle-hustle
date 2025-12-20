@@ -126,24 +126,50 @@
     </div>
 
     <!-- Users List -->
-    @if($partner->users->count() > 0)
-        <x-bladewind::card class="mt-6">
-            <h3 class="text-xl font-bold mb-4">Users ({{ $partner->users->count() }})</h3>
-            <x-bladewind::table striped="true">
+    <x-bladewind::card class="mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">Users</h3>
+            <x-bladewind::tag color="blue">{{ $partner->users->count() }} {{ Str::plural('user', $partner->users->count()) }}</x-bladewind::tag>
+        </div>
+        @if($partner->users->count() > 0)
+            <x-bladewind::table striped="true" divider="thin">
                 <x-slot name="header">
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Email Verified</th>
                     <th>Joined</th>
                 </x-slot>
                 @foreach($partner->users as $user)
                     <tr>
-                        <td>{{ $user->name }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                @if($user->profile_photo)
+                                    <img src="{{ asset($user->profile_photo) }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full object-cover">
+                                @else
+                                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-semibold">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <span class="font-medium">{{ $user->name }}</span>
+                            </div>
+                        </td>
                         <td>{{ $user->email }}</td>
+                        <td>
+                            @if($user->email_verified_at)
+                                <x-bladewind::tag color="green">Verified</x-bladewind::tag>
+                            @else
+                                <x-bladewind::tag color="gray">Unverified</x-bladewind::tag>
+                            @endif
+                        </td>
                         <td>{{ $user->created_at->format('M d, Y') }}</td>
                     </tr>
                 @endforeach
             </x-bladewind::table>
-        </x-bladewind::card>
-    @endif
+        @else
+            <x-bladewind::alert type="info">
+                No users assigned to this partner yet.
+            </x-bladewind::alert>
+        @endif
+    </x-bladewind::card>
 </div>
 @endsection
