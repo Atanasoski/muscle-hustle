@@ -52,7 +52,7 @@
                                value="{{ old('slug', $partner->slug) }}"
                                readonly
                                required
-                               class="w-full rounded border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-800 cursor-not-allowed">
+                               class="w-full rounded border border-gray-300 dark:border-gray-600 p-2 dark:text-white bg-gray-100 dark:bg-gray-800 cursor-not-allowed">
                         @error('slug')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
