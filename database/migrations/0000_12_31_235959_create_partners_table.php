@@ -31,11 +31,6 @@ return new class extends Migration
             $table->string('font_family')->nullable();
             $table->timestamps();
         });
-
-        // Add partner_id to users table
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('partner_id')->nullable()->after('id')->constrained()->onDelete('set null');
-        });
     }
 
     /**
@@ -43,11 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['partner_id']);
-            $table->dropColumn('partner_id');
-        });
-
         Schema::dropIfExists('partner_identities');
         Schema::dropIfExists('partners');
     }
