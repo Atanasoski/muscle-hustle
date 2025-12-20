@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // Seed in the correct order due to foreign key dependencies
         $this->call([
+            RoleSeeder::class,           // Create roles first
             UserSeeder::class,           // Create demo user first
             CategorySeeder::class,       // Create exercise categories
             ExerciseSeeder::class,       // Create global exercises
