@@ -43,47 +43,6 @@
                             </li>
                         </ul>
                     </li>
-                    
-                    <!-- Nutrition Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs(['recipes.*', 'foods.*', 'planner.meals', 'planner.food-diary', 'planner.grocery-list']) ? 'active' : '' }}" 
-                           href="#" id="nutritionDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-egg-fried"></i> Nutrition
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-icons">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.meals') }}">
-                                    <i class="bi bi-calendar-week fs-5 text-success"></i>
-                                    <span>Meal Planner</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.food-diary') }}">
-                                    <i class="bi bi-journal-text fs-5 text-primary"></i>
-                                    <span>Food Diary</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('recipes.index') }}">
-                                    <i class="bi bi-book fs-5 text-warning"></i>
-                                    <span>Recipes</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('foods.index') }}">
-                                    <i class="bi bi-database fs-5 text-info"></i>
-                                    <span>Foods</span>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('planner.grocery-list') }}">
-                                    <i class="bi bi-cart3 fs-5 text-success"></i>
-                                    <span>Grocery List</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
 
                     <!-- Partners (Admin) -->
                     <li class="nav-item">

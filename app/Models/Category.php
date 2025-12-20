@@ -36,14 +36,6 @@ class Category extends Model
     }
 
     /**
-     * Scope: Get only food categories
-     */
-    public function scopeFood($query)
-    {
-        return $query->where('type', CategoryType::Food);
-    }
-
-    /**
      * Scope: Get categories by type
      */
     public function scopeOfType($query, CategoryType $type)
@@ -57,13 +49,5 @@ class Category extends Model
     public function exercises(): HasMany
     {
         return $this->hasMany(Exercise::class);
-    }
-
-    /**
-     * Relationship: Category has many Foods
-     */
-    public function foods(): HasMany
-    {
-        return $this->hasMany(Food::class);
     }
 }

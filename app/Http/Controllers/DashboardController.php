@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MealPlan;
 use App\Models\WorkoutTemplate;
 use Carbon\Carbon;
 
@@ -33,16 +32,6 @@ class DashboardController extends Controller
             ->orderBy('day_of_week')
             ->get();
 
-        // Get this week's meal plan
-        $weekStart = $today->copy()->startOfWeek();
-        $mealPlan = MealPlan::where('user_id', $user->id)
-            ->where('week_start_date', $weekStart->toDateString())
-            ->with('meals')
-            ->first();
-
-        // Get today's meals
-        $todayMeals = $mealPlan ? $mealPlan->meals->where('day_of_week', $dayOfWeek) : collect();
-
         // Get last 3 completed workouts
         $recentWorkouts = $user->workoutSessions()
             ->whereNotNull('completed_at')
@@ -54,13 +43,7 @@ class DashboardController extends Controller
         // Calculate workout streak
         $streak = $this->calculateStreak($user->id);
 
-        // Get user recipes for quick log modal
-        $userRecipes = $user->recipes()
-            ->orderBy('is_favorite', 'desc')
-            ->orderBy('name')
-            ->get();
-
-        return view('dashboard', compact('todayWorkout', 'todayWorkoutCompleted', 'weekWorkouts', 'mealPlan', 'dayOfWeek', 'todayMeals', 'recentWorkouts', 'streak', 'userRecipes'));
+        return view('dashboard', compact('todayWorkout', 'todayWorkoutCompleted', 'weekWorkouts', 'dayOfWeek', 'recentWorkouts', 'streak'));
     }
 
     private function calculateStreak(int $userId): int

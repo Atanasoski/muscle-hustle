@@ -64,27 +64,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the meal plans for the user.
-     */
-    public function mealPlans(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(MealPlan::class);
-    }
-
-    /**
      * Get the custom exercises for the user.
      */
     public function exercises(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Exercise::class);
-    }
-
-    /**
-     * Get the recipes for the user.
-     */
-    public function recipes(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Recipe::class);
     }
 
     /**
