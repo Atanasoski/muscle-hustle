@@ -29,6 +29,7 @@ class WorkoutTemplateResource extends JsonResource
                         'default_rest_sec' => $exercise->default_rest_sec,
                         'category' => $exercise->category ? new CategoryResource($exercise->category) : null,
                         'pivot' => [
+                            'id' => $exercise->pivot->id,
                             'order' => $exercise->pivot->order,
                             'target_sets' => $exercise->pivot->target_sets,
                             'target_reps' => $exercise->pivot->target_reps,

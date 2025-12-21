@@ -179,12 +179,13 @@ class WorkoutTemplateController extends Controller
         }
 
         $validated = $request->validate([
-            'exercise_id' => 'sometimes|required|exists:workout_exercises,id',
             'target_sets' => 'nullable|integer|min:1',
             'target_reps' => 'nullable|integer|min:1',
             'target_weight' => 'nullable|numeric|min:0',
             'rest_seconds' => 'nullable|integer|min:0',
         ]);
+
+        $validated['exercise_id'] = $exercise->id;
 
         $exercise->update($validated);
 
