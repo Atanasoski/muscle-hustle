@@ -1,6 +1,6 @@
-# Muscle Hustle API Documentation - Exercise & Workout Resources
+# Muscle Hustle API Documentation
 
-This documentation provides complete information about the Exercise and Workout Template resources for AI applications to understand and interact with the Muscle Hustle API.
+This documentation provides complete information about all API resources and endpoints for AI applications to understand and interact with the Muscle Hustle API.
 
 ## Base URL
 
@@ -606,6 +606,73 @@ interface WorkoutTemplateExercise {
 
 ---
 
+## API Resources Overview
+
+The Muscle Hustle API uses Laravel API Resources to format all responses. All resources are located in `App\Http\Resources\Api\` namespace. The following resources are available:
+
+### Available Resources
+
+1. **UserResource** - User account information
+2. **UserProfileResource** - User fitness profile data
+3. **ExerciseResource** - Exercise information
+4. **CategoryResource** - Exercise/workout categories
+5. **WorkoutTemplateResource** - Workout template plans
+6. **PartnerResource** - Partner/brand information
+7. **PartnerVisualIdentityResource** - Partner visual branding
+
+### Resource Usage
+
+All API endpoints use these resources to ensure consistent response formatting. Resources automatically handle:
+- Conditional loading of relationships (using `whenLoaded()`)
+- Proper data transformation
+- Type casting and formatting
+- Null value handling
+
+---
+
+## Partner Resource
+
+### Overview
+Partners represent brands or organizations that can customize the application's visual identity. Partners have a visual identity that includes colors, fonts, logos, and styling options.
+
+### Partner Resource Structure
+
+```typescript
+interface PartnerResource {
+  id: number;
+  name: string;
+  slug: string;
+  domain: string | null;
+  is_active: boolean;
+  identity: PartnerVisualIdentityResource | null;  // Only present if relationship loaded
+  users: UserResource[] | null;  // Only present if relationship loaded
+  created_at: string;
+  updated_at: string;
+}
+
+interface PartnerVisualIdentityResource {
+  primary_color: string | null;
+  secondary_color: string | null;
+  logo: string | null;
+  font_family: string | null;
+  background_color: string | null;
+  card_background_color: string | null;
+  text_primary_color: string | null;
+  text_secondary_color: string | null;
+  text_on_primary_color: string | null;
+  success_color: string | null;
+  warning_color: string | null;
+  danger_color: string | null;
+  accent_color: string | null;
+  border_color: string | null;
+  background_pattern: string | null;
+}
+```
+
+**Note**: Partner endpoints are not currently exposed in the public API routes, but the resources are available for internal use and future API expansion.
+
+---
+
 ## Relationships
 
 ### Exercise Relationships
@@ -782,3 +849,145 @@ Authorization: Bearer {token}
 Content-Type: application/json
 Accept: application/json
 ```
+
+---
+
+## Complete Resource Type Definitions
+
+For TypeScript/JavaScript integration, here are all resource type definitions:
+
+```typescript
+// User Resources
+interface UserResource {
+  id: number;
+  name: string;
+  email: string;
+  profile_photo: string | null;
+  profile: UserProfileResource | null;
+  partner: {
+    id: number;
+    name: string;
+    slug: string;
+    visual_identity: PartnerVisualIdentityResource | null;
+  } | null;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserProfileResource {
+  fitness_goal: string | null;  // "fat_loss" | "muscle_gain" | "strength" | "general_fitness"
+  age: number | null;
+  gender: string | null;  // "male" | "female" | "other"
+  height: number | null;  // in cm
+  weight: string | null;  // in kg, decimal as string
+  training_experience: string | null;  // "beginner" | "intermediate" | "advanced"
+  training_days_per_week: number | null;  // 1-7
+  workout_duration_minutes: number | null;  // in minutes
+}
+
+// Exercise Resources
+interface ExerciseResource {
+  id: number;
+  user_id: number | null;  // null for global exercises
+  category: CategoryResource | null;  // Only present if relationship loaded
+  name: string;
+  image_url: string | null;
+  default_rest_sec: number;
+  created_at: string;  // ISO 8601 datetime
+  updated_at: string;  // ISO 8601 datetime
+}
+
+interface CategoryResource {
+  id: number;
+  type: string;  // Enum: "workout" or other types
+  name: string;
+  slug: string;
+  display_order: number;
+  icon: string | null;
+  color: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Workout Template Resources
+interface WorkoutTemplateResource {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string | null;
+  day_of_week: number | null;  // 0-6 (Sunday-Saturday)
+  exercises: WorkoutTemplateExercise[] | null;  // Only present if relationship loaded
+  created_at: string;
+  updated_at: string;
+}
+
+interface WorkoutTemplateExercise {
+  id: number;  // Exercise ID
+  name: string;
+  image_url: string | null;
+  default_rest_sec: number;
+  category: CategoryResource | null;
+  pivot: {
+    id: number;  // WorkoutTemplateExercise ID (pivot record ID)
+    order: number;  // Exercise order in the workout
+    target_sets: number | null;
+    target_reps: number | null;
+    target_weight: string | null;  // Decimal as string (2 decimal places)
+    rest_seconds: number | null;
+  };
+}
+
+// Partner Resources
+interface PartnerResource {
+  id: number;
+  name: string;
+  slug: string;
+  domain: string | null;
+  is_active: boolean;
+  identity: PartnerVisualIdentityResource | null;  // Only present if relationship loaded
+  users: UserResource[] | null;  // Only present if relationship loaded
+  created_at: string;
+  updated_at: string;
+}
+
+interface PartnerVisualIdentityResource {
+  primary_color: string | null;
+  secondary_color: string | null;
+  logo: string | null;
+  font_family: string | null;
+  background_color: string | null;
+  card_background_color: string | null;
+  text_primary_color: string | null;
+  text_secondary_color: string | null;
+  text_on_primary_color: string | null;
+  success_color: string | null;
+  warning_color: string | null;
+  danger_color: string | null;
+  accent_color: string | null;
+  border_color: string | null;
+  background_pattern: string | null;
+}
+```
+
+---
+
+## Resource Implementation Details
+
+### Resource Files Location
+All API resources are located in: `app/Http/Resources/Api/`
+
+### Resource Files
+- `UserResource.php` - Formats user data with profile and partner relationships
+- `UserProfileResource.php` - Formats user fitness profile data
+- `ExerciseResource.php` - Formats exercise data with category relationship
+- `CategoryResource.php` - Formats category data
+- `WorkoutTemplateResource.php` - Formats workout template data with exercises
+- `PartnerResource.php` - Formats partner data with identity and users
+- `PartnerVisualIdentityResource.php` - Formats partner visual branding data
+
+### Resource Features
+- **Conditional Loading**: Resources use `whenLoaded()` to only include relationships when they're eager loaded
+- **Type Safety**: All resources use proper type hints and return type declarations
+- **Consistent Formatting**: All resources follow the same structure and naming conventions
+- **Null Handling**: Resources properly handle null values for optional fields and relationships
