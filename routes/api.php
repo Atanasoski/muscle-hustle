@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PartnerController;
+use App\Http\Controllers\Api\ExerciseController;
+use App\Http\Controllers\Api\WorkoutTemplateController;
 use Illuminate\Support\Facades\Route;
 
 // Public authentication endpoints
@@ -13,4 +14,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth endpoints
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+
+    // Exercises CRUD
+    Route::apiResource('exercises', ExerciseController::class);
+
+    // Workout Templates CRUD
+    Route::apiResource('workout-templates', WorkoutTemplateController::class);
 });
