@@ -3,6 +3,29 @@
 @section('title', $partner->name)
 
 @section('content')
+@php
+    // Helper function to convert RGB to hex (for backward compatibility with existing data)
+    function rgbToHex($rgb, $default = '#000000') {
+        if (!$rgb) return $default;
+        // Check if already hex format
+        if (preg_match('/^#[0-9A-Fa-f]{6}$/', $rgb)) {
+            return $rgb;
+        }
+        // Convert RGB format to hex
+        $parts = explode(',', $rgb);
+        if (count($parts) !== 3) return $default;
+        $r = (int)trim($parts[0]);
+        $g = (int)trim($parts[1]);
+        $b = (int)trim($parts[2]);
+        return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
+               str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 
+               str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
+    }
+    $identity = $partner->identity;
+    $primaryColor = $identity ? rgbToHex($identity->primary_color, '#ff6b35') : '#ff6b35';
+    $secondaryColor = $identity ? rgbToHex($identity->secondary_color, '#4ecdc4') : '#4ecdc4';
+@endphp
+
 <div class="mb-6">
     <a href="{{ route('partners.index') }}" class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
         <svg class="stroke-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -13,7 +36,7 @@
 </div>
 
 <!-- Header Card -->
-<div class="mb-6 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+<div class="mb-6 rounded-2xl border border-gray-200 dark:border-gray-800" style="background: linear-gradient(135deg, {{ $primaryColor }} 0%, {{ $secondaryColor }} 100%);">
     <div class="p-6">
         <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
             <!-- Logo/Avatar -->
@@ -33,39 +56,39 @@
             <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-4 mb-3">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white/90 mb-2">{{ $partner->name }}</h2>
+                        <h2 class="text-3xl font-bold text-white mb-2">{{ $partner->name }}</h2>
                         <div class="flex items-center gap-3 flex-wrap">
-                            <code class="text-sm bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg text-gray-700 dark:text-gray-300">{{ $partner->slug }}</code>
+                            <code class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-white">{{ $partner->slug }}</code>
                             @if($partner->domain)
-                                <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500">
+                                <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-white/20 backdrop-blur-sm text-white">
                                     {{ $partner->domain }}
                                 </span>
                             @endif
                             @if($partner->is_active)
-                                <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500">
+                                <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-white/20 backdrop-blur-sm text-white">
                                     Active
                                 </span>
                             @else
-                                <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-gray-50 text-gray-700 dark:bg-gray-500/15 dark:text-gray-400">
+                                <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-white/10 backdrop-blur-sm text-white/80">
                                     Inactive
                                 </span>
                             @endif
                         </div>
                     </div>
                     <div class="flex gap-2 flex-shrink-0">
-                        <a href="{{ route('partners.edit', $partner) }}" class="inline-flex items-center justify-center rounded-lg border border-orange-300 bg-orange-50 px-4 py-2 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-100 dark:border-orange-700 dark:bg-orange-500/15 dark:text-orange-400 dark:hover:bg-orange-500/25">
+                        <a href="{{ route('partners.edit', $partner) }}" class="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/20 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/30">
                             Edit
                         </a>
                         <form action="{{ route('partners.destroy', $partner) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this partner?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex items-center justify-center rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 dark:border-red-700 dark:bg-red-500/15 dark:text-red-400 dark:hover:bg-red-500/25">
+                            <button type="submit" class="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/20 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/30">
                                 Delete
                             </button>
                         </form>
                     </div>
                 </div>
-                <div class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-6 text-sm text-white/90">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -267,23 +290,6 @@
                         @endif
                     </div>
 
-                    <!-- Brand Preview -->
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">Brand Preview</h4>
-                        <div class="relative overflow-hidden rounded-2xl shadow-xl" style="background: linear-gradient(135deg, {{ $partner->identity->primary_color }} 0%, {{ $partner->identity->secondary_color }} 100%);">
-                            <div class="p-8 text-white">
-                                @if($partner->identity->logo)
-                                    <div class="mb-4">
-                                        <img src="{{ asset($partner->identity->logo) }}" alt="{{ $partner->name }}" class="h-12 object-contain filter brightness-0 invert">
-                                    </div>
-                                @endif
-                                <h2 class="text-3xl font-bold mb-2" style="font-family: {{ $partner->identity->font_family ?? 'inherit' }};">
-                                    {{ $partner->name }}
-                                </h2>
-                                <p class="text-white/90 text-sm">Branded Experience Preview</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             @else
                 <div class="text-center py-12">
