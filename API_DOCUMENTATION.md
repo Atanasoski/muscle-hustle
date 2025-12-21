@@ -15,6 +15,12 @@ Before accessing exercise and workout endpoints, authenticate:
 - `POST /api/register` - Register a new user
 - `POST /api/login` - Login and receive authentication token
 - `POST /api/logout` - Logout (requires auth)
+
+---
+
+## User Management
+
+User profile management endpoints:
 - `GET /api/user` - Get current authenticated user (requires auth)
 - `PUT/PATCH /api/user` - Update authenticated user's profile (requires auth)
 
