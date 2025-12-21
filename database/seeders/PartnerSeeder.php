@@ -21,20 +21,20 @@ class PartnerSeeder extends Seeder
         ]);
 
         $muscleHustle->identity()->create([
-            'primary_color' => '251,54,64', // strawberry-red
-            'secondary_color' => '18,148,144', // dark-cyan
+            'primary_color' => '#fb363e', // strawberry-red
+            'secondary_color' => '#129490', // dark-cyan
             'logo' => '/images/partner-logo.png',
             'font_family' => 'Inter',
-            'background_color' => '251,255,254', // white
-            'card_background_color' => '251,255,254', // white
-            'text_primary_color' => '0,0,0', // black
-            'text_secondary_color' => '18,148,144', // dark-cyan
-            'text_on_primary_color' => '251,255,254', // white
-            'success_color' => '112,183,126', // emerald
-            'warning_color' => '255,180,0', // warm orange (strawberry-red + yellow mix)
-            'danger_color' => '251,54,64', // strawberry-red
-            'accent_color' => '112,183,126', // emerald
-            'border_color' => '200,220,218', // light dark-cyan variant
+            'background_color' => '#fbfffe', // white
+            'card_background_color' => '#fbfffe', // white
+            'text_primary_color' => '#000000', // black
+            'text_secondary_color' => '#129490', // dark-cyan
+            'text_on_primary_color' => '#fbfffe', // white
+            'success_color' => '#70b77e', // emerald
+            'warning_color' => '#ffb400', // warm orange (strawberry-red + yellow mix)
+            'danger_color' => '#fb363e', // strawberry-red
+            'accent_color' => '#70b77e', // emerald
+            'border_color' => '#c8dcda', // light dark-cyan variant
             'background_pattern' => '/images/pattern.png',
         ]);
 
@@ -47,20 +47,20 @@ class PartnerSeeder extends Seeder
         ]);
 
         $fitLife->identity()->create([
-            'primary_color' => '59,130,246', // Blue
-            'secondary_color' => '16,185,129', // Green
+            'primary_color' => '#3b82f6', // Blue
+            'secondary_color' => '#10b981', // Green
             'logo' => '/images/partners/fitlife-logo.png',
             'font_family' => 'Poppins',
-            'background_color' => '255,255,255',
-            'card_background_color' => '249,250,251',
-            'text_primary_color' => '17,24,39',
-            'text_secondary_color' => '107,114,128',
-            'text_on_primary_color' => '255,255,255',
-            'success_color' => '16,185,129',
-            'warning_color' => '245,158,11',
-            'danger_color' => '239,68,68',
-            'accent_color' => '139,92,246',
-            'border_color' => '229,231,235',
+            'background_color' => '#ffffff',
+            'card_background_color' => '#f9fafb',
+            'text_primary_color' => '#111827',
+            'text_secondary_color' => '#6b7280',
+            'text_on_primary_color' => '#ffffff',
+            'success_color' => '#10b981',
+            'warning_color' => '#f59e0b',
+            'danger_color' => '#ef4444',
+            'accent_color' => '#8b5cf6',
+            'border_color' => '#e5e7eb',
         ]);
 
         // Example Partner 2 - PowerGym Elite
@@ -72,20 +72,20 @@ class PartnerSeeder extends Seeder
         ]);
 
         $powerGym->identity()->create([
-            'primary_color' => '139,92,246', // Purple
-            'secondary_color' => '236,72,153', // Pink
+            'primary_color' => '#8b5cf6', // Purple
+            'secondary_color' => '#ec4899', // Pink
             'logo' => '/images/partners/powergym-logo.png',
             'font_family' => 'Montserrat',
-            'background_color' => '255,255,255',
-            'card_background_color' => '250,250,250',
-            'text_primary_color' => '15,23,42',
-            'text_secondary_color' => '100,116,139',
-            'text_on_primary_color' => '255,255,255',
-            'success_color' => '34,197,94',
-            'warning_color' => '251,191,36',
-            'danger_color' => '248,113,113',
-            'accent_color' => '168,85,247',
-            'border_color' => '226,232,240',
+            'background_color' => '#ffffff',
+            'card_background_color' => '#fafafa',
+            'text_primary_color' => '#0f172a',
+            'text_secondary_color' => '#64748b',
+            'text_on_primary_color' => '#ffffff',
+            'success_color' => '#22c55e',
+            'warning_color' => '#fbbf24',
+            'danger_color' => '#f87171',
+            'accent_color' => '#a855f7',
+            'border_color' => '#e2e8f0',
         ]);
     }
 }
