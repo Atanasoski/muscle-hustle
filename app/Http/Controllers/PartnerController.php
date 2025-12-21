@@ -58,6 +58,12 @@ class PartnerController extends Controller
             $identityData['logo'] = 'storage/'.$logoPath;
         }
 
+        // Handle background pattern upload
+        if ($request->hasFile('background_pattern')) {
+            $patternPath = $request->file('background_pattern')->store('partners', 'public');
+            $identityData['background_pattern'] = 'storage/'.$patternPath;
+        }
+
         $partner->identity()->create($identityData);
 
         return redirect()->route('partners.index')
@@ -120,6 +126,18 @@ class PartnerController extends Controller
             $identityData['logo'] = 'storage/'.$logoPath;
         }
 
+        // Handle background pattern upload
+        if ($request->hasFile('background_pattern')) {
+            // Delete old pattern if exists
+            if ($partner->identity?->background_pattern) {
+                $oldPatternPath = str_replace('storage/', '', $partner->identity->background_pattern);
+                \Storage::disk('public')->delete($oldPatternPath);
+            }
+
+            $patternPath = $request->file('background_pattern')->store('partners', 'public');
+            $identityData['background_pattern'] = 'storage/'.$patternPath;
+        }
+
         if ($partner->identity) {
             $partner->identity->update($identityData);
         } else {
@@ -139,6 +157,12 @@ class PartnerController extends Controller
         if ($partner->identity?->logo) {
             $logoPath = str_replace('storage/', '', $partner->identity->logo);
             \Storage::disk('public')->delete($logoPath);
+        }
+
+        // Delete background pattern if exists
+        if ($partner->identity?->background_pattern) {
+            $patternPath = str_replace('storage/', '', $partner->identity->background_pattern);
+            \Storage::disk('public')->delete($patternPath);
         }
 
         $partner->delete();

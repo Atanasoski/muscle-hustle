@@ -155,6 +155,156 @@
                         @enderror
                     </div>
 
+                    <!-- Background Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Background Color
+                        </label>
+                        <input type="color"
+                            name="background_color"
+                            id="background_color"
+                            value="{{ old('background_color', '#ffffff') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('background_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Card Background Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Card Background Color
+                        </label>
+                        <input type="color"
+                            name="card_background_color"
+                            id="card_background_color"
+                            value="{{ old('card_background_color', '#ffffff') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('card_background_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Text Primary Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Text Primary Color
+                        </label>
+                        <input type="color"
+                            name="text_primary_color"
+                            id="text_primary_color"
+                            value="{{ old('text_primary_color', '#000000') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('text_primary_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Text Secondary Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Text Secondary Color
+                        </label>
+                        <input type="color"
+                            name="text_secondary_color"
+                            id="text_secondary_color"
+                            value="{{ old('text_secondary_color', '#6b7280') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('text_secondary_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Text On Primary Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Text On Primary Color
+                        </label>
+                        <input type="color"
+                            name="text_on_primary_color"
+                            id="text_on_primary_color"
+                            value="{{ old('text_on_primary_color', '#ffffff') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('text_on_primary_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Success Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Success Color
+                        </label>
+                        <input type="color"
+                            name="success_color"
+                            id="success_color"
+                            value="{{ old('success_color', '#10dc60') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('success_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Warning Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Warning Color
+                        </label>
+                        <input type="color"
+                            name="warning_color"
+                            id="warning_color"
+                            value="{{ old('warning_color', '#ffce00') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('warning_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Danger Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Danger Color
+                        </label>
+                        <input type="color"
+                            name="danger_color"
+                            id="danger_color"
+                            value="{{ old('danger_color', '#f04141') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('danger_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Accent Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Accent Color
+                        </label>
+                        <input type="color"
+                            name="accent_color"
+                            id="accent_color"
+                            value="{{ old('accent_color', '#8ac34a') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('accent_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Border Color -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Border Color
+                        </label>
+                        <input type="color"
+                            name="border_color"
+                            id="border_color"
+                            value="{{ old('border_color', '#dee2e6') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('border_color')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Logo -->
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -169,6 +319,22 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Upload partner logo (PNG, JPG, SVG)</p>
+                    </div>
+
+                    <!-- Background Pattern -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Background Pattern
+                        </label>
+                        <input type="file"
+                            name="background_pattern"
+                            id="background_pattern"
+                            accept="image/*"
+                            class="focus:border-ring-brand-300 shadow-theme-xs focus:file:ring-brand-300 h-11 w-full overflow-hidden rounded-lg border border-gray-300 bg-transparent text-sm text-gray-500 transition-colors file:mr-5 file:border-collapse file:cursor-pointer file:rounded-l-lg file:border-0 file:border-r file:border-solid file:border-gray-200 file:bg-gray-50 file:py-3 file:pr-3 file:pl-3.5 file:text-sm file:text-gray-700 placeholder:text-gray-400 hover:file:bg-gray-100 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:text-white/90 dark:file:border-gray-800 dark:file:bg-white/[0.03] dark:file:text-gray-400 dark:placeholder:text-gray-400" />
+                        @error('background_pattern')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Upload background pattern image (PNG, JPG, SVG)</p>
                     </div>
 
                     <!-- Font Family -->

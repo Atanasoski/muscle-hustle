@@ -45,7 +45,7 @@ class UpdatePartnerRequest extends FormRequest
             'danger_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'accent_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'border_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'background_pattern' => ['nullable', 'string', 'max:255'],
+            'background_pattern' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,svg', 'max:2048'],
         ];
     }
 
@@ -73,6 +73,9 @@ class UpdatePartnerRequest extends FormRequest
             'logo.image' => 'The logo must be an image file.',
             'logo.mimes' => 'The logo must be a file of type: jpeg, jpg, png, gif, svg.',
             'logo.max' => 'The logo may not be greater than 2MB.',
+            'background_pattern.image' => 'The background pattern must be an image file.',
+            'background_pattern.mimes' => 'The background pattern must be a file of type: jpeg, jpg, png, gif, svg.',
+            'background_pattern.max' => 'The background pattern may not be greater than 2MB.',
         ];
     }
 }
