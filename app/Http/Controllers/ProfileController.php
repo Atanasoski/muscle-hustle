@@ -27,7 +27,14 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $user->fill($request->validated());
+        $validated = $request->validated();
+
+        // Update user fields
+        $userFields = ['name', 'email', 'profile_photo'];
+        $userData = array_intersect_key($validated, array_flip($userFields));
+        if (! empty($userData)) {
+            $user->fill($userData);
+        }
 
         // Handle profile photo upload
         if ($request->hasFile('profile_photo')) {
@@ -46,6 +53,26 @@ class ProfileController extends Controller
         }
 
         $user->save();
+
+        // Update or create user profile
+        $profileFields = [
+            'fitness_goal',
+            'age',
+            'gender',
+            'height',
+            'weight',
+            'training_experience',
+            'training_days_per_week',
+            'workout_duration_minutes',
+        ];
+        $profileData = array_intersect_key($validated, array_flip($profileFields));
+
+        if (! empty($profileData)) {
+            $user->profile()->updateOrCreate(
+                ['user_id' => $user->id],
+                $profileData
+            );
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

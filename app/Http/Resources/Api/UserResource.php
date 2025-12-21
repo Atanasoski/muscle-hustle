@@ -19,6 +19,18 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'profile_photo' => $this->profile_photo,
+            'profile' => $this->whenLoaded('profile', function () {
+                return [
+                    'fitness_goal' => $this->profile->fitness_goal?->value,
+                    'age' => $this->profile->age,
+                    'gender' => $this->profile->gender?->value,
+                    'height' => $this->profile->height,
+                    'weight' => $this->profile->weight,
+                    'training_experience' => $this->profile->training_experience?->value,
+                    'training_days_per_week' => $this->profile->training_days_per_week,
+                    'workout_duration_minutes' => $this->profile->workout_duration_minutes,
+                ];
+            }),
             'partner' => $this->whenLoaded('partner', function () {
                 return [
                     'id' => $this->partner->id,

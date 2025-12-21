@@ -16,6 +16,125 @@ Before accessing exercise and workout endpoints, authenticate:
 - `POST /api/login` - Login and receive authentication token
 - `POST /api/logout` - Logout (requires auth)
 - `GET /api/user` - Get current authenticated user (requires auth)
+- `PUT/PATCH /api/user` - Update authenticated user's profile (requires auth)
+
+---
+
+## User Profile Resource
+
+### Overview
+User profiles contain fitness-related information separate from the main user account. Each user can have one profile with fitness goals, physical attributes, and training preferences.
+
+### API Endpoints
+
+#### Get Current User (with Profile)
+```
+GET /api/user
+```
+
+**Response Structure**:
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "profile_photo": "profile-photos/abc123.jpg",
+    "profile": {
+      "fitness_goal": "muscle_gain",
+      "age": 30,
+      "gender": "male",
+      "height": 180,
+      "weight": "75.50",
+      "training_experience": "intermediate",
+      "training_days_per_week": 4,
+      "workout_duration_minutes": 60
+    },
+    "partner": { /* PartnerResource */ },
+    "email_verified_at": "2025-01-01T00:00:00.000000Z",
+    "created_at": "2025-01-01T00:00:00.000000Z",
+    "updated_at": "2025-01-01T00:00:00.000000Z"
+  }
+}
+```
+
+**Note**: The `profile` object will be `null` if the user hasn't created a profile yet.
+
+#### Update User Profile
+```
+PUT/PATCH /api/user
+```
+
+**Request Body** (all fields optional):
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "profile_photo": "<file>",
+  "fitness_goal": "muscle_gain",
+  "age": 30,
+  "gender": "male",
+  "height": 180,
+  "weight": 75.5,
+  "training_experience": "intermediate",
+  "training_days_per_week": 4,
+  "workout_duration_minutes": 60
+}
+```
+
+**Validation Rules**:
+- `name`: sometimes required, string, max 255 characters
+- `email`: sometimes required, string, lowercase, email, max 255, unique (except current user)
+- `profile_photo`: nullable, image file, mimes: jpeg,png,jpg,gif, max 2048KB
+- `fitness_goal`: nullable, enum: `fat_loss`, `muscle_gain`, `strength`, `general_fitness`
+- `age`: nullable, integer, min 1, max 150
+- `gender`: nullable, enum: `male`, `female`, `other`
+- `height`: nullable, integer, min 50, max 300 (in cm)
+- `weight`: nullable, numeric, min 1, max 500 (in kg)
+- `training_experience`: nullable, enum: `beginner`, `intermediate`, `advanced`
+- `training_days_per_week`: nullable, integer, min 1, max 7
+- `workout_duration_minutes`: nullable, integer, min 1, max 600
+
+**Response**:
+```json
+{
+  "message": "Profile updated successfully",
+  "user": { /* UserResource with updated profile */ }
+}
+```
+
+**Note**: 
+- User fields (name, email, profile_photo) update the user record
+- Fitness profile fields create or update the user's profile record
+- You can update user fields and profile fields in the same request
+- Profile fields are stored in a separate `user_profiles` table
+
+### User Resource Structure
+
+```typescript
+interface UserResource {
+  id: number;
+  name: string;
+  email: string;
+  profile_photo: string | null;
+  profile: UserProfileResource | null;
+  partner: PartnerResource | null;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserProfileResource {
+  fitness_goal: string | null;  // "fat_loss" | "muscle_gain" | "strength" | "general_fitness"
+  age: number | null;
+  gender: string | null;  // "male" | "female" | "other"
+  height: number | null;  // in cm
+  weight: string | null;  // in kg, decimal as string
+  training_experience: string | null;  // "beginner" | "intermediate" | "advanced"
+  training_days_per_week: number | null;  // 1-7
+  workout_duration_minutes: number | null;  // in minutes
+}
+```
 
 ---
 
@@ -623,6 +742,13 @@ This sets the order based on WorkoutTemplateExercise IDs (not exercise IDs).
 ---
 
 ## Quick Reference
+
+### Authentication Endpoints
+- `POST /api/register` - Register a new user
+- `POST /api/login` - Login and receive authentication token
+- `POST /api/logout` - Logout (requires auth)
+- `GET /api/user` - Get current authenticated user (requires auth)
+- `PUT/PATCH /api/user` - Update user profile (requires auth)
 
 ### Exercise Endpoints
 - `GET /api/exercises` - List exercises

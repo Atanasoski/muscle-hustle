@@ -37,7 +37,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User registered successfully',
-            'user' => new UserResource($user->load('partner')),
+            'user' => new UserResource($user->load(['partner', 'profile'])),
             'token' => $token,
         ], 201);
     }
@@ -63,7 +63,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            'user' => new UserResource($user->load('partner')),
+            'user' => new UserResource($user->load(['partner', 'profile'])),
             'token' => $token,
         ]);
     }
@@ -77,16 +77,6 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logged out successfully',
-        ]);
-    }
-
-    /**
-     * Get authenticated user.
-     */
-    public function user(Request $request): JsonResponse
-    {
-        return response()->json([
-            'user' => new UserResource($request->user()->load('partner')),
         ]);
     }
 }

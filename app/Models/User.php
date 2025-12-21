@@ -104,4 +104,12 @@ class User extends Authenticatable
     {
         return $this->roles()->whereIn('slug', $roleSlugs)->exists();
     }
+
+    /**
+     * Get the user's profile.
+     */
+    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserProfile::class);
+    }
 }
