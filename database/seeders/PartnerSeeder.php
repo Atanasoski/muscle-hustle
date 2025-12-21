@@ -21,20 +21,20 @@ class PartnerSeeder extends Seeder
         ]);
 
         $muscleHustle->identity()->create([
-            'primary_color' => '255,107,53',
-            'secondary_color' => '78,205,196',
+            'primary_color' => '251,54,64', // strawberry-red
+            'secondary_color' => '18,148,144', // dark-cyan
             'logo' => '/images/partner-logo.png',
             'font_family' => 'Inter',
-            'background_color' => '255,255,255',
-            'card_background_color' => '248,249,250',
-            'text_primary_color' => '33,37,41',
-            'text_secondary_color' => '108,117,125',
-            'text_on_primary_color' => '255,255,255',
-            'success_color' => '16,220,96',
-            'warning_color' => '255,206,0',
-            'danger_color' => '240,65,65',
-            'accent_color' => '138,195,74',
-            'border_color' => '222,226,230',
+            'background_color' => '251,255,254', // white
+            'card_background_color' => '251,255,254', // white
+            'text_primary_color' => '0,0,0', // black
+            'text_secondary_color' => '18,148,144', // dark-cyan
+            'text_on_primary_color' => '251,255,254', // white
+            'success_color' => '112,183,126', // emerald
+            'warning_color' => '255,180,0', // warm orange (strawberry-red + yellow mix)
+            'danger_color' => '251,54,64', // strawberry-red
+            'accent_color' => '112,183,126', // emerald
+            'border_color' => '200,220,218', // light dark-cyan variant
             'background_pattern' => '/images/pattern.png',
         ]);
 
