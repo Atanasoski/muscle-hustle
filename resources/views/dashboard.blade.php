@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="container py-4">
+{{-- <div class="container py-4">
     <!-- Welcome Header -->
     <div class="row mb-3">
         <div class="col-12">
@@ -258,6 +258,6 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 @endsection
