@@ -31,10 +31,21 @@ class UpdatePartnerRequest extends FormRequest
             'is_active' => ['boolean'],
 
             // Identity fields
-            'primary_color' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'secondary_color' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'primary_color' => ['required', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'secondary_color' => ['required', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,svg', 'max:2048'],
             'font_family' => ['nullable', 'string', 'max:255'],
+            'background_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'card_background_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'text_primary_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'text_secondary_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'text_on_primary_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'success_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'warning_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'danger_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'accent_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'border_color' => ['nullable', 'string', 'regex:/^\d{1,3},\d{1,3},\d{1,3}$/'],
+            'background_pattern' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -46,8 +57,18 @@ class UpdatePartnerRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'primary_color.regex' => 'The primary color must be a valid hex color code (e.g., #ff6b35).',
-            'secondary_color.regex' => 'The secondary color must be a valid hex color code (e.g., #4ecdc4).',
+            'primary_color.regex' => 'The primary color must be in RGB format (e.g., 255,107,53).',
+            'secondary_color.regex' => 'The secondary color must be in RGB format (e.g., 78,205,196).',
+            'background_color.regex' => 'The background color must be in RGB format (e.g., 255,255,255).',
+            'card_background_color.regex' => 'The card background color must be in RGB format (e.g., 248,249,250).',
+            'text_primary_color.regex' => 'The text primary color must be in RGB format (e.g., 33,37,41).',
+            'text_secondary_color.regex' => 'The text secondary color must be in RGB format (e.g., 108,117,125).',
+            'text_on_primary_color.regex' => 'The text on primary color must be in RGB format (e.g., 255,255,255).',
+            'success_color.regex' => 'The success color must be in RGB format (e.g., 16,220,96).',
+            'warning_color.regex' => 'The warning color must be in RGB format (e.g., 255,206,0).',
+            'danger_color.regex' => 'The danger color must be in RGB format (e.g., 240,65,65).',
+            'accent_color.regex' => 'The accent color must be in RGB format (e.g., 138,195,74).',
+            'border_color.regex' => 'The border color must be in RGB format (e.g., 222,226,230).',
             'slug.alpha_dash' => 'The slug may only contain letters, numbers, dashes and underscores.',
             'logo.image' => 'The logo must be an image file.',
             'logo.mimes' => 'The logo must be a file of type: jpeg, jpg, png, gif, svg.',
