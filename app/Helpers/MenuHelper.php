@@ -14,6 +14,11 @@ class MenuHelper
                     ['name' => 'Ecommerce', 'path' => '/'],
                 ],
             ],
+            [
+                'icon' => 'user-profile',
+                'name' => 'Partners',
+                'path' => '/partners',
+            ],
             // [
             //     'icon' => 'calendar',
             //     'name' => 'Calendar',
@@ -57,7 +62,7 @@ class MenuHelper
                 'name' => 'Charts',
                 'subItems' => [
                     ['name' => 'Line Chart', 'path' => '/line-chart', 'pro' => false],
-                    ['name' => 'Bar Chart', 'path' => '/bar-chart', 'pro' => false]
+                    ['name' => 'Bar Chart', 'path' => '/bar-chart', 'pro' => false],
                 ],
             ],
             [
@@ -88,7 +93,7 @@ class MenuHelper
         return [
             [
                 'title' => 'Menu',
-                'items' => self::getMainNavItems()
+                'items' => self::getMainNavItems(),
             ],
             // [
             //     'title' => 'Others',
