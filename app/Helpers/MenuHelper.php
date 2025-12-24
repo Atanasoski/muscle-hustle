@@ -39,27 +39,28 @@ class MenuHelper
 
     public static function getOthersItems()
     {
-        return [
-            [
-                'icon' => 'user-profile',
-                'name' => 'Profile',
-                'path' => '/profile',
-            ],
-        ];
+        return [];
     }
 
     public static function getMenuGroups()
     {
-        return [
+        $groups = [
             [
                 'title' => 'Main',
                 'items' => self::getMainNavItems(),
             ],
-            [
-                'title' => 'Account',
-                'items' => self::getOthersItems(),
-            ],
         ];
+
+        // Only include Account section if there are items
+        $otherItems = self::getOthersItems();
+        if (! empty($otherItems)) {
+            $groups[] = [
+                'title' => 'Account',
+                'items' => $otherItems,
+            ];
+        }
+
+        return $groups;
     }
 
     public static function isActive($path)
