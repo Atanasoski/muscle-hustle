@@ -44,4 +44,12 @@ class WorkoutSession extends Model
     {
         return $this->hasMany(SetLog::class);
     }
+
+    /**
+     * Relationship: WorkoutSession has many WorkoutSessionExercises
+     */
+    public function workoutSessionExercises(): HasMany
+    {
+        return $this->hasMany(WorkoutSessionExercise::class)->orderBy('order');
+    }
 }

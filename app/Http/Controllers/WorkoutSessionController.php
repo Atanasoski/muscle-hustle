@@ -29,6 +29,7 @@ class WorkoutSessionController extends Controller
         $session = WorkoutSession::where('user_id', auth()->id())
             ->whereDate('performed_at', $today->toDateString())
             ->whereNull('completed_at')
+            ->with(['workoutSessionExercises.exercise.category'])
             ->first();
 
         return view('workouts.today', compact('template', 'session'));
@@ -57,6 +58,24 @@ class WorkoutSessionController extends Controller
                 'workout_template_id' => $request->template_id,
                 'performed_at' => $today,
             ]);
+
+            // Snapshot template exercises if template is provided
+            if ($request->template_id) {
+                $template = WorkoutTemplate::with('workoutTemplateExercises')->find($request->template_id);
+
+                if ($template) {
+                    foreach ($template->workoutTemplateExercises as $templateExercise) {
+                        $session->workoutSessionExercises()->create([
+                            'exercise_id' => $templateExercise->exercise_id,
+                            'order' => $templateExercise->order,
+                            'target_sets' => $templateExercise->target_sets,
+                            'target_reps' => $templateExercise->target_reps,
+                            'target_weight' => $templateExercise->target_weight,
+                            'rest_seconds' => $templateExercise->rest_seconds,
+                        ]);
+                    }
+                }
+            }
         }
 
         return redirect()->route('workouts.session', $session);
@@ -72,19 +91,17 @@ class WorkoutSessionController extends Controller
             abort(403);
         }
 
-        $session->load(['workoutTemplate.workoutTemplateExercises.exercise.category', 'setLogs']);
+        $session->load(['workoutSessionExercises.exercise.category', 'setLogs']);
 
-        // Get exercises for this session
-        $exercises = $session->workoutTemplate
-            ? $session->workoutTemplate->workoutTemplateExercises
-            : collect();
+        // Get exercises for this session from workout_session_exercises
+        $exercises = $session->workoutSessionExercises;
 
         // Prepare exercise data with all sets pre-calculated
         $exercisesData = [];
-        foreach ($exercises as $templateExercise) {
+        foreach ($exercises as $sessionExercise) {
             // Get logged sets for this exercise in current session
             $loggedSets = $session->setLogs
-                ->where('exercise_id', $templateExercise->exercise_id)
+                ->where('exercise_id', $sessionExercise->exercise_id)
                 ->sortBy('set_number')
                 ->keyBy('set_number');
 
@@ -92,8 +109,8 @@ class WorkoutSessionController extends Controller
             $lastSession = WorkoutSession::where('user_id', auth()->id())
                 ->where('id', '!=', $session->id)
                 ->whereNotNull('completed_at')
-                ->whereHas('setLogs', function ($query) use ($templateExercise) {
-                    $query->where('exercise_id', $templateExercise->exercise_id);
+                ->whereHas('setLogs', function ($query) use ($sessionExercise) {
+                    $query->where('exercise_id', $sessionExercise->exercise_id);
                 })
                 ->orderBy('completed_at', 'desc')
                 ->first();
@@ -102,7 +119,7 @@ class WorkoutSessionController extends Controller
             $previousSets = collect();
             if ($lastSession) {
                 $previousSets = SetLog::where('workout_session_id', $lastSession->id)
-                    ->where('exercise_id', $templateExercise->exercise_id)
+                    ->where('exercise_id', $sessionExercise->exercise_id)
                     ->orderBy('set_number')
                     ->get()
                     ->keyBy('set_number');
@@ -112,7 +129,7 @@ class WorkoutSessionController extends Controller
             $currentSetNumber = $loggedSets->count() + 1;
 
             // Build sets array with all data pre-calculated
-            $targetSets = $templateExercise->target_sets ?? 3;
+            $targetSets = $sessionExercise->target_sets ?? 3;
             $sets = [];
 
             for ($setNum = 1; $setNum <= $targetSets; $setNum++) {
@@ -129,8 +146,8 @@ class WorkoutSessionController extends Controller
                     'current_weight' => $loggedSet?->weight,
                     'current_reps' => $loggedSet?->reps,
                     'logged_set_id' => $loggedSet?->id,
-                    'default_weight' => $previousSet?->weight ?? $templateExercise->target_weight ?? '',
-                    'default_reps' => $previousSet?->reps ?? $templateExercise->target_reps ?? '',
+                    'default_weight' => $previousSet?->weight ?? $sessionExercise->target_weight ?? '',
+                    'default_reps' => $previousSet?->reps ?? $sessionExercise->target_reps ?? '',
                 ];
             }
 
@@ -143,9 +160,9 @@ class WorkoutSessionController extends Controller
             }
 
             $exercisesData[] = [
-                'template_exercise' => $templateExercise,
+                'session_exercise' => $sessionExercise,
                 'sets' => $sets,
-                'rest_seconds' => $templateExercise->rest_seconds ?? 90,
+                'rest_seconds' => $sessionExercise->rest_seconds ?? 90,
                 'is_completed' => $loggedSets->count() >= $targetSets,
                 'last_completed_set' => $lastCompletedSet,
             ];

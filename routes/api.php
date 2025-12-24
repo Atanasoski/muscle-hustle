@@ -40,4 +40,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Workout Sessions
     Route::get('/workout-sessions/calendar', [WorkoutSessionController::class, 'calendar']);
+    Route::get('/workout-sessions/today', [WorkoutSessionController::class, 'today']);
+    Route::post('/workout-sessions/start', [WorkoutSessionController::class, 'start']);
+    Route::get('/workout-sessions/{session}', [WorkoutSessionController::class, 'show']);
+    Route::post('/workout-sessions/{session}/complete', [WorkoutSessionController::class, 'complete']);
+    Route::delete('/workout-sessions/{session}/cancel', [WorkoutSessionController::class, 'cancel']);
+
+    // Workout Session Set Logs
+    Route::post('/workout-sessions/{session}/sets', [WorkoutSessionController::class, 'logSet']);
+    Route::put('/workout-sessions/{session}/sets/{setLog}', [WorkoutSessionController::class, 'updateSet']);
+    Route::delete('/workout-sessions/{session}/sets/{setLog}', [WorkoutSessionController::class, 'deleteSet']);
+
+    // Workout Session Exercise Management
+    Route::post('/workout-sessions/{session}/exercises', [WorkoutSessionController::class, 'addExercise']);
+    Route::delete('/workout-sessions/{session}/exercises/{exercise}', [WorkoutSessionController::class, 'removeExercise']);
+    Route::put('/workout-sessions/{session}/exercises/{exercise}', [WorkoutSessionController::class, 'updateExercise']);
+    Route::post('/workout-sessions/{session}/exercises/reorder', [WorkoutSessionController::class, 'reorderExercises']);
 });
