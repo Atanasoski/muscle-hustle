@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\FitnessMetricsController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkoutSessionController;
 use App\Http\Controllers\Api\WorkoutTemplateController;
@@ -19,9 +20,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // User endpoints
     Route::get('/user', [UserController::class, 'show']);
-    Route::put('/user', [UserController::class, 'update']);
-    Route::patch('/user', [UserController::class, 'update']);
     Route::get('/user/fitness-metrics', [FitnessMetricsController::class, 'index']);
+
+    // Profile endpoints
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::patch('/profile', [ProfileController::class, 'update']);
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto']);
 
     // Exercises CRUD
     Route::apiResource('exercises', ExerciseController::class);

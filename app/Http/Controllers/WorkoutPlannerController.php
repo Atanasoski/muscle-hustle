@@ -25,7 +25,9 @@ class WorkoutPlannerController extends Controller
                 ->first();
         }
 
-        return view('planner.workouts', compact('templates', 'weeklyPlan'));
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        return view('planner.workouts', compact('templates', 'weeklyPlan', 'days'));
     }
 
     /**

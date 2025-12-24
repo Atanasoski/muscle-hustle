@@ -25,10 +25,6 @@
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header {{ $template->day_of_week !== null ? 'bg-danger' : 'bg-secondary' }} bg-opacity-10 border-0 py-3">
                             @if($template->day_of_week !== null)
-                                @php
-                                    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                                    $dayIcons = ['📅', '📅', '📅', '📅', '📅', '📅', '📅'];
-                                @endphp
                                 <span class="badge bg-danger text-white">
                                     {{ $dayIcons[$template->day_of_week] }} {{ $days[$template->day_of_week] }}
                                 </span>
@@ -45,11 +41,11 @@
                             </p>
                             <div class="d-flex gap-2 flex-wrap">
                                 <span class="badge bg-light text-dark border">
-                                    <i class="bi bi-list-check"></i> {{ $template->workoutTemplateExercises->count() }} exercises
+                                    <i class="bi bi-list-check"></i> {{ $template->exercises_count }} exercises
                                 </span>
-                                @if($template->workoutTemplateExercises->sum('target_sets') > 0)
+                                @if($template->total_sets > 0)
                                     <span class="badge bg-light text-dark border">
-                                        <i class="bi bi-layers"></i> {{ $template->workoutTemplateExercises->sum('target_sets') }} sets
+                                        <i class="bi bi-layers"></i> {{ $template->total_sets }} sets
                                     </span>
                                 @endif
                             </div>

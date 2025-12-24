@@ -18,10 +18,20 @@ class WorkoutTemplateController extends Controller
     public function index()
     {
         $templates = WorkoutTemplate::where('user_id', auth()->id())
+            ->with('workoutTemplateExercises')
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function ($template) {
+                $template->exercises_count = $template->workoutTemplateExercises->count();
+                $template->total_sets = $template->workoutTemplateExercises->sum('target_sets');
 
-        return view('workout-templates.index', compact('templates'));
+                return $template;
+            });
+
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $dayIcons = ['📅', '📅', '📅', '📅', '📅', '📅', '📅'];
+
+        return view('workout-templates.index', compact('templates', 'days', 'dayIcons'));
     }
 
     /**

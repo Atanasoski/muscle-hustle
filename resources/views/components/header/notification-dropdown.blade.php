@@ -90,6 +90,8 @@
         <!-- Notification List -->
         <ul class="flex flex-col h-auto overflow-y-auto custom-scrollbar">
             @php
+                // TODO: Move this to a controller/service when implementing proper notifications
+                // This should come from a database query or notification service
                 $notifications = [
                     [
                         'id' => 1,

@@ -3,28 +3,6 @@
 @section('title', $partner->name)
 
 @section('content')
-@php
-    // Helper function to convert RGB to hex (for backward compatibility with existing data)
-    function rgbToHex($rgb, $default = '#000000') {
-        if (!$rgb) return $default;
-        // Check if already hex format
-        if (preg_match('/^#[0-9A-Fa-f]{6}$/', $rgb)) {
-            return $rgb;
-        }
-        // Convert RGB format to hex
-        $parts = explode(',', $rgb);
-        if (count($parts) !== 3) return $default;
-        $r = (int)trim($parts[0]);
-        $g = (int)trim($parts[1]);
-        $b = (int)trim($parts[2]);
-        return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
-               str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 
-               str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
-    }
-    $identity = $partner->identity;
-    $primaryColor = $identity ? rgbToHex($identity->primary_color, '#ff6b35') : '#ff6b35';
-    $secondaryColor = $identity ? rgbToHex($identity->secondary_color, '#4ecdc4') : '#4ecdc4';
-@endphp
 
 <div class="mb-6">
     <a href="{{ route('partners.index') }}" class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
@@ -36,7 +14,7 @@
 </div>
 
 <!-- Header Card -->
-<div class="mb-6 rounded-2xl border border-gray-200 dark:border-gray-800" style="background: linear-gradient(135deg, {{ $primaryColor }} 0%, {{ $secondaryColor }} 100%);">
+<div class="mb-6 rounded-2xl border border-gray-200 dark:border-gray-800" style="background: linear-gradient(135deg, {{ $colors['primary'] }} 0%, {{ $colors['secondary'] }} 100%);">
     <div class="p-6">
         <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
             <!-- Logo/Avatar -->
@@ -113,7 +91,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Users</p>
-                <p class="text-3xl font-bold text-gray-800 dark:text-white/90">{{ $partner->users->count() }}</p>
+                <p class="text-3xl font-bold text-gray-800 dark:text-white/90">{{ $usersCount }}</p>
             </div>
             <div class="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center">
                 <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,23 +165,7 @@
                     <div>
                         <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">Color Palette</h4>
                         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                            @php
-                                $colors = [
-                                    ['name' => 'Primary', 'value' => $partner->identity->primary_color],
-                                    ['name' => 'Secondary', 'value' => $partner->identity->secondary_color],
-                                    ['name' => 'Background', 'value' => $partner->identity->background_color],
-                                    ['name' => 'Card Background', 'value' => $partner->identity->card_background_color],
-                                    ['name' => 'Text Primary', 'value' => $partner->identity->text_primary_color],
-                                    ['name' => 'Text Secondary', 'value' => $partner->identity->text_secondary_color],
-                                    ['name' => 'Text On Primary', 'value' => $partner->identity->text_on_primary_color],
-                                    ['name' => 'Success', 'value' => $partner->identity->success_color],
-                                    ['name' => 'Warning', 'value' => $partner->identity->warning_color],
-                                    ['name' => 'Danger', 'value' => $partner->identity->danger_color],
-                                    ['name' => 'Accent', 'value' => $partner->identity->accent_color],
-                                    ['name' => 'Border', 'value' => $partner->identity->border_color],
-                                ];
-                            @endphp
-                            @foreach($colors as $color)
+                            @foreach($colorPalette as $color)
                                 @if($color['value'])
                                     <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                                         <div class="flex items-center gap-3 mb-2">
@@ -354,16 +316,16 @@
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-gray-800 dark:text-white/90">Team Members</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $partner->users->count() }} {{ Str::plural('user', $partner->users->count()) }} assigned</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $usersCount }} {{ Str::plural('user', $usersCount) }} assigned</p>
                 </div>
             </div>
             <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500">
-                {{ $partner->users->count() }}
+                {{ $usersCount }}
             </span>
         </div>
     </div>
     <div class="p-6">
-        @if($partner->users->count() > 0)
+        @if($usersCount > 0)
             <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="max-w-full overflow-x-auto custom-scrollbar">
                     <table class="w-full min-w-[600px]">

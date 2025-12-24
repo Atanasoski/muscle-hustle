@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ColorHelper;
 use App\Http\Requests\StorePartnerRequest;
 use App\Http\Requests\UpdatePartnerRequest;
 use App\Models\Partner;
@@ -15,7 +16,12 @@ class PartnerController extends Controller
      */
     public function index(): View
     {
-        $partners = Partner::with(['identity', 'users'])->latest()->get();
+        $partners = Partner::with(['identity', 'users'])->latest()->get()
+            ->map(function ($partner) {
+                $partner->users_count = $partner->users->count();
+
+                return $partner;
+            });
 
         return view('partners.index', compact('partners'));
     }
@@ -77,7 +83,14 @@ class PartnerController extends Controller
     {
         $partner->load('identity', 'users');
 
-        return view('partners.show', compact('partner'));
+        // Process colors using ColorHelper
+        $colors = ColorHelper::processPartnerColors($partner->identity);
+        $colorPalette = ColorHelper::getColorPalette($partner->identity);
+
+        // Pre-calculate counts
+        $usersCount = $partner->users->count();
+
+        return view('partners.show', compact('partner', 'colors', 'colorPalette', 'usersCount'));
     }
 
     /**
@@ -87,7 +100,26 @@ class PartnerController extends Controller
     {
         $partner->load('identity');
 
-        return view('partners.edit', compact('partner'));
+        // Process colors using ColorHelper
+        $colors = ColorHelper::processPartnerColors($partner->identity);
+
+        // Build color array for form
+        $colorFormData = [
+            ['id' => 'primary_color', 'name' => 'Primary Color', 'value' => old('primary_color', $colors['primary']), 'required' => true],
+            ['id' => 'secondary_color', 'name' => 'Secondary Color', 'value' => old('secondary_color', $colors['secondary']), 'required' => true],
+            ['id' => 'background_color', 'name' => 'Background', 'value' => old('background_color', $colors['background']), 'required' => false],
+            ['id' => 'card_background_color', 'name' => 'Card Background', 'value' => old('card_background_color', $colors['card_background']), 'required' => false],
+            ['id' => 'text_primary_color', 'name' => 'Text Primary', 'value' => old('text_primary_color', $colors['text_primary']), 'required' => false],
+            ['id' => 'text_secondary_color', 'name' => 'Text Secondary', 'value' => old('text_secondary_color', $colors['text_secondary']), 'required' => false],
+            ['id' => 'text_on_primary_color', 'name' => 'Text On Primary', 'value' => old('text_on_primary_color', $colors['text_on_primary']), 'required' => false],
+            ['id' => 'success_color', 'name' => 'Success', 'value' => old('success_color', $colors['success']), 'required' => false],
+            ['id' => 'warning_color', 'name' => 'Warning', 'value' => old('warning_color', $colors['warning']), 'required' => false],
+            ['id' => 'danger_color', 'name' => 'Danger', 'value' => old('danger_color', $colors['danger']), 'required' => false],
+            ['id' => 'accent_color', 'name' => 'Accent', 'value' => old('accent_color', $colors['accent']), 'required' => false],
+            ['id' => 'border_color', 'name' => 'Border', 'value' => old('border_color', $colors['border']), 'required' => false],
+        ];
+
+        return view('partners.edit', compact('partner', 'colorFormData'));
     }
 
     /**
