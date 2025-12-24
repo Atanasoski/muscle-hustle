@@ -3,194 +3,293 @@
 @section('title', 'Exercise Library')
 
 @section('content')
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div x-data="{ createModal: false, editModal: 0 }" class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+    <!-- Page Header -->
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="h3 fw-bold mb-1">
-                <i class="bi bi-list-ul text-primary"></i> Exercise Library
-            </h1>
-            <p class="text-muted mb-0 small">Manage your exercises and video tutorials</p>
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                Exercise Library
+            </h2>
+            <p class="text-sm text-body dark:text-bodydark">Manage your exercises and video tutorials</p>
         </div>
-        <x-button variant="create" data-bs-toggle="modal" data-bs-target="#createExerciseModal">
+        <button @click="createModal = true" 
+                class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-center font-medium text-white hover:bg-opacity-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
             Add Custom Exercise
-        </x-button>
+        </button>
     </div>
 
     <!-- Search Bar -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <div class="input-group input-group-lg">
-                <span class="input-group-text">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" id="exercise-search" class="form-control" 
-                       placeholder="Search exercises by name..." autocomplete="off">
-            </div>
+    <div class="mb-6">
+        <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2">
+                <svg class="w-5 h-5 text-bodydark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </span>
+            <input type="text" 
+                   id="exercise-search" 
+                   placeholder="Search exercises by name..."
+                   class="w-full rounded-lg border border-stroke bg-white py-3 pl-12 pr-4 text-black focus:border-primary focus:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary">
         </div>
     </div>
 
     <!-- Exercises by Category -->
     @foreach($categories as $category)
         @if($category->exercises->count() > 0)
-        <div class="exercise-category" data-category="{{ $category->name }}">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header py-3" style="background: {{ $category->color }}; color: white;">
-                    <h5 class="mb-0 fw-bold">
-                        {{ $category->icon }} {{ $category->name }}
-                        <span class="badge bg-white text-dark ms-2">{{ $category->exercises->count() }}</span>
-                    </h5>
+        <div class="exercise-category mb-6" data-category="{{ $category->name }}">
+            <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <!-- Category Header -->
+                <div class="border-b border-stroke px-6 py-4 dark:border-strokedark" style="background: {{ $category->color }};">
+                    <h3 class="font-bold text-white flex items-center gap-2">
+                        <span>{{ $category->icon }} {{ $category->name }}</span>
+                        <span class="rounded-full bg-white px-2.5 py-0.5 text-sm font-medium text-black">
+                            {{ $category->exercises->count() }}
+                        </span>
+                    </h3>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 50%;">Exercise Name</th>
-                                    <th class="text-center d-none d-md-table-cell" style="width: 120px;">Rest Time</th>
-                                    <th class="text-center" style="width: 100px;">Type</th>
-                                    <th class="text-end" style="width: 120px;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($category->exercises as $exercise)
-                                    <tr class="exercise-row" data-name="{{ strtolower($exercise->name) }}">
-                                        <td>
-                                            <strong>{{ $exercise->name }}</strong>
-                                            @if($exercise->user_id)
-                                                <span class="badge bg-info-subtle text-info ms-2">Custom</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center d-none d-md-table-cell">
-                                            <span class="badge bg-secondary">
-                                                {{ $exercise->default_rest_sec }}s
+
+                <!-- Exercises Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-2 text-left dark:bg-meta-4">
+                                <th class="px-6 py-4 font-medium text-black dark:text-white">
+                                    Exercise Name
+                                </th>
+                                <th class="px-6 py-4 font-medium text-black dark:text-white text-center hidden md:table-cell">
+                                    Rest Time
+                                </th>
+                                <th class="px-6 py-4 font-medium text-black dark:text-white text-center">
+                                    Type
+                                </th>
+                                <th class="px-6 py-4 font-medium text-black dark:text-white text-right">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($category->exercises as $exercise)
+                                <tr class="exercise-row border-b border-stroke dark:border-strokedark hover:bg-gray-2 dark:hover:bg-meta-4" 
+                                    data-name="{{ strtolower($exercise->name) }}">
+                                    <td class="px-6 py-4">
+                                        <span class="font-medium text-black dark:text-white">{{ $exercise->name }}</span>
+                                        @if($exercise->user_id)
+                                            <span class="ml-2 inline-flex rounded-full bg-warning bg-opacity-10 px-2.5 py-0.5 text-xs font-medium text-warning">
+                                                Custom
                                             </span>
-                                        </td>
-                                        <td class="text-center">
-                                            @if($exercise->user_id)
-                                                <span class="badge bg-info text-white">Custom</span>
-                                            @else
-                                                <span class="badge bg-secondary">Global</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-end">
-                                            <x-button variant="edit" 
-                                                    size="sm"
-                                                    class="btn-outline-primary"
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#editExerciseModal{{ $exercise->id }}">
-                                                <span class="visually-hidden">Edit</span>
-                                            </x-button>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-center hidden md:table-cell">
+                                        <span class="inline-flex rounded-full bg-bodydark bg-opacity-10 px-2.5 py-0.5 text-sm font-medium text-bodydark dark:bg-white dark:bg-opacity-10 dark:text-white">
+                                            {{ $exercise->default_rest_sec }}s
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if($exercise->user_id)
+                                            <span class="inline-flex rounded-full bg-warning bg-opacity-10 px-2.5 py-0.5 text-sm font-medium text-warning">
+                                                Custom
+                                            </span>
+                                        @else
+                                            <span class="inline-flex rounded-full bg-success bg-opacity-10 px-2.5 py-0.5 text-sm font-medium text-success">
+                                                Global
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editModal = {{ $exercise->id }}"
+                                                    class="inline-flex items-center justify-center rounded-md border border-primary px-3 py-1.5 text-center font-medium text-primary hover:bg-primary hover:text-white">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </button>
                                             @if($exercise->user_id)
                                                 <form action="{{ route('exercises.destroy', $exercise) }}" 
                                                       method="POST" 
-                                                      class="d-inline"
+                                                      class="inline"
                                                       onsubmit="return confirm('Delete this exercise?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <x-button variant="delete" size="sm" type="submit" class="btn-outline-danger">
-                                                        <span class="visually-hidden">Delete</span>
-                                                    </x-button>
+                                                    <button type="submit"
+                                                            class="inline-flex items-center justify-center rounded-md border border-danger px-3 py-1.5 text-center font-medium text-danger hover:bg-danger hover:text-white">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                    </button>
                                                 </form>
                                             @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Edit Modal for this exercise -->
+                                <template x-teleport="body">
+                                    <div x-show="editModal === {{ $exercise->id }}" 
+                                         x-cloak
+                                         @click.self="editModal = 0"
+                                         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4">
+                                        <div @click.away="editModal = 0" 
+                                             class="w-full max-w-lg rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                            <!-- Header -->
+                                            <div class="border-b border-stroke px-6 py-4 dark:border-strokedark">
+                                                <h3 class="text-xl font-semibold text-black dark:text-white">
+                                                    Edit Exercise
+                                                </h3>
+                                            </div>
+
+                                            <!-- Form -->
+                                            <form action="{{ route('exercises.update', $exercise) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                
+                                                <div class="p-6 space-y-4">
+                                                    <div>
+                                                        <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                                            Exercise Name <span class="text-meta-1">*</span>
+                                                        </label>
+                                                        <input type="text" 
+                                                               name="name" 
+                                                               value="{{ $exercise->name }}" 
+                                                               required
+                                                               class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                                            Category <span class="text-meta-1">*</span>
+                                                        </label>
+                                                        <select name="category_id" 
+                                                                required
+                                                                class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
+                                                            @foreach($categories as $cat)
+                                                                <option value="{{ $cat->id }}" {{ $exercise->category_id == $cat->id ? 'selected' : '' }}>
+                                                                    {{ $cat->icon }} {{ $cat->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                                            Default Rest Time (seconds)
+                                                        </label>
+                                                        <input type="number" 
+                                                               name="default_rest_sec" 
+                                                               value="{{ $exercise->default_rest_sec }}" 
+                                                               min="0"
+                                                               class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Footer -->
+                                                <div class="flex gap-4 border-t border-stroke px-6 py-4 dark:border-strokedark">
+                                                    <button type="button" 
+                                                            @click="editModal = 0"
+                                                            class="flex-1 rounded border border-stroke px-6 py-2.5 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white">
+                                                        Cancel
+                                                    </button>
+                                                    <button type="submit"
+                                                            class="flex-1 rounded bg-primary px-6 py-2.5 font-medium text-white hover:bg-opacity-90">
+                                                        Save Changes
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </template>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
         @endif
     @endforeach
-</div>
 
-<!-- Create Exercise Modal -->
-<div class="modal fade" id="createExerciseModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('exercises.store') }}" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Custom Exercise</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <!-- Create Exercise Modal -->
+    <template x-teleport="body">
+        <div x-show="createModal" 
+             x-cloak
+             @click.self="createModal = false"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4">
+            <div @click.away="createModal = false" 
+                 class="w-full max-w-lg rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <!-- Header -->
+                <div class="border-b border-stroke px-6 py-4 dark:border-strokedark">
+                    <h3 class="text-xl font-semibold text-black dark:text-white">
+                        Add Custom Exercise
+                    </h3>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Exercise Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="name" required placeholder="e.g., Dumbbell Curl">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
-                        <input type="text" id="category-search-create" class="form-control mb-2" placeholder="🔍 Search categories..." autocomplete="off">
-                        <select class="form-select" id="category-select-create" name="category_id" required size="6">
-                            <option value="">Select category...</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}">{{ $cat->icon }} {{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Default Rest Time (seconds)</label>
-                        <input type="number" class="form-control" name="default_rest_sec" value="90" min="0">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
-                    <x-button variant="create" type="submit">
-                        Create Exercise
-                    </x-button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- Edit Exercise Modals -->
-@foreach($categories as $category)
-    @foreach($category->exercises as $exercise)
-        <div class="modal fade" id="editExerciseModal{{ $exercise->id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form action="{{ route('exercises.update', $exercise) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Exercise</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- Form -->
+                <form action="{{ route('exercises.store') }}" method="POST">
+                    @csrf
+                    
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                Exercise Name <span class="text-meta-1">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="name" 
+                                   required 
+                                   placeholder="e.g., Dumbbell Curl"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
                         </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="edit-name-{{ $exercise->id }}" class="form-label fw-bold">Exercise Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="edit-name-{{ $exercise->id }}" name="name" value="{{ $exercise->name }}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit-category-{{ $exercise->id }}" class="form-label fw-bold">Category <span class="text-danger">*</span></label>
-                                <select class="form-select" id="edit-category-{{ $exercise->id }}" name="category_id" required>
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}" {{ $exercise->category_id == $cat->id ? 'selected' : '' }}>
-                                            {{ $cat->icon }} {{ $cat->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit-rest-{{ $exercise->id }}" class="form-label fw-bold">Default Rest Time (seconds)</label>
-                                <input type="number" class="form-control" id="edit-rest-{{ $exercise->id }}" name="default_rest_sec" value="{{ $exercise->default_rest_sec }}" min="0">
-                            </div>
+
+                        <div>
+                            <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                Category <span class="text-meta-1">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="category-search-create" 
+                                   placeholder="🔍 Search categories..." 
+                                   autocomplete="off"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white mb-2">
+                            <select name="category_id" 
+                                    id="category-select-create" 
+                                    required 
+                                    size="6"
+                                    class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
+                                <option value="">Select category...</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->icon }} {{ $cat->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="modal-footer">
-                            <x-button variant="cancel" data-bs-dismiss="modal">Cancel</x-button>
-                            <x-button variant="save" type="submit">
-                                Save Changes
-                            </x-button>
+
+                        <div>
+                            <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                Default Rest Time (seconds)
+                            </label>
+                            <input type="number" 
+                                   name="default_rest_sec" 
+                                   value="90" 
+                                   min="0"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="flex gap-4 border-t border-stroke px-6 py-4 dark:border-strokedark">
+                        <button type="button" 
+                                @click="createModal = false"
+                                class="flex-1 rounded border border-stroke px-6 py-2.5 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="flex-1 rounded bg-primary px-6 py-2.5 font-medium text-white hover:bg-opacity-90">
+                            Create Exercise
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    @endforeach
-@endforeach
+    </template>
+</div>
 @endsection
 
 @push('scripts')
@@ -203,29 +302,24 @@ if (exerciseSearchInput) {
         const exerciseRows = document.querySelectorAll('.exercise-row');
         const categories = document.querySelectorAll('.exercise-category');
         
-        // Filter exercise rows
         exerciseRows.forEach(row => {
             const exerciseName = row.getAttribute('data-name');
             if (exerciseName.includes(searchTerm)) {
-                row.classList.remove('d-none');
+                row.classList.remove('hidden');
             } else {
-                row.classList.add('d-none');
+                row.classList.add('hidden');
             }
         });
         
-        // Hide categories with no visible exercises
         categories.forEach(category => {
-            const card = category.querySelector('.card');
-            if (!card) return;
-            
-            const tbody = card.querySelector('tbody');
+            const tbody = category.querySelector('tbody');
             if (!tbody) return;
             
-            const visibleRows = tbody.querySelectorAll('.exercise-row:not(.d-none)');
+            const visibleRows = tbody.querySelectorAll('.exercise-row:not(.hidden)');
             if (visibleRows.length === 0) {
-                category.classList.add('d-none');
+                category.classList.add('hidden');
             } else {
-                category.classList.remove('d-none');
+                category.classList.remove('hidden');
             }
         });
     });
@@ -241,7 +335,7 @@ if (categorySearchCreate && categorySelectCreate) {
         const options = categorySelectCreate.querySelectorAll('option');
         
         options.forEach(option => {
-            if (option.value === '') return; // Keep placeholder
+            if (option.value === '') return;
             
             const text = option.textContent.toLowerCase();
             if (text.includes(searchTerm)) {
@@ -251,18 +345,10 @@ if (categorySearchCreate && categorySelectCreate) {
             }
         });
     });
-    
-    // Reset on modal close
-    const createModal = document.getElementById('createExerciseModal');
-    if (createModal) {
-        createModal.addEventListener('hidden.bs.modal', function() {
-            categorySearchCreate.value = '';
-            categorySelectCreate.querySelectorAll('option').forEach(opt => {
-                opt.style.display = '';
-            });
-        });
-    }
 }
 </script>
-@endpush
 
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+@endpush
