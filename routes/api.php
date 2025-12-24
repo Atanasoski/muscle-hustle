@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExerciseController;
+use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkoutSessionController;
 use App\Http\Controllers\Api\WorkoutTemplateController;
@@ -20,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'show']);
     Route::put('/user', [UserController::class, 'update']);
     Route::patch('/user', [UserController::class, 'update']);
+    Route::get('/user/fitness-metrics', [FitnessMetricsController::class, 'index']);
 
     // Exercises CRUD
     Route::apiResource('exercises', ExerciseController::class);
