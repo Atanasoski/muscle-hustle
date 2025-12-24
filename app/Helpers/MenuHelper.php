@@ -6,84 +6,44 @@ class MenuHelper
 {
     public static function getMainNavItems()
     {
-        return [
-            [
-                'icon' => 'dashboard',
-                'name' => 'Dashboard',
-                'subItems' => [
-                    ['name' => 'Ecommerce', 'path' => '/'],
-                ],
-            ],
-            [
+        $user = auth()->user();
+        $items = [];
+
+        // Dashboard - Always visible
+        $items[] = [
+            'icon' => 'dashboard',
+            'name' => 'Dashboard',
+            'path' => '/dashboard',
+        ];
+
+        // Partners - Only for admins
+        if ($user && $user->hasRole('admin')) {
+            $items[] = [
                 'icon' => 'user-profile',
                 'name' => 'Partners',
                 'path' => '/partners',
-            ],
-            // [
-            //     'icon' => 'calendar',
-            //     'name' => 'Calendar',
-            //     'path' => '/calendar',
-            // ],
-            // [
-            //     'icon' => 'user-profile',
-            //     'name' => 'User Profile',
-            //     'path' => '/profile',
-            // ],
-            // [
-            //     'name' => 'Forms',
-            //     'icon' => 'forms',
-            //     'subItems' => [
-            //         ['name' => 'Form Elements', 'path' => '/form-elements', 'pro' => false],
-            //     ],
-            // ],
-            // [
-            //     'name' => 'Tables',
-            //     'icon' => 'tables',
-            //     'subItems' => [
-            //         ['name' => 'Basic Tables', 'path' => '/basic-tables', 'pro' => false]
-            //     ],
-            // ],
-            // [
-            //     'name' => 'Pages',
-            //     'icon' => 'pages',
-            //     'subItems' => [
-            //         ['name' => 'Blank Page', 'path' => '/blank', 'pro' => false],
-            //         ['name' => '404 Error', 'path' => '/error-404', 'pro' => false]
-            //     ],
-            // ],
-        ];
+            ];
+        }
+
+        // Exercises - For admins and partner admins
+        if ($user && $user->hasAnyRole(['admin', 'partner_admin'])) {
+            $items[] = [
+                'icon' => 'task',
+                'name' => 'Exercises',
+                'path' => '/exercises',
+            ];
+        }
+
+        return $items;
     }
 
     public static function getOthersItems()
     {
         return [
             [
-                'icon' => 'charts',
-                'name' => 'Charts',
-                'subItems' => [
-                    ['name' => 'Line Chart', 'path' => '/line-chart', 'pro' => false],
-                    ['name' => 'Bar Chart', 'path' => '/bar-chart', 'pro' => false],
-                ],
-            ],
-            [
-                'icon' => 'ui-elements',
-                'name' => 'UI Elements',
-                'subItems' => [
-                    ['name' => 'Alerts', 'path' => '/alerts', 'pro' => false],
-                    ['name' => 'Avatar', 'path' => '/avatars', 'pro' => false],
-                    ['name' => 'Badge', 'path' => '/badge', 'pro' => false],
-                    ['name' => 'Buttons', 'path' => '/buttons', 'pro' => false],
-                    ['name' => 'Images', 'path' => '/image', 'pro' => false],
-                    ['name' => 'Videos', 'path' => '/videos', 'pro' => false],
-                ],
-            ],
-            [
-                'icon' => 'authentication',
-                'name' => 'Authentication',
-                'subItems' => [
-                    ['name' => 'Sign In', 'path' => '/signin', 'pro' => false],
-                    ['name' => 'Sign Up', 'path' => '/signup', 'pro' => false],
-                ],
+                'icon' => 'user-profile',
+                'name' => 'Profile',
+                'path' => '/profile',
             ],
         ];
     }
@@ -92,13 +52,13 @@ class MenuHelper
     {
         return [
             [
-                'title' => 'Menu',
+                'title' => 'Main',
                 'items' => self::getMainNavItems(),
             ],
-            // [
-            //     'title' => 'Others',
-            //     'items' => self::getOthersItems()
-            // ]
+            [
+                'title' => 'Account',
+                'items' => self::getOthersItems(),
+            ],
         ];
     }
 

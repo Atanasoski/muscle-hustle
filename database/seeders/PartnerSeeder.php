@@ -3,7 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Partner;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class PartnerSeeder extends Seeder
 {
@@ -87,5 +90,46 @@ class PartnerSeeder extends Seeder
             'accent_color' => '#a855f7',
             'border_color' => '#e2e8f0',
         ]);
+
+        // Create partner admin users
+        $partnerAdminRole = Role::where('slug', 'partner_admin')->first();
+
+        $muscleHustleAdmin = User::firstOrCreate(
+            ['email' => 'admin@musclehustle.gym'],
+            [
+                'name' => 'Muscle Hustle Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $muscleHustle->id,
+            ]
+        );
+        $muscleHustleAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
+
+        $fitLifeAdmin = User::firstOrCreate(
+            ['email' => 'admin@fitlife.gym'],
+            [
+                'name' => 'FitLife Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $fitLife->id,
+            ]
+        );
+        $fitLifeAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
+
+        $powerGymAdmin = User::firstOrCreate(
+            ['email' => 'admin@powergym.gym'],
+            [
+                'name' => 'PowerGym Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $powerGym->id,
+            ]
+        );
+        $powerGymAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
+
+        $this->command->info('Partner admin users created:');
+        $this->command->info('  - admin@musclehustle.gym (password: password)');
+        $this->command->info('  - admin@fitlife.gym (password: password)');
+        $this->command->info('  - admin@powergym.gym (password: password)');
     }
 }
