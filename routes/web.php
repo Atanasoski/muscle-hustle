@@ -4,7 +4,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutPlannerController;
-use App\Http\Controllers\WorkoutSessionController;
 use App\Http\Controllers\WorkoutTemplateController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,16 +41,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/planner/workouts', [WorkoutPlannerController::class, 'index'])->name('planner.workouts');
     Route::post('/planner/workouts/assign', [WorkoutPlannerController::class, 'assign'])->name('planner.workouts.assign');
     Route::post('/planner/workouts/unassign', [WorkoutPlannerController::class, 'unassign'])->name('planner.workouts.unassign');
-
-    // Workout Sessions
-    Route::get('/workouts/today', [WorkoutSessionController::class, 'today'])->name('workouts.today');
-    Route::post('/workouts/start', [WorkoutSessionController::class, 'start'])->name('workouts.start');
-    Route::get('/workouts/{session}', [WorkoutSessionController::class, 'show'])->name('workouts.session');
-    Route::post('/workouts/{session}/log-set', [WorkoutSessionController::class, 'logSet'])->name('workouts.log-set');
-    Route::post('/workouts/{session}/complete', [WorkoutSessionController::class, 'complete'])->name('workouts.complete');
-    Route::delete('/workouts/{session}/cancel', [WorkoutSessionController::class, 'cancel'])->name('workouts.cancel');
-    Route::put('/workouts/{session}/sets/{setLog}', [WorkoutSessionController::class, 'updateSet'])->name('workouts.update-set');
-    Route::delete('/workouts/{session}/sets/{setLog}', [WorkoutSessionController::class, 'deleteSet'])->name('workouts.delete-set');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
