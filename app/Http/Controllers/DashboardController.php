@@ -68,9 +68,13 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $recentWorkouts = WorkoutSession::with(['user.partner'])
-            ->whereNotNull('completed_at')
-            ->latest('performed_at')
+        // Partner Admin Logins - Show recent partner admin logins
+        $partnerActivity = User::with(['partner.identity', 'roles'])
+            ->whereHas('roles', function ($query) {
+                $query->where('slug', 'partner_admin');
+            })
+            ->whereNotNull('last_login_at')
+            ->orderByDesc('last_login_at')
             ->take(10)
             ->get();
 
@@ -80,7 +84,7 @@ class DashboardController extends Controller
             'totalUsers',
             'partners',
             'recentUsers',
-            'recentWorkouts'
+            'partnerActivity'
         ));
     }
 

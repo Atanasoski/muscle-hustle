@@ -192,39 +192,43 @@
             </div>
         </div>
 
-        <!-- Recent Workouts -->
+        <!-- Partner Admin Logins -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                 <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                     </svg>
-                    Recent Workouts
+                    Partner Admin Logins
                 </h5>
             </div>
             <div class="p-0">
-                @if($recentWorkouts->count() > 0)
+                @if($partnerActivity->count() > 0)
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach($recentWorkouts as $workout)
+                        @foreach($partnerActivity as $partnerAdmin)
                             <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center">
-                                        <div class="w-10 h-10 rounded mr-3 bg-yellow-500 flex items-center justify-center text-white">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                            </svg>
-                                        </div>
+                                        @if($partnerAdmin->partner && $partnerAdmin->partner->identity && $partnerAdmin->partner->identity->logo_url)
+                                            <img src="{{ $partnerAdmin->partner->identity->logo_url }}" alt="{{ $partnerAdmin->partner->name }}" class="w-10 h-10 rounded mr-3 object-cover">
+                                        @else
+                                            <div class="w-10 h-10 rounded mr-3 bg-blue-500 flex items-center justify-center text-white font-semibold">
+                                                {{ substr($partnerAdmin->name, 0, 1) }}
+                                            </div>
+                                        @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $workout->user->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $partnerAdmin->name }}</div>
                                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-3 h-3 inline mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                                 </svg>
-                                                {{ $workout->user->partner ? $workout->user->partner->name : 'No Partner' }}
+                                                {{ $partnerAdmin->partner ? $partnerAdmin->partner->name : 'No Partner' }}
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $workout->performed_at->diffForHumans() }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $partnerAdmin->last_login_at->diffForHumans() }}
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -232,9 +236,9 @@
                 @else
                     <div class="text-center py-12">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                         </svg>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No workouts yet</p>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No partner logins yet</p>
                     </div>
                 @endif
             </div>
@@ -242,3 +246,4 @@
     </div>
 </div>
 @endsection
+
