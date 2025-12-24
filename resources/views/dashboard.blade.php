@@ -174,9 +174,9 @@
                         <div class="text-center py-3">
                             <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
                             <h6 class="text-muted mb-2">No workout scheduled for today</h6>
-                            <p class="text-muted small mb-3">Rest day or time to plan your week?</p>
-                            <a href="{{ route('planner.workouts') }}" class="btn btn-primary">
-                                <i class="bi bi-calendar-plus me-2"></i> Plan Your Week
+                            <p class="text-muted small mb-3">Rest day or time to create a workout template?</p>
+                            <a href="{{ route('workout-templates.index') }}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i> Manage Templates
                             </a>
                         </div>
                     @endif
@@ -248,9 +248,9 @@
                         <div class="text-center py-3">
                             <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
                             <h6 class="text-muted mb-2">No workouts planned this week</h6>
-                            <p class="text-muted small mb-3">Get started by planning your weekly training schedule</p>
-                            <x-button variant="primary" href="{{ route('planner.workouts') }}" icon="bi-calendar-plus">
-                                Plan Your Week
+                            <p class="text-muted small mb-3">Create workout templates and schedule them using the mobile app</p>
+                            <x-button variant="primary" href="{{ route('workout-templates.index') }}" icon="bi-plus-circle">
+                                Create Templates
                             </x-button>
                         </div>
                     @endif

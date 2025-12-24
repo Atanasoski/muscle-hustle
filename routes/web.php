@@ -3,7 +3,6 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\WorkoutPlannerController;
 use App\Http\Controllers\WorkoutTemplateController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,11 +35,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('workout-templates.update-exercise');
     Route::post('/workout-templates/{workoutTemplate}/order', [WorkoutTemplateController::class, 'updateOrder'])
         ->name('workout-templates.update-order');
-
-    // Weekly Workout Planner
-    Route::get('/planner/workouts', [WorkoutPlannerController::class, 'index'])->name('planner.workouts');
-    Route::post('/planner/workouts/assign', [WorkoutPlannerController::class, 'assign'])->name('planner.workouts.assign');
-    Route::post('/planner/workouts/unassign', [WorkoutPlannerController::class, 'unassign'])->name('planner.workouts.unassign');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
