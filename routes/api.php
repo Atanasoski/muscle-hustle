@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WorkoutPlannerController;
 use App\Http\Controllers\Api\WorkoutSessionController;
 use App\Http\Controllers\Api\WorkoutTemplateController;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/workout-templates/{workoutTemplate}/exercises/{exercise}', [WorkoutTemplateController::class, 'removeExercise']);
     Route::put('/workout-templates/{workoutTemplate}/exercises/{exercise}', [WorkoutTemplateController::class, 'updateExercise']);
     Route::post('/workout-templates/{workoutTemplate}/order', [WorkoutTemplateController::class, 'updateOrder']);
+
+    // Weekly Workout Planner
+    Route::get('/planner/weekly', [WorkoutPlannerController::class, 'index']);
+    Route::post('/planner/assign', [WorkoutPlannerController::class, 'assign']);
+    Route::post('/planner/unassign', [WorkoutPlannerController::class, 'unassign']);
 
     // Workout Sessions
     Route::get('/workout-sessions/calendar', [WorkoutSessionController::class, 'calendar']);
