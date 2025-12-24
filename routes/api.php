@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExerciseController;
+use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkoutSessionController;
@@ -19,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // User endpoints
     Route::get('/user', [UserController::class, 'show']);
+    Route::get('/user/fitness-metrics', [FitnessMetricsController::class, 'index']);
 
     // Profile endpoints
     Route::get('/profile', [ProfileController::class, 'show']);
