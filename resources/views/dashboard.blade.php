@@ -165,19 +165,18 @@
                                     <i class="bi bi-exclamation-triangle me-2"></i>
                                     No exercises added yet to this template.
                                 </div>
-                                <x-button variant="create" href="{{ route('workout-templates.edit', $todayWorkout) }}" class="w-100">
-                                    Add Exercises
-                                </x-button>
+                                <div class="text-muted small">
+                                    <i class="bi bi-phone me-1"></i> Manage exercises via the mobile app
+                                </div>
                             @endif
                         </div>
                     @else
                         <div class="text-center py-3">
                             <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
                             <h6 class="text-muted mb-2">No workout scheduled for today</h6>
-                            <p class="text-muted small mb-3">Rest day or time to create a workout template?</p>
-                            <a href="{{ route('workout-templates.index') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i> Manage Templates
-                            </a>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-phone me-1"></i> Create and schedule workouts using the mobile app
+                            </p>
                         </div>
                     @endif
                 </div>
@@ -207,25 +206,23 @@
                                 @endphp
                                 <div class="col-lg-3 col-md-4 col-sm-6">
                                     @if($workout)
-                                        <a href="{{ route('workout-templates.edit', $workout) }}" class="text-decoration-none">
-                                            <div class="card h-100 border-2 {{ $isToday ? 'border-warning' : 'border-secondary' }}">
-                                                <div class="card-header bg-warning text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                                    <div class="fw-bold">{{ $day }}</div>
-                                                    @if($isToday)
-                                                        <span class="badge bg-primary text-white">Today</span>
-                                                    @endif
-                                                </div>
-                                                <div class="card-body p-3">
-                                                    <h6 class="fw-semibold text-dark mb-1">{{ $workout->name }}</h6>
-                                                    @if($workout->description)
-                                                        <p class="text-muted small mb-2">{{ $workout->description }}</p>
-                                                    @endif
-                                                    <div class="text-secondary small">
-                                                        <i class="bi bi-list-check"></i> {{ $workout->exercises->count() }} exercises
-                                                    </div>
+                                        <div class="card h-100 border-2 {{ $isToday ? 'border-warning' : 'border-secondary' }}">
+                                            <div class="card-header bg-warning text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                                <div class="fw-bold">{{ $day }}</div>
+                                                @if($isToday)
+                                                    <span class="badge bg-primary text-white">Today</span>
+                                                @endif
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <h6 class="fw-semibold text-dark mb-1">{{ $workout->name }}</h6>
+                                                @if($workout->description)
+                                                    <p class="text-muted small mb-2">{{ $workout->description }}</p>
+                                                @endif
+                                                <div class="text-secondary small">
+                                                    <i class="bi bi-list-check"></i> {{ $workout->exercises->count() }} exercises
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     @else
                                         <div class="card h-100 border-2 {{ $isToday ? 'border-warning' : '' }}">
                                             <div class="card-header bg-secondary text-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -248,10 +245,9 @@
                         <div class="text-center py-3">
                             <i class="bi bi-calendar-x fs-1 text-muted mb-2"></i>
                             <h6 class="text-muted mb-2">No workouts planned this week</h6>
-                            <p class="text-muted small mb-3">Create workout templates and schedule them using the mobile app</p>
-                            <x-button variant="primary" href="{{ route('workout-templates.index') }}" icon="bi-plus-circle">
-                                Create Templates
-                            </x-button>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-phone me-1"></i> Create and schedule templates using the mobile app
+                            </p>
                         </div>
                     @endif
                 </div>
