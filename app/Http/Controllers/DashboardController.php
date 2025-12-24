@@ -100,9 +100,17 @@ class DashboardController extends Controller
             abort(403, 'No partner associated with your account.');
         }
 
-        // Gym stats
-        $totalMembers = $partner->users()->count();
+        // Gym stats - exclude admin and partner_admin users from member counts
+        $totalMembers = $partner->users()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->whereIn('slug', ['admin', 'partner_admin']);
+            })
+            ->count();
+
         $activeMembersThisWeek = $partner->users()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->whereIn('slug', ['admin', 'partner_admin']);
+            })
             ->whereHas('workoutSessions', function ($query) {
                 $query->whereBetween('performed_at', [
                     Carbon::now()->startOfWeek(),
@@ -113,19 +121,28 @@ class DashboardController extends Controller
 
         // Top active members
         $topMembers = $partner->users()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->whereIn('slug', ['admin', 'partner_admin']);
+            })
             ->withCount(['workoutSessions' => function ($query) {
                 $query->whereBetween('performed_at', [
                     Carbon::now()->startOfWeek(),
                     Carbon::now()->endOfWeek(),
                 ]);
             }])
-            ->having('workout_sessions_count', '>', 0)
-            ->orderByDesc('workout_sessions_count')
+            ->get()
+            ->filter(function ($user) {
+                return $user->workout_sessions_count > 0;
+            })
+            ->sortByDesc('workout_sessions_count')
             ->take(5)
-            ->get();
+            ->values();
 
         // Inactive members (no workout in last 7 days)
         $inactiveMembers = $partner->users()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->whereIn('slug', ['admin', 'partner_admin']);
+            })
             ->whereDoesntHave('workoutSessions', function ($query) {
                 $query->where('performed_at', '>=', Carbon::now()->subDays(7));
             })
@@ -135,13 +152,19 @@ class DashboardController extends Controller
 
         // Recent members
         $recentMembers = $partner->users()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->whereIn('slug', ['admin', 'partner_admin']);
+            })
             ->latest()
             ->take(10)
             ->get();
 
-        // Recent workouts
+        // Recent workouts - only from regular members
         $recentWorkouts = WorkoutSession::whereHas('user', function ($query) use ($partner) {
-            $query->where('partner_id', $partner->id);
+            $query->where('partner_id', $partner->id)
+                ->whereDoesntHave('roles', function ($q) {
+                    $q->whereIn('slug', ['admin', 'partner_admin']);
+                });
         })
             ->with(['user'])
             ->whereNotNull('completed_at')
