@@ -13,7 +13,7 @@
     </div>
 
     <!-- Stats Cards Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <!-- Total Partners -->
         <div class="bg-blue-500 rounded-lg shadow-sm p-6 text-white">
             <div class="flex items-center">
@@ -42,38 +42,6 @@
                     <h3 class="text-3xl font-bold">{{ $totalUsers }}</h3>
                     <p class="text-sm opacity-90">Total Members</p>
                     <p class="text-xs opacity-75 mt-1">Across all gyms</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Workouts Today -->
-        <div class="bg-yellow-500 rounded-lg shadow-sm p-6 text-white">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-3xl font-bold">{{ $workoutsToday }}</h3>
-                    <p class="text-sm opacity-90">Workouts Today</p>
-                    <p class="text-xs opacity-75 mt-1">{{ $workoutsThisWeek }} this week</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Workouts -->
-        <div class="bg-cyan-500 rounded-lg shadow-sm p-6 text-white">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-3xl font-bold">{{ number_format($workoutsAllTime) }}</h3>
-                    <p class="text-sm opacity-90">Total Workouts</p>
-                    <p class="text-xs opacity-75 mt-1">All time</p>
                 </div>
             </div>
         </div>

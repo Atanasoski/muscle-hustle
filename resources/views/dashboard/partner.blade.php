@@ -20,7 +20,7 @@
     </div>
 
     <!-- Stats Cards Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <!-- Total Members -->
         <div class="bg-blue-500 rounded-lg shadow-sm p-6 text-white">
             <div class="flex items-center">
@@ -50,38 +50,6 @@
                     <h3 class="text-3xl font-bold">{{ $activeMembersThisWeek }}</h3>
                     <p class="text-sm opacity-90">Active This Week</p>
                     <p class="text-xs opacity-75 mt-1">{{ $totalMembers > 0 ? round(($activeMembersThisWeek / $totalMembers) * 100) : 0 }}% of members</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Workouts This Week -->
-        <div class="bg-yellow-500 rounded-lg shadow-sm p-6 text-white">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-3xl font-bold">{{ $workoutsThisWeek }}</h3>
-                    <p class="text-sm opacity-90">Workouts This Week</p>
-                    <p class="text-xs opacity-75 mt-1">{{ $activeMembersThisWeek > 0 ? round($workoutsThisWeek / $activeMembersThisWeek, 1) : 0 }} avg per member</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Workouts -->
-        <div class="bg-cyan-500 rounded-lg shadow-sm p-6 text-white">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-3xl font-bold">{{ number_format($workoutsAllTime) }}</h3>
-                    <p class="text-sm opacity-90">Total Workouts</p>
-                    <p class="text-xs opacity-75 mt-1">All time</p>
                 </div>
             </div>
         </div>

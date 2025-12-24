@@ -34,14 +34,6 @@ class DashboardController extends Controller
         $activePartners = Partner::where('is_active', true)->count();
         $totalUsers = User::count();
 
-        // Workouts stats
-        $workoutsToday = WorkoutSession::whereDate('performed_at', Carbon::today())->count();
-        $workoutsThisWeek = WorkoutSession::whereBetween('performed_at', [
-            Carbon::now()->startOfWeek(),
-            Carbon::now()->endOfWeek(),
-        ])->count();
-        $workoutsAllTime = WorkoutSession::count();
-
         // Partners with metrics
         $partners = Partner::withCount([
             'users',
@@ -86,9 +78,6 @@ class DashboardController extends Controller
             'totalPartners',
             'activePartners',
             'totalUsers',
-            'workoutsToday',
-            'workoutsThisWeek',
-            'workoutsAllTime',
             'partners',
             'recentUsers',
             'recentWorkouts'
@@ -117,17 +106,6 @@ class DashboardController extends Controller
                 ]);
             })
             ->count();
-
-        $workoutsThisWeek = WorkoutSession::whereHas('user', function ($query) use ($partner) {
-            $query->where('partner_id', $partner->id);
-        })->whereBetween('performed_at', [
-            Carbon::now()->startOfWeek(),
-            Carbon::now()->endOfWeek(),
-        ])->count();
-
-        $workoutsAllTime = WorkoutSession::whereHas('user', function ($query) use ($partner) {
-            $query->where('partner_id', $partner->id);
-        })->count();
 
         // Top active members
         $topMembers = $partner->users()
@@ -171,8 +149,6 @@ class DashboardController extends Controller
             'partner',
             'totalMembers',
             'activeMembersThisWeek',
-            'workoutsThisWeek',
-            'workoutsAllTime',
             'topMembers',
             'inactiveMembers',
             'recentMembers',
