@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,       // Create exercise categories
             ExerciseSeeder::class,       // Create global exercises
             WorkoutTemplateSeeder::class, // Create workout templates with exercises
+            WorkoutSessionSeeder::class,  // Create workout session test data
             PartnerSeeder::class,        // Create partners with identities
         ]);
 

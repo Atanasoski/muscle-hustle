@@ -5,11 +5,14 @@ namespace App\Models;
 use App\Enums\FitnessGoal;
 use App\Enums\Gender;
 use App\Enums\TrainingExperience;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserProfile extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
