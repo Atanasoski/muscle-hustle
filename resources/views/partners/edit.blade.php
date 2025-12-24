@@ -119,59 +119,11 @@
             <div class="space-y-5">
                 <h4 class="text-lg font-medium text-gray-800 dark:text-white/90 mb-5">Branding</h4>
                     
-                    @php
-                        // Helper function to convert RGB to hex (for backward compatibility with existing data)
-                        function rgbToHex($rgb, $default = '#000000') {
-                            if (!$rgb) return $default;
-                            // Check if already hex format
-                            if (preg_match('/^#[0-9A-Fa-f]{6}$/', $rgb)) {
-                                return $rgb;
-                            }
-                            // Convert RGB format to hex
-                            $parts = explode(',', $rgb);
-                            if (count($parts) !== 3) return $default;
-                            $r = (int)trim($parts[0]);
-                            $g = (int)trim($parts[1]);
-                            $b = (int)trim($parts[2]);
-                            return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . 
-                                   str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . 
-                                   str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
-                        }
-                        $identity = $partner->identity;
-                        $primaryHex = old('primary_color', $identity ? rgbToHex($identity->primary_color, '#ff6b35') : '#ff6b35');
-                        $secondaryHex = old('secondary_color', $identity ? rgbToHex($identity->secondary_color, '#4ecdc4') : '#4ecdc4');
-                        $backgroundHex = old('background_color', $identity ? rgbToHex($identity->background_color, '#ffffff') : '#ffffff');
-                        $cardBgHex = old('card_background_color', $identity ? rgbToHex($identity->card_background_color, '#ffffff') : '#ffffff');
-                        $textPrimaryHex = old('text_primary_color', $identity ? rgbToHex($identity->text_primary_color, '#000000') : '#000000');
-                        $textSecondaryHex = old('text_secondary_color', $identity ? rgbToHex($identity->text_secondary_color, '#6b7280') : '#6b7280');
-                        $textOnPrimaryHex = old('text_on_primary_color', $identity ? rgbToHex($identity->text_on_primary_color, '#ffffff') : '#ffffff');
-                        $successHex = old('success_color', $identity ? rgbToHex($identity->success_color, '#10dc60') : '#10dc60');
-                        $warningHex = old('warning_color', $identity ? rgbToHex($identity->warning_color, '#ffce00') : '#ffce00');
-                        $dangerHex = old('danger_color', $identity ? rgbToHex($identity->danger_color, '#f04141') : '#f04141');
-                        $accentHex = old('accent_color', $identity ? rgbToHex($identity->accent_color, '#8ac34a') : '#8ac34a');
-                        $borderHex = old('border_color', $identity ? rgbToHex($identity->border_color, '#dee2e6') : '#dee2e6');
-                        
-                        $colors = [
-                            ['id' => 'primary_color', 'name' => 'Primary Color', 'value' => $primaryHex, 'required' => true],
-                            ['id' => 'secondary_color', 'name' => 'Secondary Color', 'value' => $secondaryHex, 'required' => true],
-                            ['id' => 'background_color', 'name' => 'Background', 'value' => $backgroundHex, 'required' => false],
-                            ['id' => 'card_background_color', 'name' => 'Card Background', 'value' => $cardBgHex, 'required' => false],
-                            ['id' => 'text_primary_color', 'name' => 'Text Primary', 'value' => $textPrimaryHex, 'required' => false],
-                            ['id' => 'text_secondary_color', 'name' => 'Text Secondary', 'value' => $textSecondaryHex, 'required' => false],
-                            ['id' => 'text_on_primary_color', 'name' => 'Text On Primary', 'value' => $textOnPrimaryHex, 'required' => false],
-                            ['id' => 'success_color', 'name' => 'Success', 'value' => $successHex, 'required' => false],
-                            ['id' => 'warning_color', 'name' => 'Warning', 'value' => $warningHex, 'required' => false],
-                            ['id' => 'danger_color', 'name' => 'Danger', 'value' => $dangerHex, 'required' => false],
-                            ['id' => 'accent_color', 'name' => 'Accent', 'value' => $accentHex, 'required' => false],
-                            ['id' => 'border_color', 'name' => 'Border', 'value' => $borderHex, 'required' => false],
-                        ];
-                    @endphp
-                    
                     <!-- Color Palette Grid -->
                     <div>
                         <h5 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">Color Palette</h5>
                         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                            @foreach($colors as $color)
+                            @foreach($colorFormData as $color)
                                 <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 @error($color['id']) border-error-500 @enderror">
                                     <div class="flex flex-col items-center gap-3">
                                         <!-- Color Swatch -->

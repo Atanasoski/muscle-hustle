@@ -14,10 +14,6 @@
     </div>
 
     <div class="row g-4">
-        @php
-            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        @endphp
-        
         @foreach($days as $index => $day)
             <div class="col-md-6 col-lg-4">
                 <div class="card shadow-sm h-100 border-0 {{ $weeklyPlan[$index] ? 'border-start border-5 border-info' : '' }}">

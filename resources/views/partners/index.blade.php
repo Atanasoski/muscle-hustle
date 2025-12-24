@@ -99,7 +99,7 @@
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                             <span class="text-theme-xs inline-block rounded-full px-2 py-0.5 font-medium bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-500">
-                                {{ $partner->users->count() }}
+                                {{ $partner->users_count }}
                             </span>
                         </td>
                         <td class="px-5 py-4 sm:px-6">

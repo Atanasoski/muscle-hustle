@@ -134,11 +134,20 @@ class WorkoutSessionController extends Controller
                 ];
             }
 
+            // Find the last completed set for this exercise
+            $lastCompletedSet = null;
+            foreach ($sets as $set) {
+                if ($set['is_completed']) {
+                    $lastCompletedSet = $set['set_number'];
+                }
+            }
+
             $exercisesData[] = [
                 'template_exercise' => $templateExercise,
                 'sets' => $sets,
                 'rest_seconds' => $templateExercise->rest_seconds ?? 90,
                 'is_completed' => $loggedSets->count() >= $targetSets,
+                'last_completed_set' => $lastCompletedSet,
             ];
         }
 

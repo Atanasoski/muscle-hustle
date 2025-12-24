@@ -96,15 +96,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                        // Find the last completed set for this exercise
-                                        $lastCompletedSet = null;
-                                        foreach($exerciseData['sets'] as $s) {
-                                            if ($s['is_completed']) {
-                                                $lastCompletedSet = $s['set_number'];
-                                            }
-                                        }
-                                    @endphp
                                     @foreach($exerciseData['sets'] as $set)
                                         <tr class="{{ $set['is_completed'] ? 'table-success' : ($set['is_active'] ? 'table-warning' : '') }}">
                                             <!-- Set Number -->
@@ -170,7 +161,7 @@
                                                                 data-reps="{{ $set['current_reps'] }}">
                                                             <span class="visually-hidden">Edit</span>
                                                         </x-button>
-                                                        @if($set['set_number'] === $lastCompletedSet)
+                                                        @if($set['set_number'] === $exerciseData['last_completed_set'])
                                                             <x-button variant="delete" size="sm" class="btn-outline-danger delete-set-btn" 
                                                                     data-set-id="{{ $set['logged_set_id'] }}"
                                                                     data-exercise-id="{{ $exerciseData['template_exercise']->exercise_id }}">
