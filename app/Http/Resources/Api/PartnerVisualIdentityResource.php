@@ -37,6 +37,20 @@ class PartnerVisualIdentityResource extends JsonResource
             'accent_color' => $this->accent_color,
             'border_color' => $this->border_color,
             'background_pattern' => $this->background_pattern,
+
+            // Dark mode colors
+            'primary_color_dark' => $this->primary_color_dark,
+            'secondary_color_dark' => $this->secondary_color_dark,
+            'background_color_dark' => $this->background_color_dark,
+            'card_background_color_dark' => $this->card_background_color_dark,
+            'text_primary_color_dark' => $this->text_primary_color_dark,
+            'text_secondary_color_dark' => $this->text_secondary_color_dark,
+            'text_on_primary_color_dark' => $this->text_on_primary_color_dark,
+            'success_color_dark' => $this->success_color_dark,
+            'warning_color_dark' => $this->warning_color_dark,
+            'danger_color_dark' => $this->danger_color_dark,
+            'accent_color_dark' => $this->accent_color_dark,
+            'border_color_dark' => $this->border_color_dark,
         ];
     }
 }

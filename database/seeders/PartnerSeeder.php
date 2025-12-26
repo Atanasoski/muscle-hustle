@@ -39,6 +39,18 @@ class PartnerSeeder extends Seeder
             'accent_color' => '#70b77e', // emerald
             'border_color' => '#c8dcda', // light dark-cyan variant
             'background_pattern' => '/images/pattern.png',
+            'primary_color_dark' => '#fa812d',
+            'secondary_color_dark' => '#292a2c',
+            'background_color_dark' => '#121212',
+            'card_background_color_dark' => '#1e1e1e',
+            'text_primary_color_dark' => '#ffffff',
+            'text_secondary_color_dark' => '#b0b0b0',
+            'text_on_primary_color_dark' => '#ffffff',
+            'success_color_dark' => '#4ade80',
+            'warning_color_dark' => '#fff94f',
+            'danger_color_dark' => '#ff6b6b',
+            'accent_color_dark' => '#fff94f',
+            'border_color_dark' => '#3a3a3a',
         ]);
 
         // Example Partner 1 - FitLife Pro
@@ -64,6 +76,18 @@ class PartnerSeeder extends Seeder
             'danger_color' => '#ef4444',
             'accent_color' => '#8b5cf6',
             'border_color' => '#e5e7eb',
+            'primary_color_dark' => '#60a5fa',
+            'secondary_color_dark' => '#34d399',
+            'background_color_dark' => '#0f172a',
+            'card_background_color_dark' => '#1e293b',
+            'text_primary_color_dark' => '#f1f5f9',
+            'text_secondary_color_dark' => '#94a3b8',
+            'text_on_primary_color_dark' => '#ffffff',
+            'success_color_dark' => '#4ade80',
+            'warning_color_dark' => '#fbbf24',
+            'danger_color_dark' => '#f87171',
+            'accent_color_dark' => '#a78bfa',
+            'border_color_dark' => '#334155',
         ]);
 
         // Example Partner 2 - PowerGym Elite
@@ -89,6 +113,18 @@ class PartnerSeeder extends Seeder
             'danger_color' => '#f87171',
             'accent_color' => '#a855f7',
             'border_color' => '#e2e8f0',
+            'primary_color_dark' => '#a78bfa',
+            'secondary_color_dark' => '#f472b6',
+            'background_color_dark' => '#0f172a',
+            'card_background_color_dark' => '#1e293b',
+            'text_primary_color_dark' => '#f1f5f9',
+            'text_secondary_color_dark' => '#94a3b8',
+            'text_on_primary_color_dark' => '#ffffff',
+            'success_color_dark' => '#4ade80',
+            'warning_color_dark' => '#fbbf24',
+            'danger_color_dark' => '#f87171',
+            'accent_color_dark' => '#c084fc',
+            'border_color_dark' => '#334155',
         ]);
 
         // Create partner admin users
