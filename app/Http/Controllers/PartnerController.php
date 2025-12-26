@@ -99,11 +99,12 @@ class PartnerController extends Controller
         // Process colors using ColorHelper
         $colors = ColorHelper::processPartnerColors($partner->identity);
         $colorPalette = ColorHelper::getColorPalette($partner->identity);
+        $darkColorPalette = ColorHelper::getDarkColorPalette($partner->identity);
 
         // Pre-calculate counts
         $usersCount = $partner->users->count();
 
-        return view('partners.show', compact('partner', 'colors', 'colorPalette', 'usersCount'));
+        return view('partners.show', compact('partner', 'colors', 'colorPalette', 'darkColorPalette', 'usersCount'));
     }
 
     /**
@@ -116,8 +117,8 @@ class PartnerController extends Controller
         // Process colors using ColorHelper
         $colors = ColorHelper::processPartnerColors($partner->identity);
 
-        // Build color array for form
-        $colorFormData = [
+        // Build color arrays for form - separated by light/dark
+        $lightColorFormData = [
             ['id' => 'primary_color', 'name' => 'Primary Color', 'value' => old('primary_color', $colors['primary']), 'required' => true],
             ['id' => 'secondary_color', 'name' => 'Secondary Color', 'value' => old('secondary_color', $colors['secondary']), 'required' => true],
             ['id' => 'background_color', 'name' => 'Background', 'value' => old('background_color', $colors['background']), 'required' => false],
@@ -130,22 +131,24 @@ class PartnerController extends Controller
             ['id' => 'danger_color', 'name' => 'Danger', 'value' => old('danger_color', $colors['danger']), 'required' => false],
             ['id' => 'accent_color', 'name' => 'Accent', 'value' => old('accent_color', $colors['accent']), 'required' => false],
             ['id' => 'border_color', 'name' => 'Border', 'value' => old('border_color', $colors['border']), 'required' => false],
-            // Dark mode colors
-            ['id' => 'primary_color_dark', 'name' => 'Primary Color (Dark)', 'value' => old('primary_color_dark', $partner->identity->primary_color_dark ?? '#fa812d'), 'required' => false],
-            ['id' => 'secondary_color_dark', 'name' => 'Secondary Color (Dark)', 'value' => old('secondary_color_dark', $partner->identity->secondary_color_dark ?? '#292a2c'), 'required' => false],
-            ['id' => 'background_color_dark', 'name' => 'Background (Dark)', 'value' => old('background_color_dark', $partner->identity->background_color_dark ?? '#121212'), 'required' => false],
-            ['id' => 'card_background_color_dark', 'name' => 'Card Background (Dark)', 'value' => old('card_background_color_dark', $partner->identity->card_background_color_dark ?? '#1e1e1e'), 'required' => false],
-            ['id' => 'text_primary_color_dark', 'name' => 'Text Primary (Dark)', 'value' => old('text_primary_color_dark', $partner->identity->text_primary_color_dark ?? '#ffffff'), 'required' => false],
-            ['id' => 'text_secondary_color_dark', 'name' => 'Text Secondary (Dark)', 'value' => old('text_secondary_color_dark', $partner->identity->text_secondary_color_dark ?? '#b0b0b0'), 'required' => false],
-            ['id' => 'text_on_primary_color_dark', 'name' => 'Text On Primary (Dark)', 'value' => old('text_on_primary_color_dark', $partner->identity->text_on_primary_color_dark ?? '#ffffff'), 'required' => false],
-            ['id' => 'success_color_dark', 'name' => 'Success (Dark)', 'value' => old('success_color_dark', $partner->identity->success_color_dark ?? '#4ade80'), 'required' => false],
-            ['id' => 'warning_color_dark', 'name' => 'Warning (Dark)', 'value' => old('warning_color_dark', $partner->identity->warning_color_dark ?? '#fff94f'), 'required' => false],
-            ['id' => 'danger_color_dark', 'name' => 'Danger (Dark)', 'value' => old('danger_color_dark', $partner->identity->danger_color_dark ?? '#ff6b6b'), 'required' => false],
-            ['id' => 'accent_color_dark', 'name' => 'Accent (Dark)', 'value' => old('accent_color_dark', $partner->identity->accent_color_dark ?? '#fff94f'), 'required' => false],
-            ['id' => 'border_color_dark', 'name' => 'Border (Dark)', 'value' => old('border_color_dark', $partner->identity->border_color_dark ?? '#3a3a3a'), 'required' => false],
         ];
 
-        return view('partners.edit', compact('partner', 'colorFormData'));
+        $darkColorFormData = [
+            ['id' => 'primary_color_dark', 'name' => 'Primary Color', 'value' => old('primary_color_dark', $partner->identity->primary_color_dark ?? '#fa812d'), 'required' => false],
+            ['id' => 'secondary_color_dark', 'name' => 'Secondary Color', 'value' => old('secondary_color_dark', $partner->identity->secondary_color_dark ?? '#292a2c'), 'required' => false],
+            ['id' => 'background_color_dark', 'name' => 'Background', 'value' => old('background_color_dark', $partner->identity->background_color_dark ?? '#121212'), 'required' => false],
+            ['id' => 'card_background_color_dark', 'name' => 'Card Background', 'value' => old('card_background_color_dark', $partner->identity->card_background_color_dark ?? '#1e1e1e'), 'required' => false],
+            ['id' => 'text_primary_color_dark', 'name' => 'Text Primary', 'value' => old('text_primary_color_dark', $partner->identity->text_primary_color_dark ?? '#ffffff'), 'required' => false],
+            ['id' => 'text_secondary_color_dark', 'name' => 'Text Secondary', 'value' => old('text_secondary_color_dark', $partner->identity->text_secondary_color_dark ?? '#b0b0b0'), 'required' => false],
+            ['id' => 'text_on_primary_color_dark', 'name' => 'Text On Primary', 'value' => old('text_on_primary_color_dark', $partner->identity->text_on_primary_color_dark ?? '#ffffff'), 'required' => false],
+            ['id' => 'success_color_dark', 'name' => 'Success', 'value' => old('success_color_dark', $partner->identity->success_color_dark ?? '#4ade80'), 'required' => false],
+            ['id' => 'warning_color_dark', 'name' => 'Warning', 'value' => old('warning_color_dark', $partner->identity->warning_color_dark ?? '#fff94f'), 'required' => false],
+            ['id' => 'danger_color_dark', 'name' => 'Danger', 'value' => old('danger_color_dark', $partner->identity->danger_color_dark ?? '#ff6b6b'), 'required' => false],
+            ['id' => 'accent_color_dark', 'name' => 'Accent', 'value' => old('accent_color_dark', $partner->identity->accent_color_dark ?? '#fff94f'), 'required' => false],
+            ['id' => 'border_color_dark', 'name' => 'Border', 'value' => old('border_color_dark', $partner->identity->border_color_dark ?? '#3a3a3a'), 'required' => false],
+        ];
+
+        return view('partners.edit', compact('partner', 'lightColorFormData', 'darkColorFormData'));
     }
 
     /**

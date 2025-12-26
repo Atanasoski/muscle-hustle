@@ -119,11 +119,76 @@
             <div class="space-y-5">
                 <h4 class="text-lg font-medium text-gray-800 dark:text-white/90 mb-5">Branding</h4>
                     
-                    <!-- Color Palette Grid -->
+                    <!-- Divider -->
+                    <div class="relative mb-8">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                        </div>
+                        <div class="relative flex justify-center">
+                            <span class="bg-white dark:bg-white/[0.03] px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                                Color Palette
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Light Mode Color Palette Grid -->
                     <div>
-                        <h5 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">Color Palette</h5>
                         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                            @foreach($colorFormData as $color)
+                            @foreach($lightColorFormData as $color)
+                                <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 @error($color['id']) border-error-500 @enderror">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <!-- Color Swatch -->
+                                        <div 
+                                            class="w-full h-20 rounded-lg border-2 border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer relative overflow-hidden"
+                                            style="background-color: {{ $color['value'] }};"
+                                            onclick="document.getElementById('{{ $color['id'] }}').click()"
+                                        >
+                                            <input 
+                                                type="color" 
+                                                id="{{ $color['id'] }}" 
+                                                name="{{ $color['id'] }}" 
+                                                value="{{ $color['value'] }}"
+                                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                {{ $color['required'] ? 'required' : '' }}
+                                                onchange="updateColorSwatch('{{ $color['id'] }}', this.value)"
+                                            >
+                    </div>
+
+                                        <!-- Color Name and Code -->
+                                        <div class="w-full text-center">
+                                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                                {{ $color['name'] }}
+                                                @if($color['required'])
+                                                    <span class="text-error-500">*</span>
+                                                @endif
+                                            </p>
+                                            <code class="text-xs font-mono text-gray-700 dark:text-gray-300" id="{{ $color['id'] }}_code">{{ $color['value'] }}</code>
+                                        </div>
+                                    </div>
+                                    @error($color['id'])
+                                        <p class="mt-1.5 text-xs text-error-500 text-center">{{ $message }}</p>
+                        @enderror
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="relative my-8">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                        </div>
+                        <div class="relative flex justify-center">
+                            <span class="bg-white dark:bg-white/[0.03] px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                                Color Palette Dark
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Dark Mode Color Palette Grid -->
+                    <div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                            @foreach($darkColorFormData as $color)
                                 <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 @error($color['id']) border-error-500 @enderror">
                                     <div class="flex flex-col items-center gap-3">
                                         <!-- Color Swatch -->

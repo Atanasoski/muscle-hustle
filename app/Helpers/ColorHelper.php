@@ -72,7 +72,7 @@ class ColorHelper
     }
 
     /**
-     * Get color palette array for display
+     * Get light mode color palette array for display
      */
     public static function getColorPalette($identity): array
     {
@@ -91,6 +91,44 @@ class ColorHelper
             ['name' => 'Danger', 'value' => $colors['danger']],
             ['name' => 'Accent', 'value' => $colors['accent']],
             ['name' => 'Border', 'value' => $colors['border']],
+        ];
+    }
+
+    /**
+     * Get dark mode color palette array for display
+     */
+    public static function getDarkColorPalette($identity): array
+    {
+        if (! $identity) {
+            return [
+                ['name' => 'Primary', 'value' => '#e0572b'],
+                ['name' => 'Secondary', 'value' => '#3db4ac'],
+                ['name' => 'Background', 'value' => '#1a1a1a'],
+                ['name' => 'Card Background', 'value' => '#2d2d2d'],
+                ['name' => 'Text Primary', 'value' => '#ffffff'],
+                ['name' => 'Text Secondary', 'value' => '#a0a0a0'],
+                ['name' => 'Text On Primary', 'value' => '#ffffff'],
+                ['name' => 'Success', 'value' => '#0ec254'],
+                ['name' => 'Warning', 'value' => '#e6b800'],
+                ['name' => 'Danger', 'value' => '#d63939'],
+                ['name' => 'Accent', 'value' => '#7ab03e'],
+                ['name' => 'Border', 'value' => '#3f3f3f'],
+            ];
+        }
+
+        return [
+            ['name' => 'Primary', 'value' => self::rgbToHex($identity->primary_color_dark, '#e0572b')],
+            ['name' => 'Secondary', 'value' => self::rgbToHex($identity->secondary_color_dark, '#3db4ac')],
+            ['name' => 'Background', 'value' => self::rgbToHex($identity->background_color_dark, '#1a1a1a')],
+            ['name' => 'Card Background', 'value' => self::rgbToHex($identity->card_background_color_dark, '#2d2d2d')],
+            ['name' => 'Text Primary', 'value' => self::rgbToHex($identity->text_primary_color_dark, '#ffffff')],
+            ['name' => 'Text Secondary', 'value' => self::rgbToHex($identity->text_secondary_color_dark, '#a0a0a0')],
+            ['name' => 'Text On Primary', 'value' => self::rgbToHex($identity->text_on_primary_color_dark, '#ffffff')],
+            ['name' => 'Success', 'value' => self::rgbToHex($identity->success_color_dark, '#0ec254')],
+            ['name' => 'Warning', 'value' => self::rgbToHex($identity->warning_color_dark, '#e6b800')],
+            ['name' => 'Danger', 'value' => self::rgbToHex($identity->danger_color_dark, '#d63939')],
+            ['name' => 'Accent', 'value' => self::rgbToHex($identity->accent_color_dark, '#7ab03e')],
+            ['name' => 'Border', 'value' => self::rgbToHex($identity->border_color_dark, '#3f3f3f')],
         ];
     }
 }

@@ -181,6 +181,26 @@
                         </div>
                     </div>
 
+                    <!-- Color Palette Dark -->
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">Color Palette Dark</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                            @foreach($darkColorPalette as $color)
+                                @if($color['value'])
+                                    <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div style="width: 40px; height: 40px; border-radius: 8px; background-color: {{ $color['value'] }}; border: 2px solid #e5e7eb; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"></div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ $color['name'] }}</p>
+                                                <code class="text-xs font-mono text-gray-700 dark:text-gray-300 break-all">{{ $color['value'] }}</code>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+
                     <!-- Logo -->
                     <div>
                         <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">Logo</h4>
