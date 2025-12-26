@@ -24,6 +24,18 @@ class PartnerIdentity extends Model
         'accent_color',
         'border_color',
         'background_pattern',
+        'primary_color_dark',
+        'secondary_color_dark',
+        'background_color_dark',
+        'card_background_color_dark',
+        'text_primary_color_dark',
+        'text_secondary_color_dark',
+        'text_on_primary_color_dark',
+        'success_color_dark',
+        'warning_color_dark',
+        'danger_color_dark',
+        'accent_color_dark',
+        'border_color_dark',
     ];
 
     /**

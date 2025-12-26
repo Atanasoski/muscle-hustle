@@ -9,6 +9,7 @@ use App\Http\Resources\Api\PartnerResource;
 use App\Models\Partner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Storage;
 
 class PartnerController extends Controller
 {
@@ -44,6 +45,18 @@ class PartnerController extends Controller
             'accent_color',
             'border_color',
             'background_pattern',
+            'primary_color_dark',
+            'secondary_color_dark',
+            'background_color_dark',
+            'card_background_color_dark',
+            'text_primary_color_dark',
+            'text_secondary_color_dark',
+            'text_on_primary_color_dark',
+            'success_color_dark',
+            'warning_color_dark',
+            'danger_color_dark',
+            'accent_color_dark',
+            'border_color_dark',
         ]);
 
         // Handle logo upload
@@ -94,6 +107,18 @@ class PartnerController extends Controller
             'accent_color',
             'border_color',
             'background_pattern',
+            'primary_color_dark',
+            'secondary_color_dark',
+            'background_color_dark',
+            'card_background_color_dark',
+            'text_primary_color_dark',
+            'text_secondary_color_dark',
+            'text_on_primary_color_dark',
+            'success_color_dark',
+            'warning_color_dark',
+            'danger_color_dark',
+            'accent_color_dark',
+            'border_color_dark',
         ]);
 
         // Handle logo upload
@@ -101,7 +126,7 @@ class PartnerController extends Controller
             // Delete old logo if exists
             if ($partner->identity?->logo) {
                 $oldLogoPath = str_replace('storage/', '', $partner->identity->logo);
-                \Storage::disk('public')->delete($oldLogoPath);
+                Storage::disk('public')->delete($oldLogoPath);
             }
 
             $logoPath = $request->file('logo')->store('partners', 'public');
@@ -128,7 +153,7 @@ class PartnerController extends Controller
         // Delete logo if exists
         if ($partner->identity?->logo) {
             $logoPath = str_replace('storage/', '', $partner->identity->logo);
-            \Storage::disk('public')->delete($logoPath);
+            Storage::disk('public')->delete($logoPath);
         }
 
         $partner->delete();

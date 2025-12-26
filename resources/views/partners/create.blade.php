@@ -304,7 +304,199 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+            </div>
 
+            <!-- Dark Mode Colors Section -->
+            <div class="mt-8">
+                <h3 class="text-base font-medium text-gray-800 dark:text-white/90 mb-5">Dark Mode Colors</h3>
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <!-- Primary Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Primary Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="primary_color_dark"
+                            id="primary_color_dark"
+                            value="{{ old('primary_color_dark', '#fa812d') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('primary_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Secondary Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Secondary Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="secondary_color_dark"
+                            id="secondary_color_dark"
+                            value="{{ old('secondary_color_dark', '#292a2c') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('secondary_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Background Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Background Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="background_color_dark"
+                            id="background_color_dark"
+                            value="{{ old('background_color_dark', '#121212') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('background_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Card Background Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Card Background Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="card_background_color_dark"
+                            id="card_background_color_dark"
+                            value="{{ old('card_background_color_dark', '#1e1e1e') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('card_background_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Text Primary Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Text Primary Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="text_primary_color_dark"
+                            id="text_primary_color_dark"
+                            value="{{ old('text_primary_color_dark', '#ffffff') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('text_primary_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Text Secondary Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Text Secondary Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="text_secondary_color_dark"
+                            id="text_secondary_color_dark"
+                            value="{{ old('text_secondary_color_dark', '#b0b0b0') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('text_secondary_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Text On Primary Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Text On Primary Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="text_on_primary_color_dark"
+                            id="text_on_primary_color_dark"
+                            value="{{ old('text_on_primary_color_dark', '#ffffff') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('text_on_primary_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Success Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Success Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="success_color_dark"
+                            id="success_color_dark"
+                            value="{{ old('success_color_dark', '#4ade80') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('success_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Warning Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Warning Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="warning_color_dark"
+                            id="warning_color_dark"
+                            value="{{ old('warning_color_dark', '#fff94f') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('warning_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Danger Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Danger Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="danger_color_dark"
+                            id="danger_color_dark"
+                            value="{{ old('danger_color_dark', '#ff6b6b') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('danger_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Accent Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Accent Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="accent_color_dark"
+                            id="accent_color_dark"
+                            value="{{ old('accent_color_dark', '#fff94f') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('accent_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Border Color Dark -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Border Color (Dark)
+                        </label>
+                        <input type="color"
+                            name="border_color_dark"
+                            id="border_color_dark"
+                            value="{{ old('border_color_dark', '#3a3a3a') }}"
+                            class="h-12 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700" />
+                        @error('border_color_dark')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logo and Other Assets Section -->
+            <div class="mt-8">
+                <h3 class="text-base font-medium text-gray-800 dark:text-white/90 mb-5">Assets</h3>
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <!-- Logo -->
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

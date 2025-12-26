@@ -28,6 +28,20 @@ return new class extends Migration
             $table->string('accent_color')->nullable();
             $table->string('border_color')->nullable();
             $table->string('background_pattern')->nullable();
+
+            // Dark mode colors
+            $table->string('primary_color_dark')->nullable();
+            $table->string('secondary_color_dark')->nullable();
+            $table->string('background_color_dark')->nullable();
+            $table->string('card_background_color_dark')->nullable();
+            $table->string('text_primary_color_dark')->nullable();
+            $table->string('text_secondary_color_dark')->nullable();
+            $table->string('text_on_primary_color_dark')->nullable();
+            $table->string('success_color_dark')->nullable();
+            $table->string('warning_color_dark')->nullable();
+            $table->string('danger_color_dark')->nullable();
+            $table->string('accent_color_dark')->nullable();
+            $table->string('border_color_dark')->nullable();
         });
     }
 
@@ -49,6 +63,18 @@ return new class extends Migration
                 'accent_color',
                 'border_color',
                 'background_pattern',
+                'primary_color_dark',
+                'secondary_color_dark',
+                'background_color_dark',
+                'card_background_color_dark',
+                'text_primary_color_dark',
+                'text_secondary_color_dark',
+                'text_on_primary_color_dark',
+                'success_color_dark',
+                'warning_color_dark',
+                'danger_color_dark',
+                'accent_color_dark',
+                'border_color_dark',
             ]);
         });
     }
