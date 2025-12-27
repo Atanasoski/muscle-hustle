@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Web Application URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL points to the member-facing web application (Vue/Ionic app)
+    | where members can log in to track their workouts and progress.
+    |
+    */
+
+    'webapp_url' => env('WEBAPP_URL', 'http://localhost:5174'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
@@ -123,5 +135,18 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Member Invitation Expiry Days
+    |--------------------------------------------------------------------------
+    |
+    | This value determines how many days a member invitation link remains
+    | valid before expiring. After this period, the invitation will need
+    | to be resent.
+    |
+    */
+
+    'invitation_expiry_days' => env('INVITATION_EXPIRY_DAYS', 7),
 
 ];

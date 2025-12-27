@@ -16,6 +16,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Partner Management
     Route::resource('partners', \App\Http\Controllers\PartnerController::class);
 
+    // Members & Invitations Management
+    Route::get('/members', [\App\Http\Controllers\MemberInvitationController::class, 'index'])->name('members.index');
+    Route::post('/members/invite', [\App\Http\Controllers\MemberInvitationController::class, 'store'])->name('members.invite');
+    Route::post('/members/invitations/{invitation}/resend', [\App\Http\Controllers\MemberInvitationController::class, 'resend'])->name('members.resend');
+    Route::delete('/members/invitations/{invitation}', [\App\Http\Controllers\MemberInvitationController::class, 'destroy'])->name('members.cancel');
+
     // Exercise Library
     Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
     Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');

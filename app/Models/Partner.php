@@ -48,4 +48,12 @@ class Partner extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * Get the member invitations for the partner.
+     */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(MemberInvitation::class);
+    }
 }

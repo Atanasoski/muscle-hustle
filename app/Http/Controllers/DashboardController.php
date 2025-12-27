@@ -21,7 +21,8 @@ class DashboardController extends Controller
             return $this->partnerDashboard();
         }
 
-        abort(403, 'Unauthorized access to dashboard.');
+        // Members should not access web dashboard - use mobile app only
+        abort(403, 'This portal is for gym administrators only. Please use the Muscle Hustle mobile app.');
     }
 
     /**

@@ -26,7 +26,26 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $user = Auth::user();
+
+        // Only allow partner_admin and admin roles to access web admin panel
+        // Regular members should use the mobile app
+        if (! $user->hasAnyRole(['admin', 'partner_admin'])) {
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->withErrors([
+                    'email' => 'This portal is for gym administrators only. Please use the Muscle Hustle mobile app to access your account.',
+                ]);
+        }
+
         $request->session()->regenerate();
+
+        // Update last login timestamp
+        $user->update(['last_login_at' => now()]);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
