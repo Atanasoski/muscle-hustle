@@ -37,7 +37,11 @@ class RegisteredUserController extends Controller
                     ->with('error', 'This invitation has already been used.');
             } elseif ($invitation && $invitation->isExpired()) {
                 return redirect()->route('register')
-                    ->with('error', 'This invitation has expired. Please contact the gym for a new invitation.');
+                    ->with('error', 'This invitation has expired. Please contact your gym for a new invitation.');
+            } elseif (! $invitation) {
+                // Invitation not found - likely cancelled or never existed
+                return redirect()->route('register')
+                    ->with('error', 'This invitation is no longer valid. It may have been cancelled by your gym. Please contact them for assistance.');
             } else {
                 return redirect()->route('register')
                     ->with('error', 'Invalid invitation link.');

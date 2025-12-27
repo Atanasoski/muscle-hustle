@@ -14,31 +14,45 @@
             </div>
 
             <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-                @if(isset($invitation) && isset($partner))
-                    <!-- Gym Branding Header -->
-                    <div class="mb-6 text-center">
-                        @if($partner->identity && $partner->identity->logo_url)
-                            <img src="{{ $partner->identity->logo_url }}" alt="{{ $partner->name }}" class="w-20 h-20 mx-auto mb-4 rounded object-cover">
-                        @endif
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                            Welcome to {{ $partner->name }}!
-                        </h2>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Complete your registration to start tracking your fitness journey
-                        </p>
+                <!-- Error Messages -->
+                @if(session('error'))
+                    <div class="mb-6 rounded-lg bg-red-50 border-l-4 border-red-500 p-4 dark:bg-red-900/20">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="font-semibold text-red-800 dark:text-red-200 mb-1">Invitation Issue</h3>
+                                <p class="text-sm text-red-700 dark:text-red-300">{{ session('error') }}</p>
+                            </div>
+                        </div>
                     </div>
                 @else
-                    <div class="mb-5 sm:mb-8">
-                        <h1 class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
-                            Sign Up
-                        </h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Enter your details to create an account
-                        </p>
-                    </div>
-                @endif
+                    @if(isset($invitation) && isset($partner))
+                        <!-- Gym Branding Header -->
+                        <div class="mb-6 text-center">
+                            @if($partner->identity && $partner->identity->logo_url)
+                                <img src="{{ $partner->identity->logo_url }}" alt="{{ $partner->name }}" class="w-20 h-20 mx-auto mb-4 rounded object-cover">
+                            @endif
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                Welcome to {{ $partner->name }}!
+                            </h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Complete your registration to start tracking your fitness journey
+                            </p>
+                        </div>
+                    @else
+                        <div class="mb-5 sm:mb-8">
+                            <h1 class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
+                                Sign Up
+                            </h1>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Enter your details to create an account
+                            </p>
+                        </div>
+                    @endif
 
-                <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}">
                     @csrf
 
                     @if(isset($invitation))
@@ -113,6 +127,7 @@
                         </p>
                     </div>
                 </form>
+                @endif
             </div>
         </div>
 
