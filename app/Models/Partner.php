@@ -34,14 +34,6 @@ class Partner extends Model
     }
 
     /**
-     * Get all identities for the partner.
-     */
-    public function identities(): HasMany
-    {
-        return $this->hasMany(PartnerIdentity::class);
-    }
-
-    /**
      * Get the users for the partner.
      */
     public function users(): HasMany
@@ -55,5 +47,13 @@ class Partner extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(MemberInvitation::class);
+    }
+
+    /**
+     * Check if the partner can be deleted.
+     */
+    public function canBeDeleted(): bool
+    {
+        return $this->users()->count() === 0;
     }
 }

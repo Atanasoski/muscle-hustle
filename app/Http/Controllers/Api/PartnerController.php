@@ -18,6 +18,8 @@ class PartnerController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        $this->authorize('viewAny', Partner::class);
+
         $partners = Partner::with('identity')->latest()->get();
 
         return PartnerResource::collection($partners);
@@ -28,41 +30,22 @@ class PartnerController extends Controller
      */
     public function store(StorePartnerRequest $request): JsonResponse
     {
+        $this->authorize('create', Partner::class);
+
         $partner = Partner::create($request->only(['name', 'slug', 'domain', 'is_active']));
 
-        $identityData = $request->only([
-            'primary_color',
-            'secondary_color',
-            'font_family',
-            'background_color',
-            'card_background_color',
-            'text_primary_color',
-            'text_secondary_color',
-            'text_on_primary_color',
-            'success_color',
-            'warning_color',
-            'danger_color',
-            'accent_color',
-            'border_color',
-            'background_pattern',
-            'primary_color_dark',
-            'secondary_color_dark',
-            'background_color_dark',
-            'card_background_color_dark',
-            'text_primary_color_dark',
-            'text_secondary_color_dark',
-            'text_on_primary_color_dark',
-            'success_color_dark',
-            'warning_color_dark',
-            'danger_color_dark',
-            'accent_color_dark',
-            'border_color_dark',
-        ]);
+        $identityData = $request->only(config('branding.identity_fields'));
 
         // Handle logo upload
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('partners', 'public');
             $identityData['logo'] = 'storage/'.$logoPath;
+        }
+
+        // Handle background pattern upload
+        if ($request->hasFile('background_pattern')) {
+            $patternPath = $request->file('background_pattern')->store('partners', 'public');
+            $identityData['background_pattern'] = 'storage/'.$patternPath;
         }
 
         $partner->identity()->create($identityData);
@@ -78,6 +61,8 @@ class PartnerController extends Controller
      */
     public function show(Partner $partner): JsonResponse
     {
+        $this->authorize('view', $partner);
+
         $partner->load('identity', 'users');
 
         return response()->json([
@@ -90,36 +75,11 @@ class PartnerController extends Controller
      */
     public function update(UpdatePartnerRequest $request, Partner $partner): JsonResponse
     {
+        $this->authorize('update', $partner);
+
         $partner->update($request->only(['name', 'slug', 'domain', 'is_active']));
 
-        $identityData = $request->only([
-            'primary_color',
-            'secondary_color',
-            'font_family',
-            'background_color',
-            'card_background_color',
-            'text_primary_color',
-            'text_secondary_color',
-            'text_on_primary_color',
-            'success_color',
-            'warning_color',
-            'danger_color',
-            'accent_color',
-            'border_color',
-            'background_pattern',
-            'primary_color_dark',
-            'secondary_color_dark',
-            'background_color_dark',
-            'card_background_color_dark',
-            'text_primary_color_dark',
-            'text_secondary_color_dark',
-            'text_on_primary_color_dark',
-            'success_color_dark',
-            'warning_color_dark',
-            'danger_color_dark',
-            'accent_color_dark',
-            'border_color_dark',
-        ]);
+        $identityData = $request->only(config('branding.identity_fields'));
 
         // Handle logo upload
         if ($request->hasFile('logo')) {
@@ -131,6 +91,18 @@ class PartnerController extends Controller
 
             $logoPath = $request->file('logo')->store('partners', 'public');
             $identityData['logo'] = 'storage/'.$logoPath;
+        }
+
+        // Handle background pattern upload
+        if ($request->hasFile('background_pattern')) {
+            // Delete old pattern if exists
+            if ($partner->identity?->background_pattern) {
+                $oldPatternPath = str_replace('storage/', '', $partner->identity->background_pattern);
+                Storage::disk('public')->delete($oldPatternPath);
+            }
+
+            $patternPath = $request->file('background_pattern')->store('partners', 'public');
+            $identityData['background_pattern'] = 'storage/'.$patternPath;
         }
 
         if ($partner->identity) {
@@ -150,10 +122,25 @@ class PartnerController extends Controller
      */
     public function destroy(Partner $partner): JsonResponse
     {
+        $this->authorize('delete', $partner);
+
+        // Check if partner can be deleted
+        if (! $partner->canBeDeleted()) {
+            return response()->json([
+                'message' => 'Cannot delete partner with existing users. Please remove all users first.',
+            ], 422);
+        }
+
         // Delete logo if exists
         if ($partner->identity?->logo) {
             $logoPath = str_replace('storage/', '', $partner->identity->logo);
             Storage::disk('public')->delete($logoPath);
+        }
+
+        // Delete background pattern if exists
+        if ($partner->identity?->background_pattern) {
+            $patternPath = str_replace('storage/', '', $partner->identity->background_pattern);
+            Storage::disk('public')->delete($patternPath);
         }
 
         $partner->delete();

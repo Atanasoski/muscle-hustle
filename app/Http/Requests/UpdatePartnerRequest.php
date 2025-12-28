@@ -12,7 +12,9 @@ class UpdatePartnerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // TODO: Add proper authorization logic
+        $partner = $this->route('partner');
+
+        return $this->user()->can('update', $partner);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Partner;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePartnerRequest extends FormRequest
@@ -11,7 +12,7 @@ class StorePartnerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // TODO: Add proper authorization logic
+        return $this->user()->can('create', Partner::class);
     }
 
     /**
