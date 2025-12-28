@@ -1,45 +1,6 @@
-<form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-5">
+<form method="post" action="{{ route('profile.update') }}" class="space-y-5">
     @csrf
     @method('patch')
-
-    <!-- Profile Photo -->
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Profile Photo</label>
-        <div class="flex items-center gap-4">
-            @if($user->profile_photo)
-                <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Profile Photo" 
-                     class="h-20 w-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700">
-            @else
-                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-blue-500 text-2xl font-bold text-white">
-                    {{ substr($user->name, 0, 1) }}
-                </div>
-            @endif
-            <div class="flex-1">
-                <input 
-                    type="file" 
-                    id="profile_photo" 
-                    name="profile_photo" 
-                    accept="image/*"
-                    class="dark:bg-dark-900 shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('profile_photo') border-error-500 @enderror" />
-                @error('profile_photo')
-                    <p class="mt-1.5 text-sm text-error-500">{{ $message }}</p>
-                @enderror
-                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">JPG, PNG, or GIF (Max 2MB)</p>
-                
-                @if($user->profile_photo)
-                    <button 
-                        type="button" 
-                        onclick="if(confirm('Remove your profile photo?')) { document.getElementById('removePhotoForm').submit(); }"
-                        class="mt-2 inline-flex items-center text-sm text-error-600 hover:text-error-700 dark:text-error-500 dark:hover:text-error-400">
-                        <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        Remove Photo
-                    </button>
-                @endif
-            </div>
-        </div>
-    </div>
 
     <!-- Name -->
     <div>
@@ -104,11 +65,4 @@
         </button>
     </div>
 </form>
-
-<!-- Separate form for removing photo -->
-@if($user->profile_photo)
-    <form id="removePhotoForm" action="{{ route('profile.photo.delete') }}" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
-@endif
+     

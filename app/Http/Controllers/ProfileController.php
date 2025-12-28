@@ -30,22 +30,10 @@ class ProfileController extends Controller
         $validated = $request->validated();
 
         // Update user fields
-        $userFields = ['name', 'email', 'profile_photo'];
+        $userFields = ['name', 'email'];
         $userData = array_intersect_key($validated, array_flip($userFields));
         if (! empty($userData)) {
             $user->fill($userData);
-        }
-
-        // Handle profile photo upload
-        if ($request->hasFile('profile_photo')) {
-            // Delete old photo if exists
-            if ($user->profile_photo && \Storage::disk('public')->exists($user->profile_photo)) {
-                \Storage::disk('public')->delete($user->profile_photo);
-            }
-
-            // Store new photo
-            $path = $request->file('profile_photo')->store('profile-photos', 'public');
-            $user->profile_photo = $path;
         }
 
         if ($user->isDirty('email')) {
@@ -96,22 +84,5 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
-    }
-
-    /**
-     * Delete the user's profile photo.
-     */
-    public function deletePhoto(Request $request): RedirectResponse
-    {
-        $user = $request->user();
-
-        if ($user->profile_photo && \Storage::disk('public')->exists($user->profile_photo)) {
-            \Storage::disk('public')->delete($user->profile_photo);
-        }
-
-        $user->profile_photo = null;
-        $user->save();
-
-        return Redirect::route('profile.edit')->with('status', 'photo-deleted');
     }
 }

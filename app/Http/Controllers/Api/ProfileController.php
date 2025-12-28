@@ -29,8 +29,8 @@ class ProfileController extends Controller
         $validated = $request->validated();
         $user = $request->user();
 
-        // Update user fields
-        $userFields = ['name', 'email', 'profile_photo'];
+        // Update user fields (exclude profile_photo as it needs special handling)
+        $userFields = ['name', 'email'];
         $userData = array_intersect_key($validated, array_flip($userFields));
         if (! empty($userData)) {
             $user->fill($userData);

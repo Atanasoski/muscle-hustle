@@ -28,7 +28,6 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'fitness_goal' => ['nullable', Rule::enum(FitnessGoal::class)],
             'age' => ['nullable', 'integer', 'min:1', 'max:150'],
             'gender' => ['nullable', Rule::enum(Gender::class)],
@@ -37,6 +36,37 @@ class ProfileUpdateRequest extends FormRequest
             'training_experience' => ['nullable', Rule::enum(TrainingExperience::class)],
             'training_days_per_week' => ['nullable', 'integer', 'min:1', 'max:7'],
             'workout_duration_minutes' => ['nullable', 'integer', 'min:1', 'max:600'],
+        ];
+    }
+
+    /**
+     * Get custom error messages for validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Please provide your name.',
+            'name.max' => 'Your name cannot exceed 255 characters.',
+            'email.required' => 'Please provide your email address.',
+            'email.email' => 'Please provide a valid email address.',
+            'email.unique' => 'This email address is already in use.',
+            'age.integer' => 'Please provide a valid age.',
+            'age.min' => 'Age must be at least 1.',
+            'age.max' => 'Age must not exceed 150.',
+            'height.integer' => 'Please provide a valid height in centimeters.',
+            'height.min' => 'Height must be at least 50 cm.',
+            'height.max' => 'Height must not exceed 300 cm.',
+            'weight.numeric' => 'Please provide a valid weight.',
+            'weight.min' => 'Weight must be at least 1 kg.',
+            'weight.max' => 'Weight must not exceed 500 kg.',
+            'training_days_per_week.integer' => 'Please provide a valid number of training days.',
+            'training_days_per_week.min' => 'Training days must be at least 1.',
+            'training_days_per_week.max' => 'Training days cannot exceed 7.',
+            'workout_duration_minutes.integer' => 'Please provide a valid workout duration.',
+            'workout_duration_minutes.min' => 'Workout duration must be at least 1 minute.',
+            'workout_duration_minutes.max' => 'Workout duration cannot exceed 600 minutes.',
         ];
     }
 }
