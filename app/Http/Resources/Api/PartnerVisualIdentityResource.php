@@ -18,7 +18,7 @@ class PartnerVisualIdentityResource extends JsonResource
             // Core branding
             'primary_color' => $this->primary_color,
             'secondary_color' => $this->secondary_color,
-            'logo' => $this->logo,
+            'logo' => asset($this->logo),
             'font_family' => $this->font_family,
 
             // Essential colors
@@ -36,7 +36,7 @@ class PartnerVisualIdentityResource extends JsonResource
             // Optional styling
             'accent_color' => $this->accent_color,
             'border_color' => $this->border_color,
-            'background_pattern' => $this->background_pattern,
+            'background_image' => asset($this->background_pattern),
 
             // Dark mode colors
             'primary_color_dark' => $this->primary_color_dark,
