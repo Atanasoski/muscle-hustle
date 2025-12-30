@@ -20,6 +20,9 @@ return new class extends Migration
             $table->integer('reps');
             $table->integer('rest_seconds')->nullable();
             $table->timestamps();
+
+            // Performance indexes
+            $table->index(['exercise_id', 'workout_session_id']);
         });
     }
 

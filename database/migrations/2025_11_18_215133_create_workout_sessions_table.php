@@ -19,6 +19,10 @@ return new class extends Migration
             $table->dateTime('completed_at')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
+
+            // Performance indexes
+            $table->index(['user_id', 'performed_at']);
+            $table->index(['user_id', 'completed_at']);
         });
     }
 

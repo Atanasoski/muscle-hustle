@@ -21,6 +21,9 @@ return new class extends Migration
             $table->decimal('target_weight', 8, 2)->nullable();
             $table->integer('rest_seconds')->nullable();
             $table->timestamps();
+
+            // Performance indexes
+            $table->index(['workout_session_id', 'order']);
         });
     }
 

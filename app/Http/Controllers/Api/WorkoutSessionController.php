@@ -3,6 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddSessionExerciseRequest;
+use App\Http\Requests\LogSetRequest;
+use App\Http\Requests\ReorderSessionExercisesRequest;
+use App\Http\Requests\StartWorkoutSessionRequest;
+use App\Http\Requests\UpdateSessionExerciseRequest;
+use App\Http\Requests\UpdateSetRequest;
 use App\Http\Requests\WorkoutSessionCalendarRequest;
 use App\Http\Resources\Api\SetLogResource;
 use App\Http\Resources\Api\WorkoutSessionCalendarResource;
@@ -29,8 +35,10 @@ class WorkoutSessionController extends Controller
         $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
         $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
 
-        $sessions = WorkoutSession::where('user_id', Auth::id())
-            ->with('workoutTemplate')
+        $sessions = WorkoutSession::query()
+            ->select(['id', 'user_id', 'workout_template_id', 'performed_at', 'completed_at'])
+            ->where('user_id', Auth::id())
+            ->with('workoutTemplate:id,name')
             ->whereBetween('performed_at', [$startDate, $endDate])
             ->orderBy('performed_at')
             ->get();
@@ -78,12 +86,8 @@ class WorkoutSessionController extends Controller
     /**
      * Start a new workout session
      */
-    public function start(Request $request): JsonResponse
+    public function start(StartWorkoutSessionRequest $request): JsonResponse
     {
-        $request->validate([
-            'template_id' => 'nullable|exists:workout_templates,id',
-        ]);
-
         $today = Carbon::now();
 
         // Check if an active session already exists for today
@@ -93,29 +97,40 @@ class WorkoutSessionController extends Controller
             ->first();
 
         if (! $session) {
-            $session = WorkoutSession::create([
-                'user_id' => Auth::id(),
-                'workout_template_id' => $request->template_id,
-                'performed_at' => $today,
-            ]);
+            $session = DB::transaction(function () use ($request, $today) {
+                $newSession = WorkoutSession::create([
+                    'user_id' => Auth::id(),
+                    'workout_template_id' => $request->template_id,
+                    'performed_at' => $today,
+                ]);
 
-            // Snapshot template exercises if template is provided
-            if ($request->template_id) {
-                $template = WorkoutTemplate::with('workoutTemplateExercises')->find($request->template_id);
+                // Snapshot template exercises if template is provided
+                if ($request->template_id) {
+                    $template = WorkoutTemplate::with('workoutTemplateExercises')->find($request->template_id);
 
-                if ($template) {
-                    foreach ($template->workoutTemplateExercises as $templateExercise) {
-                        $session->workoutSessionExercises()->create([
-                            'exercise_id' => $templateExercise->exercise_id,
-                            'order' => $templateExercise->order,
-                            'target_sets' => $templateExercise->target_sets,
-                            'target_reps' => $templateExercise->target_reps,
-                            'target_weight' => $templateExercise->target_weight,
-                            'rest_seconds' => $templateExercise->rest_seconds,
-                        ]);
+                    if ($template && $template->workoutTemplateExercises->isNotEmpty()) {
+                        // Bulk insert instead of individual creates
+                        $now = now();
+                        $exercisesToInsert = $template->workoutTemplateExercises->map(function ($templateExercise) use ($newSession, $now) {
+                            return [
+                                'workout_session_id' => $newSession->id,
+                                'exercise_id' => $templateExercise->exercise_id,
+                                'order' => $templateExercise->order,
+                                'target_sets' => $templateExercise->target_sets,
+                                'target_reps' => $templateExercise->target_reps,
+                                'target_weight' => $templateExercise->target_weight,
+                                'rest_seconds' => $templateExercise->rest_seconds,
+                                'created_at' => $now,
+                                'updated_at' => $now,
+                            ];
+                        })->toArray();
+
+                        WorkoutSessionExercise::insert($exercisesToInsert);
                     }
                 }
-            }
+
+                return $newSession;
+            });
         }
 
         $session->load(['workoutSessionExercises.exercise.category', 'setLogs']);
@@ -131,40 +146,50 @@ class WorkoutSessionController extends Controller
      */
     public function show(WorkoutSession $session): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('view', $session);
 
         $session->load(['workoutSessionExercises.exercise.category', 'setLogs']);
 
-        // Prepare exercise data with set information
+        // Get all exercise IDs in this session for batch fetching
+        $exerciseIds = $session->workoutSessionExercises->pluck('exercise_id')->toArray();
+
+        // Batch fetch previous set logs - find the latest completed session per exercise
+        // This replaces the N+1 query pattern with a single optimized query
+        $previousSetLogs = collect();
+        if (! empty($exerciseIds)) {
+            // Subquery to find the latest completed session ID for each exercise
+            $latestSessionsSubquery = DB::table('workout_sessions as ws')
+                ->join('workout_set_logs as wsl', 'ws.id', '=', 'wsl.workout_session_id')
+                ->select('wsl.exercise_id', DB::raw('MAX(ws.id) as latest_session_id'))
+                ->where('ws.user_id', Auth::id())
+                ->where('ws.id', '!=', $session->id)
+                ->whereNotNull('ws.completed_at')
+                ->whereIn('wsl.exercise_id', $exerciseIds)
+                ->groupBy('wsl.exercise_id');
+
+            // Fetch all previous set logs in one query
+            $previousSetLogs = SetLog::query()
+                ->joinSub($latestSessionsSubquery, 'latest', function ($join) {
+                    $join->on('workout_set_logs.workout_session_id', '=', 'latest.latest_session_id')
+                        ->on('workout_set_logs.exercise_id', '=', 'latest.exercise_id');
+                })
+                ->select('workout_set_logs.*')
+                ->orderBy('workout_set_logs.set_number')
+                ->get()
+                ->groupBy('exercise_id');
+        }
+
+        // Prepare exercise data with set information (no additional queries in loop)
         $exercisesData = [];
         foreach ($session->workoutSessionExercises as $sessionExercise) {
-            // Get logged sets for this exercise in current session
+            // Get logged sets for this exercise in current session (in-memory filtering)
             $loggedSets = $session->setLogs
                 ->where('exercise_id', $sessionExercise->exercise_id)
                 ->sortBy('set_number')
                 ->values();
 
-            // Find the most recent completed workout session with this exercise
-            $lastSession = WorkoutSession::where('user_id', Auth::id())
-                ->where('id', '!=', $session->id)
-                ->whereNotNull('completed_at')
-                ->whereHas('setLogs', function ($query) use ($sessionExercise) {
-                    $query->where('exercise_id', $sessionExercise->exercise_id);
-                })
-                ->orderBy('completed_at', 'desc')
-                ->first();
-
-            // Get previous sets
-            $previousSets = collect();
-            if ($lastSession) {
-                $previousSets = SetLog::where('workout_session_id', $lastSession->id)
-                    ->where('exercise_id', $sessionExercise->exercise_id)
-                    ->orderBy('set_number')
-                    ->get();
-            }
+            // Get previous sets from pre-fetched collection (in-memory lookup)
+            $previousSets = $previousSetLogs->get($sessionExercise->exercise_id, collect());
 
             $exercisesData[] = [
                 'session_exercise' => new WorkoutSessionExerciseResource($sessionExercise),
@@ -195,20 +220,9 @@ class WorkoutSessionController extends Controller
     /**
      * Log a set
      */
-    public function logSet(Request $request, WorkoutSession $session): JsonResponse
+    public function logSet(LogSetRequest $request, WorkoutSession $session): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'exercise_id' => 'required|exists:workout_exercises,id',
-            'set_number' => 'required|integer|min:1',
-            'weight' => 'required|numeric|min:0',
-            'reps' => 'required|integer|min:0',
-            'rest_seconds' => 'nullable|integer|min:0',
-        ]);
+        $this->authorize('update', $session);
 
         $setLog = SetLog::create([
             'workout_session_id' => $session->id,
@@ -228,17 +242,13 @@ class WorkoutSessionController extends Controller
     /**
      * Update a set log
      */
-    public function updateSet(Request $request, WorkoutSession $session, SetLog $setLog): JsonResponse
+    public function updateSet(UpdateSetRequest $request, WorkoutSession $session, SetLog $setLog): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id() || $setLog->workout_session_id !== $session->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $session);
 
-        $request->validate([
-            'weight' => 'required|numeric|min:0',
-            'reps' => 'required|integer|min:0',
-        ]);
+        if ($setLog->workout_session_id !== $session->id) {
+            abort(403, 'Set log does not belong to this session.');
+        }
 
         $setLog->update([
             'weight' => $request->weight,
@@ -256,9 +266,10 @@ class WorkoutSessionController extends Controller
      */
     public function deleteSet(WorkoutSession $session, SetLog $setLog): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id() || $setLog->workout_session_id !== $session->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        $this->authorize('update', $session);
+
+        if ($setLog->workout_session_id !== $session->id) {
+            abort(403, 'Set log does not belong to this session.');
         }
 
         // Verify this is the last set for this exercise
@@ -285,10 +296,7 @@ class WorkoutSessionController extends Controller
      */
     public function complete(Request $request, WorkoutSession $session): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $session);
 
         $request->validate([
             'notes' => 'nullable|string|max:1000',
@@ -310,10 +318,7 @@ class WorkoutSessionController extends Controller
      */
     public function cancel(WorkoutSession $session): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('delete', $session);
 
         // Delete all set logs and session exercises
         $session->setLogs()->delete();
@@ -330,21 +335,9 @@ class WorkoutSessionController extends Controller
     /**
      * Add an exercise to the session
      */
-    public function addExercise(Request $request, WorkoutSession $session): JsonResponse
+    public function addExercise(AddSessionExerciseRequest $request, WorkoutSession $session): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'exercise_id' => 'required|exists:workout_exercises,id',
-            'order' => 'nullable|integer|min:0',
-            'target_sets' => 'nullable|integer|min:1',
-            'target_reps' => 'nullable|integer|min:1',
-            'target_weight' => 'nullable|numeric|min:0',
-            'rest_seconds' => 'nullable|integer|min:0',
-        ]);
+        $this->authorize('update', $session);
 
         // Get the exercise to retrieve default values
         $exercise = Exercise::find($request->exercise_id);
@@ -374,9 +367,10 @@ class WorkoutSessionController extends Controller
      */
     public function removeExercise(WorkoutSession $session, WorkoutSessionExercise $exercise): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id() || $exercise->workout_session_id !== $session->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        $this->authorize('update', $session);
+
+        if ($exercise->workout_session_id !== $session->id) {
+            abort(403, 'Exercise does not belong to this session.');
         }
 
         // Delete associated set logs
@@ -395,20 +389,13 @@ class WorkoutSessionController extends Controller
     /**
      * Update exercise targets in the session
      */
-    public function updateExercise(Request $request, WorkoutSession $session, WorkoutSessionExercise $exercise): JsonResponse
+    public function updateExercise(UpdateSessionExerciseRequest $request, WorkoutSession $session, WorkoutSessionExercise $exercise): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id() || $exercise->workout_session_id !== $session->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $session);
 
-        $request->validate([
-            'order' => 'nullable|integer|min:0',
-            'target_sets' => 'nullable|integer|min:1',
-            'target_reps' => 'nullable|integer|min:1',
-            'target_weight' => 'nullable|numeric|min:0',
-            'rest_seconds' => 'nullable|integer|min:0',
-        ]);
+        if ($exercise->workout_session_id !== $session->id) {
+            abort(403, 'Exercise does not belong to this session.');
+        }
 
         $exercise->update($request->only([
             'order',
@@ -429,17 +416,9 @@ class WorkoutSessionController extends Controller
     /**
      * Reorder exercises in the session
      */
-    public function reorderExercises(Request $request, WorkoutSession $session): JsonResponse
+    public function reorderExercises(ReorderSessionExercisesRequest $request, WorkoutSession $session): JsonResponse
     {
-        // Authorization check
-        if ($session->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'exercise_ids' => 'required|array',
-            'exercise_ids.*' => 'required|exists:workout_session_exercises,id',
-        ]);
+        $this->authorize('update', $session);
 
         DB::transaction(function () use ($request, $session) {
             foreach ($request->exercise_ids as $order => $exerciseId) {
