@@ -16,8 +16,10 @@ class WorkoutPlannerController extends Controller
      */
     public function index(): JsonResponse
     {
-        // Get all templates for the user
-        $templates = WorkoutTemplate::where('user_id', Auth::id())
+        // Get all templates for the user through plans
+        $templates = WorkoutTemplate::whereHas('plan', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
             ->with('exercises.category')
             ->orderBy('name')
             ->get();
@@ -27,7 +29,9 @@ class WorkoutPlannerController extends Controller
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
         for ($i = 0; $i < 7; $i++) {
-            $assignedTemplate = WorkoutTemplate::where('user_id', Auth::id())
+            $assignedTemplate = WorkoutTemplate::whereHas('plan', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
                 ->where('day_of_week', $i)
                 ->with('exercises.category')
                 ->first();
@@ -57,15 +61,17 @@ class WorkoutPlannerController extends Controller
             'day_of_week' => 'required|integer|min:0|max:6',
         ]);
 
-        $template = WorkoutTemplate::findOrFail($request->template_id);
+        $template = WorkoutTemplate::with('plan')->findOrFail($request->template_id);
 
         // Authorization check
-        if ($template->user_id !== Auth::id()) {
+        if ($template->plan->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // Remove any existing template for this day
-        WorkoutTemplate::where('user_id', Auth::id())
+        WorkoutTemplate::whereHas('plan', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
             ->where('day_of_week', $request->day_of_week)
             ->where('id', '!=', $template->id)
             ->update(['day_of_week' => null]);
@@ -90,10 +96,10 @@ class WorkoutPlannerController extends Controller
             'template_id' => 'required|exists:workout_templates,id',
         ]);
 
-        $template = WorkoutTemplate::findOrFail($request->template_id);
+        $template = WorkoutTemplate::with('plan')->findOrFail($request->template_id);
 
         // Authorization check
-        if ($template->user_id !== Auth::id()) {
+        if ($template->plan->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -22,9 +22,10 @@ class DatabaseSeeder extends Seeder
             UserProfileSeeder::class,    // Create user profiles
             CategorySeeder::class,       // Create exercise categories
             ExerciseSeeder::class,       // Create global exercises
+            PlanSeeder::class,           // Create plans
             WorkoutTemplateSeeder::class, // Create workout templates with exercises
-            WorkoutSessionSeeder::class,  // Create workout session test data
-            WorkoutSessionDataSeeder::class, // Create workout sessions with set logs for fitness metrics
+            // WorkoutSessionSeeder::class,  // Create workout session test data
+            // WorkoutSessionDataSeeder::class, // Create workout sessions with set logs for fitness metrics
             PartnerSeeder::class,        // Create partners with identities
         ]);
 

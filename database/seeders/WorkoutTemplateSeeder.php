@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Exercise;
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\WorkoutTemplate;
 use App\Models\WorkoutTemplateExercise;
@@ -19,6 +20,17 @@ class WorkoutTemplateSeeder extends Seeder
 
         if (! $demoUser) {
             $this->command->error('User not found. Run UserSeeder first.');
+
+            return;
+        }
+
+        // Get the active plan for this user
+        $plan = Plan::where('user_id', $demoUser->id)
+            ->where('is_active', true)
+            ->first();
+
+        if (! $plan) {
+            $this->command->error('No active plan found. Run PlanSeeder first.');
 
             return;
         }
@@ -86,7 +98,7 @@ class WorkoutTemplateSeeder extends Seeder
             // Create or find template
             $template = WorkoutTemplate::firstOrCreate(
                 [
-                    'user_id' => $demoUser->id,
+                    'plan_id' => $plan->id,
                     'name' => $templateData['name'],
                 ],
                 [

@@ -52,11 +52,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the workout templates for the user.
+     * Get the plans for the user.
      */
-    public function workoutTemplates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function plans(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(WorkoutTemplate::class);
+        return $this->hasMany(Plan::class);
     }
 
     /**

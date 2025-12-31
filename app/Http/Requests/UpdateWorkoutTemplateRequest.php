@@ -22,6 +22,18 @@ class UpdateWorkoutTemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'plan_id' => [
+                'nullable',
+                'exists:plans,id',
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $plan = \App\Models\Plan::find($value);
+                        if ($plan && $plan->user_id !== auth()->id()) {
+                            $fail('The selected plan does not belong to you.');
+                        }
+                    }
+                },
+            ],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'day_of_week' => 'nullable|integer|min:0|max:6',

@@ -19,7 +19,9 @@ class WorkoutTemplateController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $templates = WorkoutTemplate::where('user_id', auth()->id())
+        $templates = WorkoutTemplate::whereHas('plan', function ($query) {
+            $query->where('user_id', auth()->id());
+        })
             ->with('exercises.category')
             ->orderBy('name')
             ->get();
@@ -33,11 +35,13 @@ class WorkoutTemplateController extends Controller
     public function store(StoreWorkoutTemplateRequest $request): JsonResponse
     {
         $template = WorkoutTemplate::create([
-            'user_id' => auth()->id(),
+            'plan_id' => $request->plan_id,
             'name' => $request->name,
             'description' => $request->description,
             'day_of_week' => $request->day_of_week,
         ]);
+
+        $template->load('exercises.category');
 
         return response()->json([
             'message' => 'Workout template created successfully',
@@ -51,7 +55,8 @@ class WorkoutTemplateController extends Controller
     public function show(WorkoutTemplate $workoutTemplate): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id()) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -70,7 +75,8 @@ class WorkoutTemplateController extends Controller
     public function update(UpdateWorkoutTemplateRequest $request, WorkoutTemplate $workoutTemplate): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id()) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -90,7 +96,8 @@ class WorkoutTemplateController extends Controller
     public function destroy(WorkoutTemplate $workoutTemplate): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id()) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -109,7 +116,8 @@ class WorkoutTemplateController extends Controller
     public function addExercise(Request $request, WorkoutTemplate $workoutTemplate): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id()) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -150,7 +158,8 @@ class WorkoutTemplateController extends Controller
     public function removeExercise(WorkoutTemplate $workoutTemplate, WorkoutTemplateExercise $exercise): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id() || $exercise->workout_template_id !== $workoutTemplate->id) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id() || $exercise->workout_template_id !== $workoutTemplate->id) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -172,7 +181,8 @@ class WorkoutTemplateController extends Controller
     public function updateExercise(Request $request, WorkoutTemplate $workoutTemplate, WorkoutTemplateExercise $exercise): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id() || $exercise->workout_template_id !== $workoutTemplate->id) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id() || $exercise->workout_template_id !== $workoutTemplate->id) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -203,7 +213,8 @@ class WorkoutTemplateController extends Controller
     public function updateOrder(Request $request, WorkoutTemplate $workoutTemplate): JsonResponse
     {
         // Authorization check
-        if ($workoutTemplate->user_id !== auth()->id()) {
+        $workoutTemplate->load('plan');
+        if ($workoutTemplate->plan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);

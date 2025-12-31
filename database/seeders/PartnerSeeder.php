@@ -163,9 +163,109 @@ class PartnerSeeder extends Seeder
         );
         $powerGymAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
 
+        // Synergy Fitness Center
+        $synergyFitness = Partner::create([
+            'name' => 'Synergy Fitness Center',
+            'slug' => 'synergy-fitness-center',
+            'domain' => 'synergy.example.com',
+            'is_active' => true,
+        ]);
+
+        $synergyFitness->identity()->create([
+            'primary_color' => '#089e5a', // green
+            'secondary_color' => '#efcd3f', // yellow/gold
+            'logo' => '/images/partners/synergy-logo.png',
+            'font_family' => 'Inter',
+            'background_color' => '#ffffff',
+            'card_background_color' => '#f9fafb',
+            'text_primary_color' => '#111827',
+            'text_secondary_color' => '#089e5a', // green
+            'text_on_primary_color' => '#ffffff',
+            'success_color' => '#089e5a', // green
+            'warning_color' => '#efcd3f', // yellow/gold
+            'danger_color' => '#ef4444',
+            'accent_color' => '#089e5a', // green
+            'border_color' => '#d1fae5', // light green variant
+            'background_pattern' => '/images/pattern.png',
+            'primary_color_dark' => '#10b981', // lighter green for dark mode
+            'secondary_color_dark' => '#fbbf24', // lighter yellow for dark mode
+            'background_color_dark' => '#0f172a',
+            'card_background_color_dark' => '#1e293b',
+            'text_primary_color_dark' => '#f1f5f9',
+            'text_secondary_color_dark' => '#6ee7b7', // light green
+            'text_on_primary_color_dark' => '#ffffff',
+            'success_color_dark' => '#34d399',
+            'warning_color_dark' => '#fbbf24',
+            'danger_color_dark' => '#f87171',
+            'accent_color_dark' => '#34d399',
+            'border_color_dark' => '#1e3a2f', // dark green variant
+        ]);
+
+        // Premium Sport Center
+        $premiumSport = Partner::create([
+            'name' => 'Premium Sport Center',
+            'slug' => 'premium-sport-center',
+            'domain' => 'premium.example.com',
+            'is_active' => true,
+        ]);
+
+        $premiumSport->identity()->create([
+            'primary_color' => '#053a7b', // dark blue
+            'secondary_color' => '#fbf004', // bright yellow
+            'logo' => '/images/partners/premium-logo.png',
+            'font_family' => 'Poppins',
+            'background_color' => '#ffffff',
+            'card_background_color' => '#f8fafc',
+            'text_primary_color' => '#0f172a',
+            'text_secondary_color' => '#053a7b', // dark blue
+            'text_on_primary_color' => '#ffffff',
+            'success_color' => '#10b981',
+            'warning_color' => '#fbf004', // bright yellow
+            'danger_color' => '#ef4444',
+            'accent_color' => '#3b82f6', // lighter blue variant
+            'border_color' => '#bfdbfe', // light blue variant
+            'background_pattern' => '/images/pattern.png',
+            'primary_color_dark' => '#3b82f6', // lighter blue for dark mode
+            'secondary_color_dark' => '#fbbf24', // lighter yellow for dark mode
+            'background_color_dark' => '#0f172a',
+            'card_background_color_dark' => '#1e293b',
+            'text_primary_color_dark' => '#f1f5f9',
+            'text_secondary_color_dark' => '#93c5fd', // light blue
+            'text_on_primary_color_dark' => '#ffffff',
+            'success_color_dark' => '#4ade80',
+            'warning_color_dark' => '#fbbf24',
+            'danger_color_dark' => '#f87171',
+            'accent_color_dark' => '#60a5fa',
+            'border_color_dark' => '#1e3a5f', // dark blue variant
+        ]);
+
+        $synergyFitnessAdmin = User::firstOrCreate(
+            ['email' => 'admin@synergy.gym'],
+            [
+                'name' => 'Synergy Fitness Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $synergyFitness->id,
+            ]
+        );
+        $synergyFitnessAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
+
+        $premiumSportAdmin = User::firstOrCreate(
+            ['email' => 'admin@premium.gym'],
+            [
+                'name' => 'Premium Sport Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $premiumSport->id,
+            ]
+        );
+        $premiumSportAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
+
         $this->command->info('Partner admin users created:');
         $this->command->info('  - admin@musclehustle.gym (password: password)');
         $this->command->info('  - admin@fitlife.gym (password: password)');
         $this->command->info('  - admin@powergym.gym (password: password)');
+        $this->command->info('  - admin@synergy.gym (password: password)');
+        $this->command->info('  - admin@premium.gym (password: password)');
     }
 }

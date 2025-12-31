@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\WorkoutTemplate>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Plan>
  */
-class WorkoutTemplateFactory extends Factory
+class PlanFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,10 +17,10 @@ class WorkoutTemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'plan_id' => \App\Models\Plan::factory(),
-            'name' => fake()->words(3, true).' Workout',
+            'user_id' => \App\Models\User::factory(),
+            'name' => fake()->words(2, true).' Plan',
             'description' => fake()->sentence(),
-            'day_of_week' => fake()->numberBetween(0, 6),
+            'is_active' => fake()->boolean(),
         ];
     }
 }

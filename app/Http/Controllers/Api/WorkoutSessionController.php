@@ -63,7 +63,9 @@ class WorkoutSessionController extends Controller
         $dayOfWeek = $today->dayOfWeek === 0 ? 6 : $today->dayOfWeek - 1;
 
         // Get today's template
-        $template = WorkoutTemplate::where('user_id', Auth::id())
+        $template = WorkoutTemplate::whereHas('plan', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
             ->where('day_of_week', $dayOfWeek)
             ->with(['workoutTemplateExercises.exercise.category'])
             ->first();
