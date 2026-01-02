@@ -13,7 +13,7 @@ class WorkoutTemplate extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'plan_id',
         'name',
         'description',
         'day_of_week',
@@ -24,11 +24,19 @@ class WorkoutTemplate extends Model
     ];
 
     /**
-     * Relationship: WorkoutTemplate belongs to User
+     * Relationship: WorkoutTemplate belongs to Plan
      */
-    public function user(): BelongsTo
+    public function plan(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Plan::class);
+    }
+
+    /**
+     * Get the user that owns this workout template through the plan
+     */
+    public function getUserAttribute()
+    {
+        return $this->plan?->user;
     }
 
     /**

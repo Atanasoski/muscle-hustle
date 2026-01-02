@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\FitnessMetricsController;
+use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkoutPlannerController;
@@ -31,6 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Exercises CRUD
     Route::apiResource('exercises', ExerciseController::class);
+
+    // Plans CRUD
+    Route::apiResource('plans', PlanController::class);
 
     // Workout Templates CRUD
     Route::apiResource('workout-templates', WorkoutTemplateController::class);
