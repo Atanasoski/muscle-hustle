@@ -20,6 +20,15 @@ class ExerciseResource extends JsonResource
             'category' => $this->whenLoaded('category', function () {
                 return new CategoryResource($this->category);
             }),
+            'muscle_groups' => $this->whenLoaded('muscleGroups', function () {
+                return MuscleGroupResource::collection($this->muscleGroups);
+            }),
+            'primary_muscle_groups' => $this->whenLoaded('primaryMuscleGroups', function () {
+                return MuscleGroupResource::collection($this->primaryMuscleGroups);
+            }),
+            'secondary_muscle_groups' => $this->whenLoaded('secondaryMuscleGroups', function () {
+                return MuscleGroupResource::collection($this->secondaryMuscleGroups);
+            }),
             'name' => $this->name,
             'image_url' => $this->image_url,
             'default_rest_sec' => $this->default_rest_sec,

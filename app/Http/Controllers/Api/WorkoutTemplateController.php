@@ -22,7 +22,7 @@ class WorkoutTemplateController extends Controller
         $templates = WorkoutTemplate::whereHas('plan', function ($query) {
             $query->where('user_id', auth()->id());
         })
-            ->with('exercises.category')
+            ->with(['exercises.category', 'exercises.muscleGroups'])
             ->orderBy('name')
             ->get();
 
@@ -41,7 +41,7 @@ class WorkoutTemplateController extends Controller
             'day_of_week' => $request->day_of_week,
         ]);
 
-        $template->load('exercises.category');
+        $template->load(['exercises.category', 'exercises.muscleGroups']);
 
         return response()->json([
             'message' => 'Workout template created successfully',
@@ -62,7 +62,7 @@ class WorkoutTemplateController extends Controller
             ], 403);
         }
 
-        $workoutTemplate->load('exercises.category');
+        $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups']);
 
         return response()->json([
             'data' => new WorkoutTemplateResource($workoutTemplate),
@@ -144,7 +144,7 @@ class WorkoutTemplateController extends Controller
             'rest_seconds' => $validated['rest_seconds'] ?? null,
         ]);
 
-        $workoutTemplate->load('exercises.category');
+        $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups']);
 
         return response()->json([
             'message' => 'Exercise added successfully',
@@ -167,7 +167,7 @@ class WorkoutTemplateController extends Controller
 
         $exercise->delete();
 
-        $workoutTemplate->load('exercises.category');
+        $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups']);
 
         return response()->json([
             'message' => 'Exercise removed successfully',
@@ -199,7 +199,7 @@ class WorkoutTemplateController extends Controller
 
         $exercise->update($validated);
 
-        $workoutTemplate->load('exercises.category');
+        $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups']);
 
         return response()->json([
             'message' => 'Exercise updated successfully',
@@ -244,7 +244,7 @@ class WorkoutTemplateController extends Controller
                 ->update(['order' => $index]);
         }
 
-        $workoutTemplate->load('exercises.category');
+        $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups']);
 
         return response()->json([
             'message' => 'Order updated successfully',

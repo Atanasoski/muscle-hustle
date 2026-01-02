@@ -17,7 +17,7 @@ class ExerciseController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $exercises = Exercise::with('category')
+        $exercises = Exercise::with('category', 'muscleGroups')
             ->where(function ($query) {
                 $query->whereNull('user_id')
                     ->orWhere('user_id', auth()->id());

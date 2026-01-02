@@ -31,6 +31,9 @@ class WorkoutTemplateResource extends JsonResource
                         'image_url' => $exercise->image_url,
                         'default_rest_sec' => $exercise->default_rest_sec,
                         'category' => $exercise->category ? new CategoryResource($exercise->category) : null,
+                        'muscle_groups' => $exercise->relationLoaded('muscleGroups')
+                            ? MuscleGroupResource::collection($exercise->muscleGroups)
+                            : [],
                         'pivot' => [
                             'id' => $exercise->pivot->id,
                             'order' => $exercise->pivot->order,

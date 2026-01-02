@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Exercise;
+use App\Models\MuscleGroup;
 use Illuminate\Database\Seeder;
 
 class ExerciseSeeder extends Seeder
@@ -16,100 +17,516 @@ class ExerciseSeeder extends Seeder
         // Get all categories indexed by slug for easy lookup
         $categories = Category::pluck('id', 'slug');
 
+        // Get all muscle groups indexed by name for easy lookup
+        $muscleGroups = MuscleGroup::pluck('id', 'name');
+
+        // Exercise data with category and muscle group mappings
+        // Format: name, category_slug, default_rest_sec, primary_muscles[], secondary_muscles[]
         $exercises = [
-            // Chest
-            ['name' => 'Barbell Bench Press', 'category_id' => $categories['chest'], 'default_rest_sec' => 120],
-            ['name' => 'Dumbbell Bench Press', 'category_id' => $categories['chest'], 'default_rest_sec' => 90],
-            ['name' => 'Incline Barbell Bench Press', 'category_id' => $categories['chest'], 'default_rest_sec' => 120],
-            ['name' => 'Incline Dumbbell Press', 'category_id' => $categories['chest'], 'default_rest_sec' => 90],
-            ['name' => 'Decline Bench Press', 'category_id' => $categories['chest'], 'default_rest_sec' => 90],
-            ['name' => 'Dumbbell Flyes', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
-            ['name' => 'Cable Flyes', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
-            ['name' => 'Cable Chest Flyes', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
-            ['name' => 'Push-ups', 'category_id' => $categories['chest'], 'default_rest_sec' => 60],
-            ['name' => 'Dips (Chest)', 'category_id' => $categories['chest'], 'default_rest_sec' => 90],
+            // Chest exercises
+            [
+                'name' => 'Barbell Bench Press',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Chest'],
+                'secondary' => ['Triceps', 'Front Delts'],
+            ],
+            [
+                'name' => 'Dumbbell Bench Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Chest'],
+                'secondary' => ['Triceps', 'Front Delts'],
+            ],
+            [
+                'name' => 'Incline Barbell Bench Press',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Chest', 'Front Delts'],
+                'secondary' => ['Triceps'],
+            ],
+            [
+                'name' => 'Incline Dumbbell Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Chest', 'Front Delts'],
+                'secondary' => ['Triceps'],
+            ],
+            [
+                'name' => 'Decline Bench Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Chest'],
+                'secondary' => ['Triceps'],
+            ],
+            [
+                'name' => 'Dumbbell Flyes',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Chest'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Cable Flyes',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Chest'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Cable Chest Flyes',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Chest'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Push-ups',
+                'category' => 'compound',
+                'default_rest_sec' => 60,
+                'primary' => ['Chest'],
+                'secondary' => ['Triceps', 'Front Delts', 'Abs'],
+            ],
+            [
+                'name' => 'Dips (Chest)',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Chest'],
+                'secondary' => ['Triceps', 'Front Delts'],
+            ],
 
-            // Back
-            ['name' => 'Deadlift', 'category_id' => $categories['back'], 'default_rest_sec' => 180],
-            ['name' => 'Barbell Row', 'category_id' => $categories['back'], 'default_rest_sec' => 120],
-            ['name' => 'Dumbbell Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
-            ['name' => 'Chest-Supported Dumbbell Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
-            ['name' => 'Pull-ups', 'category_id' => $categories['back'], 'default_rest_sec' => 120],
-            ['name' => 'Lat Pulldown', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
-            ['name' => 'Seated Cable Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
-            ['name' => 'T-Bar Row', 'category_id' => $categories['back'], 'default_rest_sec' => 90],
-            ['name' => 'Face Pulls', 'category_id' => $categories['back'], 'default_rest_sec' => 60],
-            ['name' => 'Reverse Cable Flyes', 'category_id' => $categories['back'], 'default_rest_sec' => 60],
-            ['name' => 'Hyperextensions', 'category_id' => $categories['back'], 'default_rest_sec' => 60],
+            // Back exercises
+            [
+                'name' => 'Deadlift',
+                'category' => 'compound',
+                'default_rest_sec' => 180,
+                'primary' => ['Lower Back', 'Glutes', 'Hamstrings'],
+                'secondary' => ['Lats', 'Traps', 'Quadriceps', 'Forearms'],
+            ],
+            [
+                'name' => 'Barbell Row',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Lats', 'Upper Back'],
+                'secondary' => ['Biceps', 'Rear Delts', 'Lower Back'],
+            ],
+            [
+                'name' => 'Dumbbell Row',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Lats', 'Upper Back'],
+                'secondary' => ['Biceps', 'Rear Delts'],
+            ],
+            [
+                'name' => 'Chest-Supported Dumbbell Row',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Lats', 'Upper Back'],
+                'secondary' => ['Biceps', 'Rear Delts'],
+            ],
+            [
+                'name' => 'Pull-ups',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Lats'],
+                'secondary' => ['Biceps', 'Upper Back', 'Abs'],
+            ],
+            [
+                'name' => 'Lat Pulldown',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Lats'],
+                'secondary' => ['Biceps', 'Upper Back'],
+            ],
+            [
+                'name' => 'Seated Cable Row',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Lats', 'Upper Back'],
+                'secondary' => ['Biceps', 'Rear Delts'],
+            ],
+            [
+                'name' => 'T-Bar Row',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Lats', 'Upper Back'],
+                'secondary' => ['Biceps', 'Lower Back'],
+            ],
+            [
+                'name' => 'Face Pulls',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Rear Delts', 'Upper Back'],
+                'secondary' => ['Traps'],
+            ],
+            [
+                'name' => 'Reverse Cable Flyes',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Rear Delts'],
+                'secondary' => ['Upper Back'],
+            ],
+            [
+                'name' => 'Hyperextensions',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Lower Back'],
+                'secondary' => ['Glutes', 'Hamstrings'],
+            ],
 
-            // Legs
-            ['name' => 'Barbell Squat', 'category_id' => $categories['legs'], 'default_rest_sec' => 180],
-            ['name' => 'Front Squat', 'category_id' => $categories['legs'], 'default_rest_sec' => 150],
-            ['name' => 'Leg Press', 'category_id' => $categories['legs'], 'default_rest_sec' => 120],
-            ['name' => 'Romanian Deadlift', 'category_id' => $categories['legs'], 'default_rest_sec' => 120],
-            ['name' => 'Leg Curl', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
-            ['name' => 'Leg Extension', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
-            ['name' => 'Walking Lunges', 'category_id' => $categories['legs'], 'default_rest_sec' => 90],
-            ['name' => 'Bulgarian Split Squat', 'category_id' => $categories['legs'], 'default_rest_sec' => 90],
-            ['name' => 'Barbell Hip Thrust', 'category_id' => $categories['legs'], 'default_rest_sec' => 90],
-            ['name' => 'Calf Raises', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
-            ['name' => 'Standing Calf Raises', 'category_id' => $categories['legs'], 'default_rest_sec' => 60],
+            // Leg exercises
+            [
+                'name' => 'Barbell Squat',
+                'category' => 'compound',
+                'default_rest_sec' => 180,
+                'primary' => ['Quadriceps', 'Glutes'],
+                'secondary' => ['Hamstrings', 'Lower Back', 'Abs'],
+            ],
+            [
+                'name' => 'Front Squat',
+                'category' => 'compound',
+                'default_rest_sec' => 150,
+                'primary' => ['Quadriceps'],
+                'secondary' => ['Glutes', 'Abs'],
+            ],
+            [
+                'name' => 'Leg Press',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Quadriceps', 'Glutes'],
+                'secondary' => ['Hamstrings'],
+            ],
+            [
+                'name' => 'Romanian Deadlift',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Hamstrings', 'Glutes'],
+                'secondary' => ['Lower Back'],
+            ],
+            [
+                'name' => 'Leg Curl',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Hamstrings'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Leg Extension',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Quadriceps'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Walking Lunges',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Quadriceps', 'Glutes'],
+                'secondary' => ['Hamstrings', 'Abs'],
+            ],
+            [
+                'name' => 'Bulgarian Split Squat',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Quadriceps', 'Glutes'],
+                'secondary' => ['Hamstrings'],
+            ],
+            [
+                'name' => 'Barbell Hip Thrust',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Glutes'],
+                'secondary' => ['Hamstrings'],
+            ],
+            [
+                'name' => 'Calf Raises',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Calves'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Standing Calf Raises',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Calves'],
+                'secondary' => [],
+            ],
 
-            // Shoulders
-            ['name' => 'Overhead Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 120],
-            ['name' => 'Dumbbell Shoulder Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 90],
-            ['name' => 'Seated Dumbbell Shoulder Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 90],
-            ['name' => 'Lateral Raises', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
-            ['name' => 'Cable Lateral Raises', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
-            ['name' => 'Front Raises', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
-            ['name' => 'Rear Delt Flyes', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
-            ['name' => 'Arnold Press', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 90],
-            ['name' => 'Upright Row', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
-            ['name' => 'Shrugs', 'category_id' => $categories['shoulders'], 'default_rest_sec' => 60],
+            // Shoulder exercises
+            [
+                'name' => 'Overhead Press',
+                'category' => 'compound',
+                'default_rest_sec' => 120,
+                'primary' => ['Front Delts', 'Side Delts'],
+                'secondary' => ['Triceps', 'Upper Back'],
+            ],
+            [
+                'name' => 'Dumbbell Shoulder Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Front Delts', 'Side Delts'],
+                'secondary' => ['Triceps'],
+            ],
+            [
+                'name' => 'Seated Dumbbell Shoulder Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Front Delts', 'Side Delts'],
+                'secondary' => ['Triceps'],
+            ],
+            [
+                'name' => 'Lateral Raises',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Side Delts'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Cable Lateral Raises',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Side Delts'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Front Raises',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Front Delts'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Rear Delt Flyes',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Rear Delts'],
+                'secondary' => ['Upper Back'],
+            ],
+            [
+                'name' => 'Arnold Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Front Delts', 'Side Delts'],
+                'secondary' => ['Triceps'],
+            ],
+            [
+                'name' => 'Upright Row',
+                'category' => 'compound',
+                'default_rest_sec' => 60,
+                'primary' => ['Side Delts', 'Traps'],
+                'secondary' => ['Biceps'],
+            ],
+            [
+                'name' => 'Shrugs',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Traps'],
+                'secondary' => [],
+            ],
 
-            // Arms
-            ['name' => 'Barbell Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Dumbbell Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Incline Dumbbell Curls', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Hammer Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Preacher Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Cable Curl', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Close-Grip Bench Press', 'category_id' => $categories['arms'], 'default_rest_sec' => 90],
-            ['name' => 'Tricep Dips', 'category_id' => $categories['arms'], 'default_rest_sec' => 90],
-            ['name' => 'Overhead Tricep Extension', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Tricep Pushdown', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
-            ['name' => 'Skull Crushers', 'category_id' => $categories['arms'], 'default_rest_sec' => 60],
+            // Arm exercises
+            [
+                'name' => 'Barbell Curl',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Biceps'],
+                'secondary' => ['Forearms'],
+            ],
+            [
+                'name' => 'Dumbbell Curl',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Biceps'],
+                'secondary' => ['Forearms'],
+            ],
+            [
+                'name' => 'Incline Dumbbell Curls',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Biceps'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Hammer Curl',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Biceps', 'Forearms'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Preacher Curl',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Biceps'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Cable Curl',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Biceps'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Close-Grip Bench Press',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Triceps'],
+                'secondary' => ['Chest', 'Front Delts'],
+            ],
+            [
+                'name' => 'Tricep Dips',
+                'category' => 'compound',
+                'default_rest_sec' => 90,
+                'primary' => ['Triceps'],
+                'secondary' => ['Chest', 'Front Delts'],
+            ],
+            [
+                'name' => 'Overhead Tricep Extension',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Triceps'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Tricep Pushdown',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Triceps'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Skull Crushers',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Triceps'],
+                'secondary' => [],
+            ],
 
-            // Core
-            ['name' => 'Plank', 'category_id' => $categories['core'], 'default_rest_sec' => 60],
-            ['name' => 'Crunches', 'category_id' => $categories['core'], 'default_rest_sec' => 45],
-            ['name' => 'Reverse Crunches', 'category_id' => $categories['core'], 'default_rest_sec' => 45],
-            ['name' => 'Hanging Leg Raises', 'category_id' => $categories['core'], 'default_rest_sec' => 60],
-            ['name' => 'Russian Twists', 'category_id' => $categories['core'], 'default_rest_sec' => 45],
-            ['name' => 'Cable Crunches', 'category_id' => $categories['core'], 'default_rest_sec' => 60],
-            ['name' => 'Ab Wheel Rollout', 'category_id' => $categories['core'], 'default_rest_sec' => 60],
+            // Core exercises
+            [
+                'name' => 'Plank',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Abs'],
+                'secondary' => ['Obliques'],
+            ],
+            [
+                'name' => 'Crunches',
+                'category' => 'isolation',
+                'default_rest_sec' => 45,
+                'primary' => ['Abs'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Reverse Crunches',
+                'category' => 'isolation',
+                'default_rest_sec' => 45,
+                'primary' => ['Abs'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Hanging Leg Raises',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Abs'],
+                'secondary' => ['Obliques'],
+            ],
+            [
+                'name' => 'Russian Twists',
+                'category' => 'isolation',
+                'default_rest_sec' => 45,
+                'primary' => ['Obliques'],
+                'secondary' => ['Abs'],
+            ],
+            [
+                'name' => 'Cable Crunches',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Abs'],
+                'secondary' => [],
+            ],
+            [
+                'name' => 'Ab Wheel Rollout',
+                'category' => 'compound',
+                'default_rest_sec' => 60,
+                'primary' => ['Abs'],
+                'secondary' => ['Lats', 'Front Delts'],
+            ],
 
-            // Cardio
-            ['name' => 'Treadmill Running', 'category_id' => $categories['cardio'], 'default_rest_sec' => null],
-            ['name' => 'Cycling', 'category_id' => $categories['cardio'], 'default_rest_sec' => null],
-            ['name' => 'Rowing Machine', 'category_id' => $categories['cardio'], 'default_rest_sec' => null],
-            ['name' => 'Jump Rope', 'category_id' => $categories['cardio'], 'default_rest_sec' => 60],
-            ['name' => 'Burpees', 'category_id' => $categories['cardio'], 'default_rest_sec' => 60],
+            // Cardio exercises
+            [
+                'name' => 'Treadmill Running',
+                'category' => 'cardio',
+                'default_rest_sec' => null,
+                'primary' => ['Quadriceps', 'Hamstrings', 'Calves'],
+                'secondary' => ['Glutes', 'Abs'],
+            ],
+            [
+                'name' => 'Cycling',
+                'category' => 'cardio',
+                'default_rest_sec' => null,
+                'primary' => ['Quadriceps'],
+                'secondary' => ['Hamstrings', 'Glutes', 'Calves'],
+            ],
+            [
+                'name' => 'Rowing Machine',
+                'category' => 'cardio',
+                'default_rest_sec' => null,
+                'primary' => ['Lats', 'Upper Back'],
+                'secondary' => ['Biceps', 'Quadriceps', 'Abs'],
+            ],
+            [
+                'name' => 'Jump Rope',
+                'category' => 'cardio',
+                'default_rest_sec' => 60,
+                'primary' => ['Calves'],
+                'secondary' => ['Quadriceps', 'Abs'],
+            ],
+            [
+                'name' => 'Burpees',
+                'category' => 'plyometrics',
+                'default_rest_sec' => 60,
+                'primary' => ['Quadriceps', 'Chest'],
+                'secondary' => ['Abs', 'Triceps', 'Front Delts'],
+            ],
         ];
 
-        foreach ($exercises as $exercise) {
-            Exercise::firstOrCreate(
+        foreach ($exercises as $exerciseData) {
+            $exercise = Exercise::firstOrCreate(
                 [
-                    'name' => $exercise['name'],
+                    'name' => $exerciseData['name'],
                     'user_id' => null,
                 ],
                 [
-                    'category_id' => $exercise['category_id'],
-                    'default_rest_sec' => $exercise['default_rest_sec'],
+                    'category_id' => $categories[$exerciseData['category']] ?? null,
+                    'default_rest_sec' => $exerciseData['default_rest_sec'],
                 ]
             );
+
+            // Attach muscle groups if the exercise was newly created or has no muscle groups
+            if ($exercise->wasRecentlyCreated || $exercise->muscleGroups()->count() === 0) {
+                $muscleGroupAttachments = [];
+
+                // Add primary muscle groups
+                foreach ($exerciseData['primary'] as $muscleName) {
+                    if (isset($muscleGroups[$muscleName])) {
+                        $muscleGroupAttachments[$muscleGroups[$muscleName]] = ['is_primary' => true];
+                    }
+                }
+
+                // Add secondary muscle groups
+                foreach ($exerciseData['secondary'] as $muscleName) {
+                    if (isset($muscleGroups[$muscleName])) {
+                        $muscleGroupAttachments[$muscleGroups[$muscleName]] = ['is_primary' => false];
+                    }
+                }
+
+                $exercise->muscleGroups()->sync($muscleGroupAttachments);
+            }
         }
 
-        $this->command->info('Global exercises seeded successfully!');
+        $this->command->info('Global exercises seeded successfully with muscle groups!');
     }
 }
