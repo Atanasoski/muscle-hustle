@@ -18,6 +18,7 @@ class Exercise extends Model
         'user_id',
         'category_id',
         'name',
+        'description',
         'image_url',
         'default_rest_sec',
     ];

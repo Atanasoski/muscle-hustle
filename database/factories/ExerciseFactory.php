@@ -21,6 +21,7 @@ class ExerciseFactory extends Factory
     {
         return [
             'name' => fake()->unique()->words(3, true),
+            'description' => fake()->optional()->sentence(),
             'user_id' => null,
             'category_id' => null,
             'image_url' => null,

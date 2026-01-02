@@ -36,6 +36,7 @@ class ExerciseController extends Controller
         $exercise = Exercise::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
+            'description' => $request->description,
             'category_id' => $request->category_id,
             'image_url' => $request->image_url,
             'default_rest_sec' => $request->default_rest_sec ?? 90,
@@ -80,6 +81,7 @@ class ExerciseController extends Controller
 
         $exercise->update([
             'name' => $request->name,
+            'description' => $request->description,
             'category_id' => $request->category_id,
             'image_url' => $request->image_url,
             'default_rest_sec' => $request->default_rest_sec,

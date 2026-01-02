@@ -159,6 +159,16 @@
 
                                                     <div>
                                                         <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                                            Description
+                                                        </label>
+                                                        <textarea name="description" 
+                                                                  rows="3"
+                                                                  placeholder="Exercise instructions or notes..."
+                                                                  class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">{{ $exercise->description }}</textarea>
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
                                                             Category <span class="text-meta-1">*</span>
                                                         </label>
                                                         <select name="category_id" 
@@ -238,6 +248,16 @@
                                    required 
                                    placeholder="e.g., Dumbbell Curl"
                                    class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
+                        </div>
+
+                        <div>
+                            <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">
+                                Description
+                            </label>
+                            <textarea name="description" 
+                                      rows="3"
+                                      placeholder="Exercise instructions or notes..."
+                                      class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"></textarea>
                         </div>
 
                         <div>
