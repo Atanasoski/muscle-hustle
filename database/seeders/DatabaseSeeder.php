@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,           // Create demo user first
             UserProfileSeeder::class,    // Create user profiles
             CategorySeeder::class,       // Create exercise categories
+            MuscleGroupSeeder::class,    // Create muscle groups
             ExerciseSeeder::class,       // Create global exercises
             PlanSeeder::class,           // Create plans
             WorkoutTemplateSeeder::class, // Create workout templates with exercises

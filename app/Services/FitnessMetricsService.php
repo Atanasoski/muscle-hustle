@@ -84,8 +84,17 @@ class FitnessMetricsService
             }
         }
 
-        // Ensure we have all required muscle groups
-        $requiredGroups = ['chest', 'back', 'legs', 'shoulders', 'arms', 'core'];
+        // Ensure we have all required muscle groups (granular)
+        $requiredGroups = [
+            // Upper body
+            'chest', 'lats', 'upper back', 'lower back',
+            'front delts', 'side delts', 'rear delts', 'traps',
+            'biceps', 'triceps', 'forearms',
+            // Lower body
+            'quadriceps', 'hamstrings', 'glutes', 'calves',
+            // Core
+            'abs', 'obliques',
+        ];
         foreach ($requiredGroups as $group) {
             if (! isset($muscleGroups[$group])) {
                 $muscleGroups[$group] = 0;
@@ -162,17 +171,20 @@ class FitnessMetricsService
         return DB::table('workout_set_logs')
             ->join('workout_sessions', 'workout_set_logs.workout_session_id', '=', 'workout_sessions.id')
             ->join('workout_exercises', 'workout_set_logs.exercise_id', '=', 'workout_exercises.id')
-            ->join('categories', 'workout_exercises.category_id', '=', 'categories.id')
+            ->join('exercise_muscle_group', 'workout_exercises.id', '=', 'exercise_muscle_group.exercise_id')
+            ->join('muscle_groups', 'exercise_muscle_group.muscle_group_id', '=', 'muscle_groups.id')
             ->where('workout_sessions.user_id', $this->user->id)
             ->whereNotNull('workout_sessions.completed_at')
             ->whereNotNull('workout_set_logs.weight')
             ->where('workout_set_logs.weight', '>', 0)
             ->where('workout_set_logs.reps', '>', 0)
+            ->where('exercise_muscle_group.is_primary', true)
             ->select([
                 'workout_set_logs.*',
                 'workout_sessions.performed_at',
                 'workout_exercises.name as exercise_name',
-                'categories.name as category_name',
+                'muscle_groups.name as muscle_group_name',
+                'muscle_groups.body_region',
             ]);
     }
 
@@ -215,7 +227,7 @@ class FitnessMetricsService
 
         $volumes = [];
         foreach ($query->get() as $set) {
-            $muscleGroup = $set->category_name;
+            $muscleGroup = $set->muscle_group_name;
             $volume = $set->weight * $set->reps; // Volume = weight × reps
 
             if (! isset($volumes[$muscleGroup])) {

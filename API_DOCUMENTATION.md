@@ -170,14 +170,28 @@ GET /api/exercises
       "category": {
         "id": 1,
         "type": "workout",
-        "name": "Chest",
-        "slug": "chest",
+        "name": "Compound",
+        "slug": "compound",
         "display_order": 1,
-        "icon": "chest-icon",
-        "color": "#FF5733",
+        "icon": "🏋️",
+        "color": "#ef4444",
         "created_at": "2025-01-01T00:00:00.000000Z",
         "updated_at": "2025-01-01T00:00:00.000000Z"
       },
+      "muscle_groups": [
+        {
+          "id": 1,
+          "name": "Chest",
+          "body_region": "upper",
+          "is_primary": true
+        },
+        {
+          "id": 10,
+          "name": "Triceps",
+          "body_region": "upper",
+          "is_primary": false
+        }
+      ],
       "name": "Bench Press",
       "image_url": "https://example.com/bench-press.jpg",
       "default_rest_sec": 90,
@@ -187,6 +201,8 @@ GET /api/exercises
   ]
 }
 ```
+
+**Note**: The `muscle_groups` array is only present when the relationship is loaded. Each muscle group includes `is_primary` to indicate if it's a primary or secondary target.
 
 #### Get Single Exercise
 ```
@@ -273,6 +289,9 @@ interface ExerciseResource {
   id: number;
   user_id: number | null;  // null for global exercises
   category: CategoryResource | null;  // Only present if relationship loaded
+  muscle_groups: MuscleGroupResource[] | null;  // Only present if relationship loaded
+  primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
+  secondary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
   name: string;
   image_url: string | null;
   default_rest_sec: number;
@@ -283,12 +302,14 @@ interface ExerciseResource {
 
 ### Category Resource Structure
 
+Categories represent **workout types** (not body parts):
+
 ```typescript
 interface CategoryResource {
   id: number;
-  type: string;  // Enum: "workout" or other types
-  name: string;
-  slug: string;
+  type: string;  // Enum: "workout"
+  name: string;  // "Compound" | "Isolation" | "Cardio" | "Plyometrics" | "Mobility"
+  slug: string;  // "compound" | "isolation" | "cardio" | "plyometrics" | "mobility"
   display_order: number;
   icon: string | null;
   color: string | null;
@@ -296,6 +317,134 @@ interface CategoryResource {
   updated_at: string;
 }
 ```
+
+### Muscle Group Resource Structure
+
+Muscle groups represent **body parts** that exercises target:
+
+```typescript
+interface MuscleGroupResource {
+  id: number;
+  name: string;  // e.g., "Chest", "Biceps", "Quadriceps"
+  body_region: string;  // "upper" | "lower" | "core"
+  is_primary: boolean | null;  // Only present when loaded via exercise relationship
+  created_at: string;
+  updated_at: string;
+}
+```
+
+**Available Muscle Groups (17 total)**:
+- **Upper Body**: Chest, Lats, Upper Back, Lower Back, Front Delts, Side Delts, Rear Delts, Traps, Biceps, Triceps, Forearms
+- **Lower Body**: Quadriceps, Hamstrings, Glutes, Calves
+- **Core**: Abs, Obliques
+
+---
+
+## Muscle Group Resource
+
+### Overview
+Muscle Groups represent body parts that exercises target. Each exercise can have multiple primary and secondary muscle groups. This is separate from Categories which represent workout types (Compound, Isolation, etc.).
+
+### API Endpoints
+
+#### List All Muscle Groups
+```
+GET /api/muscle-groups
+```
+
+**Query Parameters**:
+- `body_region` (optional): Filter by region - `upper`, `lower`, or `core`
+
+**Response Structure**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Chest",
+      "body_region": "upper",
+      "created_at": "2025-01-01T00:00:00.000000Z",
+      "updated_at": "2025-01-01T00:00:00.000000Z"
+    },
+    {
+      "id": 12,
+      "name": "Quadriceps",
+      "body_region": "lower",
+      "created_at": "2025-01-01T00:00:00.000000Z",
+      "updated_at": "2025-01-01T00:00:00.000000Z"
+    }
+  ]
+}
+```
+
+#### Get Single Muscle Group
+```
+GET /api/muscle-groups/{id}
+```
+
+**Response**: Returns muscle group with associated exercises.
+
+---
+
+## Fitness Metrics Resource
+
+### Overview
+Fitness metrics provide analytics about the user's training including strength score, muscle group balance, and weekly progress.
+
+### API Endpoints
+
+#### Get Fitness Metrics
+```
+GET /api/user/fitness-metrics
+```
+
+**Response Structure**:
+```json
+{
+  "success": true,
+  "data": {
+    "strength_score": {
+      "current": 250,
+      "level": "INTERMEDIATE",
+      "recent_gain": 15,
+      "gain_period": "last_30_days"
+    },
+    "strength_balance": {
+      "percentage": 72,
+      "level": "GOOD",
+      "recent_change": 3,
+      "muscle_groups": {
+        "chest": 10,
+        "lats": 8,
+        "upper back": 5,
+        "lower back": 3,
+        "front delts": 4,
+        "side delts": 3,
+        "rear delts": 2,
+        "traps": 2,
+        "biceps": 8,
+        "triceps": 10,
+        "forearms": 1,
+        "quadriceps": 15,
+        "hamstrings": 8,
+        "glutes": 10,
+        "calves": 3,
+        "abs": 5,
+        "obliques": 3
+      }
+    },
+    "weekly_progress": {
+      "percentage": 25,
+      "trend": "up",
+      "current_week_workouts": 5,
+      "previous_week_workouts": 4
+    }
+  },
+  "message": "Fitness metrics retrieved successfully"
+}
+```
+
+**Note**: The `muscle_groups` object contains 17 granular muscle groups with their training volume percentage distribution.
 
 ---
 
@@ -614,11 +763,13 @@ The Muscle Hustle API uses Laravel API Resources to format all responses. All re
 
 1. **UserResource** - User account information
 2. **UserProfileResource** - User fitness profile data
-3. **ExerciseResource** - Exercise information
-4. **CategoryResource** - Exercise/workout categories
-5. **WorkoutTemplateResource** - Workout template plans
-6. **PartnerResource** - Partner/brand information
-7. **PartnerVisualIdentityResource** - Partner visual branding
+3. **ExerciseResource** - Exercise information with muscle groups
+4. **CategoryResource** - Exercise/workout type categories (Compound, Isolation, Cardio, etc.)
+5. **MuscleGroupResource** - Body part muscle groups (Chest, Biceps, Quadriceps, etc.)
+6. **WorkoutTemplateResource** - Workout template plans
+7. **PartnerResource** - Partner/brand information
+8. **PartnerVisualIdentityResource** - Partner visual branding
+9. **FitnessMetricsResource** - User fitness metrics and muscle balance
 
 ### Resource Usage
 
@@ -830,6 +981,13 @@ This sets the order based on WorkoutTemplateExercise IDs (not exercise IDs).
 - `PUT/PATCH /api/exercises/{id}` - Update exercise
 - `DELETE /api/exercises/{id}` - Delete exercise
 
+### Muscle Group Endpoints
+- `GET /api/muscle-groups` - List muscle groups (filter with `?body_region=upper|lower|core`)
+- `GET /api/muscle-groups/{id}` - Get muscle group with exercises
+
+### Fitness Metrics Endpoints
+- `GET /api/user/fitness-metrics` - Get user's fitness metrics and muscle balance
+
 ### Workout Template Endpoints
 - `GET /api/workout-templates` - List templates
 - `POST /api/workout-templates` - Create template
@@ -891,6 +1049,9 @@ interface ExerciseResource {
   id: number;
   user_id: number | null;  // null for global exercises
   category: CategoryResource | null;  // Only present if relationship loaded
+  muscle_groups: MuscleGroupResource[] | null;  // Only present if relationship loaded
+  primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
+  secondary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
   name: string;
   image_url: string | null;
   default_rest_sec: number;
@@ -898,16 +1059,49 @@ interface ExerciseResource {
   updated_at: string;  // ISO 8601 datetime
 }
 
+// Categories represent WORKOUT TYPES (not body parts)
 interface CategoryResource {
   id: number;
-  type: string;  // Enum: "workout" or other types
-  name: string;
+  type: string;  // "workout"
+  name: string;  // "Compound" | "Isolation" | "Cardio" | "Plyometrics" | "Mobility"
   slug: string;
   display_order: number;
   icon: string | null;
   color: string | null;
   created_at: string;
   updated_at: string;
+}
+
+// Muscle Groups represent BODY PARTS
+interface MuscleGroupResource {
+  id: number;
+  name: string;  // e.g., "Chest", "Biceps", "Quadriceps"
+  body_region: "upper" | "lower" | "core";
+  is_primary: boolean | null;  // Only when loaded via exercise pivot
+  created_at: string;
+  updated_at: string;
+}
+
+// Fitness Metrics
+interface FitnessMetricsResource {
+  strength_score: {
+    current: number;
+    level: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    recent_gain: number;
+    gain_period: string;
+  };
+  strength_balance: {
+    percentage: number;
+    level: "EXCELLENT" | "GOOD" | "FAIR" | "NEEDS_IMPROVEMENT";
+    recent_change: number;
+    muscle_groups: Record<string, number>;  // 17 muscle groups with % distribution
+  };
+  weekly_progress: {
+    percentage: number;
+    trend: "up" | "down" | "same";
+    current_week_workouts: number;
+    previous_week_workouts: number;
+  };
 }
 
 // Workout Template Resources
@@ -980,9 +1174,11 @@ All API resources are located in: `app/Http/Resources/Api/`
 ### Resource Files
 - `UserResource.php` - Formats user data with profile and partner relationships
 - `UserProfileResource.php` - Formats user fitness profile data
-- `ExerciseResource.php` - Formats exercise data with category relationship
-- `CategoryResource.php` - Formats category data
+- `ExerciseResource.php` - Formats exercise data with category and muscle groups
+- `CategoryResource.php` - Formats workout type category data
+- `MuscleGroupResource.php` - Formats muscle group (body part) data
 - `WorkoutTemplateResource.php` - Formats workout template data with exercises
+- `FitnessMetricsResource.php` - Formats fitness metrics and muscle balance data
 - `PartnerResource.php` - Formats partner data with identity and users
 - `PartnerVisualIdentityResource.php` - Formats partner visual branding data
 

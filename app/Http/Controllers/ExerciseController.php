@@ -25,6 +25,7 @@ class ExerciseController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:5000',
             'category_id' => [
                 'required',
                 'exists:categories,id',
@@ -41,6 +42,7 @@ class ExerciseController extends Controller
         Exercise::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
+            'description' => $request->description,
             'category_id' => $request->category_id,
             'default_rest_sec' => $request->default_rest_sec ?? 90,
         ]);
@@ -58,6 +60,7 @@ class ExerciseController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:5000',
             'category_id' => [
                 'required',
                 'exists:categories,id',
@@ -73,6 +76,7 @@ class ExerciseController extends Controller
 
         $exercise->update([
             'name' => $request->name,
+            'description' => $request->description,
             'category_id' => $request->category_id,
             'default_rest_sec' => $request->default_rest_sec,
         ]);
