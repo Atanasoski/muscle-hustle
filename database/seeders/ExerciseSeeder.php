@@ -5,10 +5,15 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Exercise;
 use App\Models\MuscleGroup;
+use App\Services\MuscleGroupImageService;
 use Illuminate\Database\Seeder;
 
 class ExerciseSeeder extends Seeder
 {
+    public function __construct(
+        private MuscleGroupImageService $muscleImageService
+    ) {}
+
     /**
      * Run the database seeds.
      */
@@ -493,7 +498,43 @@ class ExerciseSeeder extends Seeder
             ],
         ];
 
+        // Check if muscle image service is configured
+        $canFetchImages = $this->muscleImageService->isConfigured();
+
+        if (! $canFetchImages) {
+            $this->command->warn('RAPIDAPI_KEY not configured - muscle group images will not be fetched.');
+        }
+
+        $imagesFetched = 0;
+        $imagesSkipped = 0;
+
         foreach ($exercises as $exerciseData) {
+            $imageUrl = null;
+
+            // Fetch muscle group image if service is configured
+            if ($canFetchImages) {
+                $primaryMuscles = $exerciseData['primary'];
+                $secondaryMuscles = $exerciseData['secondary'];
+
+                // Check if we already have this image (to avoid duplicate API calls)
+                if ($this->muscleImageService->imageExists($primaryMuscles, $secondaryMuscles)) {
+                    $imagePath = $this->muscleImageService->getImagePath($primaryMuscles, $secondaryMuscles);
+                    $imageUrl = $this->muscleImageService->getImageUrl($imagePath);
+                    $imagesSkipped++;
+                } else {
+                    $imagePath = $this->muscleImageService->fetchAndStoreMuscleImage(
+                        $primaryMuscles,
+                        $secondaryMuscles
+                    );
+
+                    if ($imagePath !== null) {
+                        $imageUrl = $this->muscleImageService->getImageUrl($imagePath);
+                        $imagesFetched++;
+                        $this->command->info("Fetched image for: {$exerciseData['name']}");
+                    }
+                }
+            }
+
             $exercise = Exercise::firstOrCreate(
                 [
                     'name' => $exerciseData['name'],
@@ -502,8 +543,14 @@ class ExerciseSeeder extends Seeder
                 [
                     'category_id' => $categories[$exerciseData['category']] ?? null,
                     'default_rest_sec' => $exerciseData['default_rest_sec'],
+                    'image_url' => $imageUrl,
                 ]
             );
+
+            // Update image_url if exercise exists but has no image
+            if (! $exercise->wasRecentlyCreated && empty($exercise->image_url) && $imageUrl !== null) {
+                $exercise->update(['image_url' => $imageUrl]);
+            }
 
             // Attach muscle groups if the exercise was newly created or has no muscle groups
             if ($exercise->wasRecentlyCreated || $exercise->muscleGroups()->count() === 0) {
@@ -528,5 +575,9 @@ class ExerciseSeeder extends Seeder
         }
 
         $this->command->info('Global exercises seeded successfully with muscle groups!');
+
+        if ($canFetchImages) {
+            $this->command->info("Muscle images: {$imagesFetched} fetched, {$imagesSkipped} already existed.");
+        }
     }
 }

@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'rapidapi' => [
+        'key' => env('RAPIDAPI_KEY'),
+        'muscle_image' => [
+            'host' => 'muscle-group-image-generator.p.rapidapi.com',
+            'base_url' => 'https://muscle-group-image-generator.p.rapidapi.com/getIndividualColorImage',
+        ],
+    ],
+
 ];
