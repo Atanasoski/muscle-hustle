@@ -21,6 +21,7 @@ return [
 
     'allowed_origins' => [
         'https://fit-nation-app.vercel.app',
+        'https://app.fitnation.mk',
     ],
 
     'allowed_origins_patterns' => [],
