@@ -42,10 +42,10 @@ class WorkoutTemplateSeeder extends Seeder
                 'description' => 'Push focus with quads',
                 'day_of_week' => 0, // Monday
                 'exercises' => [
-                    ['name' => 'Incline Dumbbell Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Incline Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
                     ['name' => 'Chest-Supported Dumbbell Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Barbell Squat', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 180],
-                    ['name' => 'Incline Dumbbell Curls', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Back Squat', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 180],
+                    ['name' => 'Incline Dumbbell Curl', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 60],
                 ],
             ],
             [
@@ -53,10 +53,10 @@ class WorkoutTemplateSeeder extends Seeder
                 'description' => 'Shoulders, back, and hamstrings',
                 'day_of_week' => 1, // Tuesday
                 'exercises' => [
-                    ['name' => 'Seated Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
                     ['name' => 'Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
                     ['name' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 120],
-                    ['name' => 'Incline Dumbbell Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Incline Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
                 ],
             ],
             [
@@ -66,7 +66,7 @@ class WorkoutTemplateSeeder extends Seeder
                 'exercises' => [
                     ['name' => 'Barbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 120],
                     ['name' => 'Dumbbell Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Leg Extension', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Leg Extensions', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
                     ['name' => 'Cable Lateral Raises', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
                 ],
             ],
@@ -75,8 +75,8 @@ class WorkoutTemplateSeeder extends Seeder
                 'description' => 'Glutes, chest, rear delts, and biceps',
                 'day_of_week' => 3, // Thursday
                 'exercises' => [
-                    ['name' => 'Barbell Hip Thrust', 'sets' => 3, 'reps' => 12, 'weight' => 60.00, 'rest' => 90],
-                    ['name' => 'Cable Chest Flyes', 'sets' => 3, 'reps' => 10, 'weight' => 12.50, 'rest' => 60],
+                    ['name' => 'Hip Thrust (Barbell)', 'sets' => 3, 'reps' => 12, 'weight' => 60.00, 'rest' => 90],
+                    ['name' => 'Cable Fly', 'sets' => 3, 'reps' => 10, 'weight' => 12.50, 'rest' => 60],
                     ['name' => 'Reverse Cable Flyes', 'sets' => 3, 'reps' => 12, 'weight' => 10.00, 'rest' => 60],
                     ['name' => 'Hammer Curl', 'sets' => 3, 'reps' => 12, 'weight' => 16.00, 'rest' => 60],
                 ],
@@ -87,9 +87,9 @@ class WorkoutTemplateSeeder extends Seeder
                 'day_of_week' => 4, // Friday
                 'exercises' => [
                     ['name' => 'Walking Lunges', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Reverse Crunches', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 45],
+                    ['name' => 'Hyperextensions', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 45],
                     ['name' => 'Standing Calf Raises', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 60],
-                    ['name' => 'Tricep Pushdown', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Triceps Pushdown (Cable)', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
                 ],
             ],
         ];
