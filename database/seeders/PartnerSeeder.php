@@ -261,11 +261,67 @@ class PartnerSeeder extends Seeder
         );
         $premiumSportAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
 
+        // Create trainer users
+        $trainerRole = Role::where('slug', 'trainer')->first();
+
+        // Trainers for Fit Nation
+        $fitNationTrainer1 = User::firstOrCreate(
+            ['email' => 'trainer1@fitnation.gym'],
+            [
+                'name' => 'John Trainer',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $muscleHustle->id,
+            ]
+        );
+        $fitNationTrainer1->roles()->syncWithoutDetaching($trainerRole);
+
+        $fitNationTrainer2 = User::firstOrCreate(
+            ['email' => 'trainer2@fitnation.gym'],
+            [
+                'name' => 'Sarah Fitness',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $muscleHustle->id,
+            ]
+        );
+        $fitNationTrainer2->roles()->syncWithoutDetaching($trainerRole);
+
+        // Trainer for FitLife Pro
+        $fitLifeTrainer = User::firstOrCreate(
+            ['email' => 'trainer@fitlife.gym'],
+            [
+                'name' => 'Mike Coach',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $fitLife->id,
+            ]
+        );
+        $fitLifeTrainer->roles()->syncWithoutDetaching($trainerRole);
+
+        // Trainer for PowerGym Elite
+        $powerGymTrainer = User::firstOrCreate(
+            ['email' => 'trainer@powergym.gym'],
+            [
+                'name' => 'Emma Strength',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'partner_id' => $powerGym->id,
+            ]
+        );
+        $powerGymTrainer->roles()->syncWithoutDetaching($trainerRole);
+
         $this->command->info('Partner admin users created:');
         $this->command->info('  - admin@fitnation.gym (password: password)');
         $this->command->info('  - admin@fitlife.gym (password: password)');
         $this->command->info('  - admin@powergym.gym (password: password)');
         $this->command->info('  - admin@synergy.gym (password: password)');
         $this->command->info('  - admin@premium.gym (password: password)');
+        $this->command->info('');
+        $this->command->info('Trainer users created:');
+        $this->command->info('  - trainer1@fitnation.gym (password: password)');
+        $this->command->info('  - trainer2@fitnation.gym (password: password)');
+        $this->command->info('  - trainer@fitlife.gym (password: password)');
+        $this->command->info('  - trainer@powergym.gym (password: password)');
     }
 }

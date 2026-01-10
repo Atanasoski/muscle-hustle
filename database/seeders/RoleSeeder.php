@@ -31,6 +31,11 @@ class RoleSeeder extends Seeder
                 'slug' => 'user',
                 'description' => 'Regular user with standard permissions',
             ],
+            [
+                'name' => 'Trainer',
+                'slug' => 'trainer',
+                'description' => 'Personal trainer who can manage clients and workouts',
+            ],
         ];
 
         foreach ($roles as $role) {
