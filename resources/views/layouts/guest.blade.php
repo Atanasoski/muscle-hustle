@@ -85,16 +85,22 @@
             </div>
 
             <div class="bg-gray-900 relative hidden h-full w-full items-center lg:grid lg:w-1/2 dark:bg-gray-950">
-                <div class="z-1 flex items-center justify-center">
+                <div class="z-1 flex items-center justify-center w-full">
                     <!-- ===== Common Grid Shape Start ===== -->
                     <x-common.common-grid-shape/>
-                    <div class="flex max-w-xs flex-col items-center">
-                        <a href="{{ route('dashboard') }}" class="mb-4 block">
-                            <img src="{{ asset('images/muscle-hustle-logo.png') }}" alt="Logo" class="h-12" />
+                    <div class="flex max-w-md flex-col items-center space-y-8 px-6">
+                        <a href="{{ route('dashboard') }}" class="block">
+                            <img src="{{ asset('images/logo/fit-nation-logo.png') }}" alt="Fit Nation Logo" class="h-28 w-auto max-w-full" />
                         </a>
-                        <p class="text-center text-white/80 dark:text-white/60">
-                            Fit Nation - Your Fitness Journey Starts Here
-                        </p>
+                        <div class="text-center space-y-3">
+                            <h1 class="text-5xl font-bold tracking-tight leading-tight">
+                                <span class="text-white">Fit</span>
+                                <span class="text-gray-300">NATION</span>
+                            </h1>
+                            <p class="text-sm text-white/90 font-normal tracking-wide">
+                                Fit Nation - Your Fitness Journey Starts Here
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
