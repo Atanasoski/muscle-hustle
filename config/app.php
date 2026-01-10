@@ -64,7 +64,7 @@ return [
     |
     */
 
-    'webapp_url' => env('WEBAPP_URL', 'http://localhost:5174'),
+    'webapp_url' => env('WEBAPP_URL', 'http://localhost:5173'),
 
     /*
     |--------------------------------------------------------------------------

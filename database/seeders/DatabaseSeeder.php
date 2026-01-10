@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('');
         $this->command->info('🎉 Database seeded successfully!');
         $this->command->info('📧 User: atanasoski992@gmail.com');
-        $this->command->info('🔑 Password: kiril123');
+        $this->command->info('🔑 Password: password');
         $this->command->info('');
     }
 }

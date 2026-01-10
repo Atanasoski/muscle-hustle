@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             ['email' => 'atanasoski992@gmail.com'],
             [
                 'name' => 'Kiril Atanasoski',
-                'password' => Hash::make('kiril123'),
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'partner_id' => null,
             ]
@@ -38,6 +38,6 @@ class UserSeeder extends Seeder
         $demoUser->roles()->syncWithoutDetaching(\App\Models\Role::where('slug', 'admin')->first());
 
         $this->command->info('Admin user created: admin@fitnation.com (password: password)');
-        $this->command->info('User created: atanasoski992@gmail.com (password: kiril123)');
+        $this->command->info('User created: atanasoski992@gmail.com (password: password)');
     }
 }

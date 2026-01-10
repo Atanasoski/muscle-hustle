@@ -12,17 +12,13 @@
     <button
         class="flex items-center text-gray-700 dark:text-gray-400"
         @click.prevent="toggleDropdown()"
-        type="button"
-    >
-        <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-            @if(auth()->user()->profile_photo)
-                <img src="{{ asset(auth()->user()->profile_photo) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" />
-            @else
-                <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
-            @endif
-        </span>
+        type="button">
+        
+        {{-- <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
+            <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            </div>
+        </span> --}}
 
        <span class="block mr-1 font-medium text-theme-sm">{{ auth()->user()->name }}</span>
 
