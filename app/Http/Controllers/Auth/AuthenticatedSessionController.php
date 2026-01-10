@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
 
             return redirect()->route('login')
                 ->withErrors([
-                    'email' => 'This portal is for gym administrators only. Please use the Muscle Hustle mobile app to access your account.',
+                    'email' => 'This portal is for gym administrators only. Please use the Fit Nation mobile app to access your account.',
                 ]);
         }
 

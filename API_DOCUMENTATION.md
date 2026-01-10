@@ -1,6 +1,6 @@
-# Muscle Hustle API Documentation
+# Fit Nation API Documentation
 
-This documentation provides complete information about all API resources and endpoints for AI applications to understand and interact with the Muscle Hustle API.
+This documentation provides complete information about all API resources and endpoints for AI applications to understand and interact with the Fit Nation API.
 
 ## Base URL
 
@@ -757,7 +757,7 @@ interface WorkoutTemplateExercise {
 
 ## API Resources Overview
 
-The Muscle Hustle API uses Laravel API Resources to format all responses. All resources are located in `App\Http\Resources\Api\` namespace. The following resources are available:
+The Fit Nation API uses Laravel API Resources to format all responses. All resources are located in `App\Http\Resources\Api\` namespace. The following resources are available:
 
 ### Available Resources
 

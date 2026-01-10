@@ -1,4 +1,4 @@
-# 📊 Project Summary - Muscle Hustle Fitness Tracker
+# 📊 Project Summary - Fit Nation Fitness Tracker
 
 ## ✅ Project Status: COMPLETE
 

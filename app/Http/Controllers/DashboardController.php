@@ -22,7 +22,7 @@ class DashboardController extends Controller
         }
 
         // Members should not access web dashboard - use mobile app only
-        abort(403, 'This portal is for gym administrators only. Please use the Muscle Hustle mobile app.');
+        abort(403, 'This portal is for gym administrators only. Please use the Fit Nation mobile app.');
     }
 
     /**

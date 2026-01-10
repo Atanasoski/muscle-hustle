@@ -143,7 +143,7 @@
                 <strong>{{ $partner->name }}</strong>
             </p>
             <p style="margin: 0;">
-                Powered by Muscle Hustle
+                Powered by Fit Nation
             </p>
         </div>
     </div>

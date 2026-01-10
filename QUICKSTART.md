@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - Muscle Hustle
+# 🚀 Quick Start Guide - Fit Nation
 
 Get up and running in 5 minutes!
 

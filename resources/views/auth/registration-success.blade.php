@@ -57,7 +57,7 @@
                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                     </svg>
-                    Login to Muscle Hustle
+                    Login to Fit Nation
                 </a>
             </div>
 
@@ -94,7 +94,7 @@
 
             <!-- Help Text -->
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                Need help? Contact your gym or email <a href="mailto:support@musclehustle.com" class="text-blue-500 hover:text-blue-600 underline">support@musclehustle.com</a>
+                Need help? Contact your gym or email <a href="mailto:support@fitnation.com" class="text-blue-500 hover:text-blue-600 underline">support@fitnation.com</a>
             </p>
         </div>
     </div>

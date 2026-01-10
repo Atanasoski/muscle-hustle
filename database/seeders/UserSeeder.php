@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         // Create admin user
         $admin = User::firstOrCreate(
-            ['email' => 'admin@musclehustle.com'],
+            ['email' => 'admin@fitnation.com'],
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('password'),
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
         );
         $demoUser->roles()->syncWithoutDetaching(\App\Models\Role::where('slug', 'admin')->first());
 
-        $this->command->info('Admin user created: admin@musclehustle.com (password: password)');
+        $this->command->info('Admin user created: admin@fitnation.com (password: password)');
         $this->command->info('User created: atanasoski992@gmail.com (password: kiril123)');
     }
 }

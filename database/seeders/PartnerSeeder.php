@@ -15,10 +15,10 @@ class PartnerSeeder extends Seeder
      */
     public function run(): void
     {
-        // Default Partner - Muscle Hustle
+        // Default Partner - Fit Nation
         $muscleHustle = Partner::create([
-            'name' => 'Muscle Hustle',
-            'slug' => 'muscle-hustle',
+            'name' => 'Fit Nation',
+            'slug' => 'fit-nation',
             'domain' => null, // Default domain
             'is_active' => true,
         ]);
@@ -131,9 +131,9 @@ class PartnerSeeder extends Seeder
         $partnerAdminRole = Role::where('slug', 'partner_admin')->first();
 
         $muscleHustleAdmin = User::firstOrCreate(
-            ['email' => 'admin@musclehustle.gym'],
+            ['email' => 'admin@fitnation.gym'],
             [
-                'name' => 'Muscle Hustle Admin',
+                'name' => 'Fit Nation Admin',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'partner_id' => $muscleHustle->id,
@@ -262,7 +262,7 @@ class PartnerSeeder extends Seeder
         $premiumSportAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
 
         $this->command->info('Partner admin users created:');
-        $this->command->info('  - admin@musclehustle.gym (password: password)');
+        $this->command->info('  - admin@fitnation.gym (password: password)');
         $this->command->info('  - admin@fitlife.gym (password: password)');
         $this->command->info('  - admin@powergym.gym (password: password)');
         $this->command->info('  - admin@synergy.gym (password: password)');

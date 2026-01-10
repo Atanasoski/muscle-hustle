@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Muscle Hustle application includes comprehensive seeders that populate the database with realistic demo data for a complete fitness tracking experience.
+The Fit Nation application includes comprehensive seeders that populate the database with realistic demo data for a complete fitness tracking experience.
 
 ## Seeder Classes
 

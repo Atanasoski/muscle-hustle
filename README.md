@@ -1,4 +1,4 @@
-# 🏋️ Muscle Hustle - Fitness Tracking Web App
+# 🏋️ Fit Nation - Fitness Tracking Web App
 
 A comprehensive fitness tracking web application built with **Laravel 11**, **Blade templates**, and **Bootstrap 5**. Track your workouts, plan your week, log your meals, and monitor your progress!
 
