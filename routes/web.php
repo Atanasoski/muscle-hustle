@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,11 +17,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Partner Management
     Route::resource('partners', \App\Http\Controllers\PartnerController::class);
 
-    // Members & Invitations Management
-    Route::get('/members', [\App\Http\Controllers\MemberInvitationController::class, 'index'])->name('members.index');
-    Route::post('/members/invite', [\App\Http\Controllers\MemberInvitationController::class, 'store'])->name('members.invite');
-    Route::post('/members/invitations/{invitation}/resend', [\App\Http\Controllers\MemberInvitationController::class, 'resend'])->name('members.resend');
-    Route::delete('/members/invitations/{invitation}', [\App\Http\Controllers\MemberInvitationController::class, 'destroy'])->name('members.cancel');
+    // Users Management
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
+    // User Invitations Management
+    Route::get('/user-invitations', [UserController::class, 'invitationsIndex'])->name('user-invitations.index');
+    Route::post('/user-invitations/invite', [UserController::class, 'invitationsStore'])->name('user-invitations.invite');
+    Route::post('/user-invitations/{invitation}/resend', [UserController::class, 'invitationsResend'])->name('user-invitations.resend');
+    Route::delete('/user-invitations/{invitation}', [UserController::class, 'invitationsDestroy'])->name('user-invitations.destroy');
 
     // Exercise Library
     Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');

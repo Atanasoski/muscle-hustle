@@ -25,12 +25,17 @@ class MenuHelper
             ];
         }
 
-        // Members - For partner admins
+        // Users - For partner admins
         if ($user && $user->hasRole('partner_admin')) {
             $items[] = [
                 'icon' => 'members',
-                'name' => 'Members',
-                'path' => '/members',
+                'name' => 'Users',
+                'path' => '/users',
+            ];
+            $items[] = [
+                'icon' => 'email',
+                'name' => 'User Invitations',
+                'path' => '/user-invitations',
             ];
         }
 
