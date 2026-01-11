@@ -32,11 +32,6 @@ class MenuHelper
                 'name' => 'Users',
                 'path' => '/users',
             ];
-            $items[] = [
-                'icon' => 'email',
-                'name' => 'User Invitations',
-                'path' => '/user-invitations',
-            ];
         }
 
         // Exercises - For admins and partner admins
