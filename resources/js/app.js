@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('#chartThirteen')) {
         import('./components/chart/chart-13').then(module => module.initChartThirteen());
     }
+    if (document.querySelector('#memberProgressChart')) {
+        import('./components/chart/member-progress').then(module => module.initMemberProgressChart());
+    }
 
     // Calendar init
     if (document.querySelector('#calendar')) {
