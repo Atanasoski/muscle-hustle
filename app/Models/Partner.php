@@ -42,11 +42,11 @@ class Partner extends Model
     }
 
     /**
-     * Get the member invitations for the partner.
+     * Get the user invitations for the partner.
      */
     public function invitations(): HasMany
     {
-        return $this->hasMany(MemberInvitation::class);
+        return $this->hasMany(UserInvitation::class);
     }
 
     /**

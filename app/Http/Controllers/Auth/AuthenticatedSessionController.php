@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         // Only allow partner_admin and admin roles to access web admin panel
-        // Regular members should use the mobile app
+        // Regular users should use the mobile app
         if (! $user->hasAnyRole(['admin', 'partner_admin'])) {
             Auth::logout();
 

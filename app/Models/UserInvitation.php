@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
-class MemberInvitation extends Model
+class UserInvitation extends Model
 {
     protected $fillable = [
         'partner_id',

@@ -2,15 +2,15 @@
 
 namespace App\Mail;
 
-use App\Models\MemberInvitation;
 use App\Models\Partner;
+use App\Models\UserInvitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class MemberInvitationMail extends Mailable
+class UserInvitationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -18,7 +18,7 @@ class MemberInvitationMail extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public MemberInvitation $invitation,
+        public UserInvitation $invitation,
         public Partner $partner,
         public string $signupUrl
     ) {
@@ -41,7 +41,7 @@ class MemberInvitationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.member-invitation',
+            view: 'emails.user-invitation',
         );
     }
 

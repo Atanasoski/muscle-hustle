@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class InviteMemberRequest extends FormRequest
+class InviteUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,7 +30,7 @@ class InviteMemberRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email'),
                 function ($attribute, $value, $fail) {
-                    $existingInvitation = \App\Models\MemberInvitation::where('partner_id', $this->user()->partner_id)
+                    $existingInvitation = \App\Models\UserInvitation::where('partner_id', $this->user()->partner_id)
                         ->where('email', $value)
                         ->whereNull('accepted_at')
                         ->where('expires_at', '>', now())

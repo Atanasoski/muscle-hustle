@@ -21,7 +21,7 @@ class DashboardController extends Controller
             return $this->partnerDashboard();
         }
 
-        // Members should not access web dashboard - use mobile app only
+        // Users should not access web dashboard - use mobile app only
         abort(403, 'This portal is for gym administrators only. Please use the Fit Nation mobile app.');
     }
 
@@ -101,7 +101,7 @@ class DashboardController extends Controller
             abort(403, 'No partner associated with your account.');
         }
 
-        // Gym stats - exclude admin and partner_admin users from member counts
+        // Gym stats - exclude admin and partner_admin users from user counts
         $totalMembers = $partner->users()
             ->whereDoesntHave('roles', function ($query) {
                 $query->whereIn('slug', ['admin', 'partner_admin']);
@@ -120,7 +120,7 @@ class DashboardController extends Controller
             })
             ->count();
 
-        // Top active members
+        // Top active users
         $topMembers = $partner->users()
             ->whereDoesntHave('roles', function ($query) {
                 $query->whereIn('slug', ['admin', 'partner_admin']);
@@ -139,7 +139,7 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
-        // Inactive members (no workout in last 7 days)
+        // Inactive users (no workout in last 7 days)
         $inactiveMembers = $partner->users()
             ->whereDoesntHave('roles', function ($query) {
                 $query->whereIn('slug', ['admin', 'partner_admin']);
@@ -151,7 +151,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Recent members
+        // Recent users
         $recentMembers = $partner->users()
             ->whereDoesntHave('roles', function ($query) {
                 $query->whereIn('slug', ['admin', 'partner_admin']);
@@ -160,7 +160,7 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Recent workouts - only from regular members
+        // Recent workouts - only from regular users
         $recentWorkouts = WorkoutSession::whereHas('user', function ($query) use ($partner) {
             $query->where('partner_id', $partner->id)
                 ->whereDoesntHave('roles', function ($q) {

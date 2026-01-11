@@ -140,7 +140,7 @@
     <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Member Since</p>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">User Since</p>
                 <p class="text-lg font-semibold text-gray-800 dark:text-white/90">{{ $partner->created_at->format('M Y') }}</p>
             </div>
             <div class="w-12 h-12 rounded-lg bg-orange-50 dark:bg-orange-500/15 flex items-center justify-center">
@@ -335,7 +335,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white/90">Team Members</h3>
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white/90">Team Users</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $usersCount }} {{ Str::plural('user', $usersCount) }} assigned</p>
                 </div>
             </div>
@@ -352,7 +352,7 @@
                         <thead>
                             <tr class="border-b border-gray-100 dark:border-gray-800">
                                 <th class="px-5 py-3 text-left sm:px-6">
-                                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Member</p>
+                                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">User</p>
                                 </th>
                                 <th class="px-5 py-3 text-left sm:px-6">
                                     <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Email</p>
@@ -413,7 +413,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                     </svg>
                 </div>
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-2">No Team Members Yet</h4>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-2">No Team Users Yet</h4>
                 <p class="text-gray-600 dark:text-gray-400">Users assigned to this partner will appear here.</p>
             </div>
         @endif

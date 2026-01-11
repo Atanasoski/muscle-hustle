@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\InviteMemberRequest;
-use App\Mail\MemberInvitationMail;
-use App\Models\MemberInvitation;
+use App\Http\Requests\InviteUserRequest;
+use App\Mail\UserInvitationMail;
 use App\Models\Partner;
 use App\Models\User;
+use App\Models\UserInvitation;
 use App\Models\WorkoutSession;
 use App\Services\FitnessMetricsService;
 use Carbon\Carbon;
@@ -125,17 +125,17 @@ class UserController extends Controller
     /**
      * Store a new user invitation.
      */
-    public function invitationsStore(InviteMemberRequest $request): RedirectResponse
+    public function invitationsStore(InviteUserRequest $request): RedirectResponse
     {
         $user = $request->user();
         $partner = Partner::with('identity')->findOrFail($user->partner_id);
 
         // Create the invitation
-        $invitation = MemberInvitation::create([
+        $invitation = UserInvitation::create([
             'partner_id' => $partner->id,
             'invited_by' => $user->id,
             'email' => $request->email,
-            'token' => MemberInvitation::generateToken(),
+            'token' => UserInvitation::generateToken(),
             'expires_at' => now()->addDays(config('app.invitation_expiry_days', 7)),
         ]);
 
@@ -144,7 +144,7 @@ class UserController extends Controller
 
         // Send the invitation email
         Mail::to($invitation->email)
-            ->send(new MemberInvitationMail($invitation, $partner, $signupUrl));
+            ->send(new UserInvitationMail($invitation, $partner, $signupUrl));
 
         return redirect()->back()
             ->with('success', "Invitation sent to {$invitation->email}!");
@@ -153,7 +153,7 @@ class UserController extends Controller
     /**
      * Resend an existing invitation.
      */
-    public function invitationsResend(Request $request, MemberInvitation $invitation): RedirectResponse
+    public function invitationsResend(Request $request, UserInvitation $invitation): RedirectResponse
     {
         $user = $request->user();
 
@@ -180,7 +180,7 @@ class UserController extends Controller
 
         // Resend the invitation email
         Mail::to($invitation->email)
-            ->send(new MemberInvitationMail($invitation, $partner, $signupUrl));
+            ->send(new UserInvitationMail($invitation, $partner, $signupUrl));
 
         return redirect()->back()
             ->with('success', "Invitation resent to {$invitation->email}!");
@@ -189,7 +189,7 @@ class UserController extends Controller
     /**
      * Cancel/delete an invitation.
      */
-    public function invitationsDestroy(Request $request, MemberInvitation $invitation): RedirectResponse
+    public function invitationsDestroy(Request $request, UserInvitation $invitation): RedirectResponse
     {
         $user = $request->user();
 

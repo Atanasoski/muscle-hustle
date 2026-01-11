@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\MemberInvitation;
 use App\Models\User;
+use App\Models\UserInvitation;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ class RegisteredUserController extends Controller
 
         // Check if there's an invitation token
         if ($request->has('invitation')) {
-            $invitation = MemberInvitation::with('partner.identity')
+            $invitation = UserInvitation::with('partner.identity')
                 ->where('token', $request->invitation)
                 ->first();
 
@@ -62,7 +62,7 @@ class RegisteredUserController extends Controller
 
         // Check if there's an invitation token
         if ($request->has('invitation_token')) {
-            $invitation = MemberInvitation::where('token', $request->invitation_token)->first();
+            $invitation = UserInvitation::where('token', $request->invitation_token)->first();
 
             // Validate invitation still valid
             if (! $invitation || ! $invitation->isValid()) {
@@ -98,7 +98,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // Don't log members into web panel - they should use the mobile app
+        // Don't log users into web panel - they should use the mobile app
         if ($invitation) {
             return redirect()->route('registration.success')
                 ->with('email', $user->email)

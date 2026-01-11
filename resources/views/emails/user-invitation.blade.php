@@ -101,7 +101,7 @@
             <div class="message">
                 <p>You've been invited to join <strong>{{ $partner->name }}</strong> and start your fitness journey with us!</p>
                 
-                <p>As a member, you'll have access to:</p>
+                <p>As a user, you'll have access to:</p>
                 <ul>
                     <li>Personalized workout tracking</li>
                     <li>Progress monitoring and analytics</li>

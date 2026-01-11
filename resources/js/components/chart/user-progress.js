@@ -1,5 +1,5 @@
-export const initMemberProgressChart = () => {
-    const chartElement = document.querySelector('#memberProgressChart');
+export const initUserProgressChart = () => {
+    const chartElement = document.querySelector('#userProgressChart');
 
     if (!chartElement) {
         return;
@@ -23,7 +23,7 @@ export const initMemberProgressChart = () => {
 
     // Fallback: try to get from JSON script tag
     if (chartData.length === 0) {
-        const dataScript = document.querySelector('#memberProgressChartData');
+        const dataScript = document.querySelector('#userProgressChartData');
         if (dataScript) {
             try {
                 const parsed = JSON.parse(dataScript.textContent);
@@ -213,4 +213,4 @@ export const initMemberProgressChart = () => {
     return chart;
 };
 
-export default initMemberProgressChart;
+export default initUserProgressChart;

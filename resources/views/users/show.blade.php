@@ -166,8 +166,8 @@
     @if(isset($weeklyWorkoutData) && !empty($weeklyWorkoutData))
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Workout Frequency (Last 12 Weeks)</h3>
-            <div id="memberProgressChart"></div>
-            <script type="application/json" id="memberProgressChartData">
+            <div id="userProgressChart"></div>
+            <script type="application/json" id="userProgressChartData">
                 {!! json_encode($weeklyWorkoutData) !!}
             </script>
         </div>
