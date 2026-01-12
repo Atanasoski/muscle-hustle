@@ -21,7 +21,9 @@ class WorkoutSessionSeeder extends Seeder
         $this->command->info('🏋️ Creating workout session test data...');
 
         $user = User::where('email', 'atanasoski992@gmail.com')->first();
-        $templates = WorkoutTemplate::where('user_id', $user->id)->get();
+        $templates = WorkoutTemplate::whereHas('plan', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
 
         if ($templates->isEmpty()) {
             $this->command->warn('⚠️ No workout templates found for the demo user. Run WorkoutTemplateSeeder first.');

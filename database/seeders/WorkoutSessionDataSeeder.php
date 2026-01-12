@@ -30,7 +30,9 @@ class WorkoutSessionDataSeeder extends Seeder
             return;
         }
 
-        $templates = WorkoutTemplate::where('user_id', $user->id)->get();
+        $templates = WorkoutTemplate::whereHas('plan', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
 
         if ($templates->isEmpty()) {
             $this->command->warn('⚠️ No workout templates found. Run WorkoutTemplateSeeder first.');

@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 'name' => 'Kiril Atanasoski',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
-                'partner_id' => null,
+                'partner_id' => 1,
             ]
         );
         $demoUser->roles()->syncWithoutDetaching(\App\Models\Role::where('slug', 'admin')->first());
