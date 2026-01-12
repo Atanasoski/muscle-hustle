@@ -74,7 +74,7 @@ class UserController extends Controller
         $recentWorkouts = $user->workoutSessions()
             ->with('workoutTemplate')
             ->latest('performed_at')
-            ->paginate(10);
+            ->paginate(7);
 
         // Get fitness metrics for the user
         $fitnessMetricsService = new FitnessMetricsService($user);

@@ -3,7 +3,7 @@
 @section('title', $user->name . ' - User Details')
 
 @section('content')
-<div class="p-6">
+<div class="p-6 w-full max-w-full overflow-x-hidden">
     <!-- Breadcrumb -->
     <div class="mb-4">
         <nav class="flex" aria-label="Breadcrumb">
@@ -47,8 +47,110 @@
         </div>
     </div>
 
+    <!-- Profile Information (Table) -->
+    @if($user->profile)
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Profile Information</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-900">
+                        <tr>
+                            @if($user->profile->age)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Age</th>
+                            @endif
+                            @if($user->profile->gender)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Gender</th>
+                            @endif
+                            @if($user->profile->height)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Height</th>
+                            @endif
+                            @if($user->profile->weight)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Weight</th>
+                            @endif
+                            @if($user->profile->fitness_goal)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fitness Goal</th>
+                            @endif
+                            @if($user->profile->training_experience)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Training Experience</th>
+                            @endif
+                            @if($user->profile->training_days_per_week)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Training Days/Week</th>
+                            @endif
+                            @if($user->profile->workout_duration_minutes)
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Workout Duration</th>
+                            @endif
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Login</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            @if($user->profile->age)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ $user->profile->age }} years</div>
+                                </td>
+                            @endif
+                            @if($user->profile->gender)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ ucfirst($user->profile->gender->value) }}</div>
+                                </td>
+                            @endif
+                            @if($user->profile->height)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ $user->profile->height }} cm</div>
+                                </td>
+                            @endif
+                            @if($user->profile->weight)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ $user->profile->weight }} kg</div>
+                                </td>
+                            @endif
+                            @if($user->profile->fitness_goal)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ ucfirst(str_replace('_', ' ', $user->profile->fitness_goal->value)) }}</div>
+                                </td>
+                            @endif
+                            @if($user->profile->training_experience)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ ucfirst($user->profile->training_experience->value) }}</div>
+                                </td>
+                            @endif
+                            @if($user->profile->training_days_per_week)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ $user->profile->training_days_per_week }}</div>
+                                </td>
+                            @endif
+                            @if($user->profile->workout_duration_minutes)
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">{{ $user->profile->workout_duration_minutes }} minutes</div>
+                                </td>
+                            @endif
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">
+                                    {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
+    <!-- Weekly Workout Frequency Chart -->
+    @if(isset($weeklyWorkoutData) && !empty($weeklyWorkoutData))
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Workout Frequency (Last 12 Weeks)</h3>
+            <div class="w-full overflow-x-auto">
+                <div id="userProgressChart" class="min-w-0"></div>
+            </div>
+            <script type="application/json" id="userProgressChartData">
+                {!! json_encode($weeklyWorkoutData) !!}
+            </script>
+        </div>
+    @endif
+
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 text-center">
             <div class="flex flex-col items-center justify-center">
                 <svg class="w-5 h-5 text-blue-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,22 +178,6 @@
                 </svg>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $activePlans }}</h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Active Plans</p>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 text-center">
-            <div class="flex flex-col items-center justify-center">
-                <svg class="w-5 h-5 text-orange-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <h3 class="text-sm font-bold text-gray-900 dark:text-white">
-                    @if($lastWorkout)
-                        {{ $lastWorkout->performed_at->diffForHumans() }}
-                    @else
-                        Never
-                    @endif
-                </h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Last Workout</p>
             </div>
         </div>
     </div>
@@ -162,95 +248,7 @@
         </div>
     @endif
 
-    <!-- Weekly Workout Frequency Chart -->
-    @if(isset($weeklyWorkoutData) && !empty($weeklyWorkoutData))
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Workout Frequency (Last 12 Weeks)</h3>
-            <div id="userProgressChart"></div>
-            <script type="application/json" id="userProgressChartData">
-                {!! json_encode($weeklyWorkoutData) !!}
-            </script>
-        </div>
-    @endif
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Profile Information -->
-        <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Profile Information</h3>
-                @if($user->profile)
-                    <div class="space-y-4">
-                        @if($user->profile->age)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Age</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ $user->profile->age }} years</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->gender)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Gender</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ ucfirst($user->profile->gender->value) }}</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->height)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Height</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ $user->profile->height }} cm</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->weight)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Weight</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ $user->profile->weight }} kg</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->fitness_goal)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Fitness Goal</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ ucfirst(str_replace('_', ' ', $user->profile->fitness_goal->value)) }}</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->training_experience)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Training Experience</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ ucfirst($user->profile->training_experience->value) }}</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->training_days_per_week)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Training Days/Week</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ $user->profile->training_days_per_week }}</p>
-                            </div>
-                        @endif
-
-                        @if($user->profile->workout_duration_minutes)
-                            <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Workout Duration</p>
-                                <p class="text-base font-medium text-gray-900 dark:text-white">{{ $user->profile->workout_duration_minutes }} minutes</p>
-                            </div>
-                        @endif
-                    </div>
-                @else
-                    <p class="text-sm text-gray-500 dark:text-gray-400">No profile information available.</p>
-                @endif
-
-                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Last Login</p>
-                    <p class="text-base font-medium text-gray-900 dark:text-white">
-                        {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-6">
+    <div class="space-y-6">
             <!-- Workout Plans -->
             @if($user->plans->count() > 0)
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">

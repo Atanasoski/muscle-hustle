@@ -20,6 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'http://localhost:5173',
         'https://fit-nation-app.vercel.app',
         'https://app.fitnation.mk',
     ],

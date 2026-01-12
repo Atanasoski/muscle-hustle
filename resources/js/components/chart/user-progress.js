@@ -56,6 +56,7 @@ export const initUserProgressChart = () => {
             fontFamily: 'Outfit, sans-serif',
             height: 310,
             type: 'area',
+            width: '100%',
             toolbar: {
                 show: false,
             },
