@@ -35,13 +35,13 @@ class MenuHelper
         }
 
         // Exercises - For admins and partner admins
-        // if ($user && $user->hasAnyRole(['admin', 'partner_admin'])) {
-        //     $items[] = [
-        //         'icon' => 'task',
-        //         'name' => 'Exercises',
-        //         'path' => '/exercises',
-        //     ];
-        // }
+        if ($user && $user->hasAnyRole(['admin', 'partner_admin'])) {
+            $items[] = [
+                'icon' => 'task',
+                'name' => 'Exercises',
+                'path' => '/exercises',
+            ];
+        }
 
         return $items;
     }
