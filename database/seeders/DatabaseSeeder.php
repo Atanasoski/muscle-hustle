@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         // Seed in the correct order due to foreign key dependencies
         $this->call([
             RoleSeeder::class,           // Create roles first
+            PartnerSeeder::class,        // Create partners with identities
             UserSeeder::class,           // Create demo user first
             UserProfileSeeder::class,    // Create user profiles
             CategorySeeder::class,       // Create exercise categories
@@ -27,7 +28,6 @@ class DatabaseSeeder extends Seeder
             WorkoutTemplateSeeder::class, // Create workout templates with exercises
             WorkoutSessionSeeder::class,  // Create workout session test data
             WorkoutSessionDataSeeder::class, // Create workout sessions with set logs for fitness metrics
-            PartnerSeeder::class,        // Create partners with identities
         ]);
 
         $this->command->info('');
