@@ -13,7 +13,9 @@ class StoreExerciseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+
+        return $user->hasRole('admin') && $user->partner === null;
     }
 
     /**
