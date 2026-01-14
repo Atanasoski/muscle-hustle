@@ -38,58 +38,57 @@ class WorkoutTemplateSeeder extends Seeder
         // Define workout templates structure
         $templates = [
             [
-                'name' => 'Day 1 - Monday',
-                'description' => 'Push focus with quads',
+                'name' => 'Day 1 – Push Focus',
+                'description' => 'Push focus with leg press, chest press, shoulder press, and triceps',
                 'day_of_week' => 0, // Monday
                 'exercises' => [
-                    ['name' => 'Incline Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Chest-Supported Dumbbell Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Back Squat', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 180],
-                    ['name' => 'Incline Dumbbell Curl', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Leg Press', 'sets' => 3, 'reps' => 11, 'weight' => null, 'rest' => 90], // 3×10–12
+                    ['name' => 'Machine Chest Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
+                    ['name' => 'Machine Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
+                    ['name' => 'Triceps Pushdown (Cable)', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60], // 3×12
                 ],
             ],
             [
-                'name' => 'Day 2 - Tuesday',
-                'description' => 'Shoulders, back, and hamstrings',
+                'name' => 'Day 2 – Pull Focus',
+                'description' => 'Pull focus with lower back, lat pulldown, seated row, and biceps',
                 'day_of_week' => 1, // Tuesday
                 'exercises' => [
-                    ['name' => 'Dumbbell Shoulder Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 120],
-                    ['name' => 'Incline Dumbbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
+                    ['name' => 'Hyperextensions', 'sets' => 3, 'reps' => 11, 'weight' => null, 'rest' => 60], // 3×10–12 (Lower Back Extension Machine)
+                    ['name' => 'Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
+                    ['name' => 'Seated Cable Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
+                    ['name' => 'Cable Curl', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60], // 3×12 (Biceps Curl Machine / Cable Curl)
                 ],
             ],
             [
-                'name' => 'Day 3 - Wednesday',
-                'description' => 'Chest, back, quads, and shoulders',
+                'name' => 'Day 3 – Legs + Core',
+                'description' => 'Legs and core focus with leg press, leg curl, and ab crunch',
                 'day_of_week' => 2, // Wednesday
                 'exercises' => [
-                    ['name' => 'Barbell Bench Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 120],
-                    ['name' => 'Dumbbell Row', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Leg Extensions', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
-                    ['name' => 'Cable Lateral Raises', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Leg Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×10 (Narrow or Medium Stance, using Leg Press instead of Single-Leg Press)
+                    ['name' => 'Seated Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60], // 3×12 (Leg Curl Seated or Lying)
+                    ['name' => 'Ab Crunch Machine', 'sets' => 3, 'reps' => 13, 'weight' => null, 'rest' => 45], // 3×12–15
                 ],
             ],
             [
-                'name' => 'Day 4 - Thursday',
-                'description' => 'Glutes, chest, rear delts, and biceps',
+                'name' => 'Day 4 – Upper Strength',
+                'description' => 'Upper body strength with incline chest press, close-grip lat pulldown, lateral raises, and face pulls',
                 'day_of_week' => 3, // Thursday
                 'exercises' => [
-                    ['name' => 'Hip Thrust (Barbell)', 'sets' => 3, 'reps' => 12, 'weight' => 60.00, 'rest' => 90],
-                    ['name' => 'Cable Fly', 'sets' => 3, 'reps' => 10, 'weight' => 12.50, 'rest' => 60],
-                    ['name' => 'Reverse Cable Flyes', 'sets' => 3, 'reps' => 12, 'weight' => 10.00, 'rest' => 60],
-                    ['name' => 'Hammer Curl', 'sets' => 3, 'reps' => 12, 'weight' => 16.00, 'rest' => 60],
+                    ['name' => 'Incline Chest Press Machine', 'sets' => 3, 'reps' => 9, 'weight' => null, 'rest' => 90], // 3×8–10
+                    ['name' => 'Close-Grip Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
+                    ['name' => 'Dumbbell Lateral Raises', 'sets' => 3, 'reps' => 13, 'weight' => null, 'rest' => 60], // 3×12–15
+                    ['name' => 'Face Pulls', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 60], // 3×15
                 ],
             ],
             [
-                'name' => 'Day 5 - Friday',
-                'description' => 'Quads, glutes, core, calves, and triceps',
+                'name' => 'Day 5 – Conditioning + Balance',
+                'description' => 'Conditioning and balance with hack squat, hip thrust, chest press AMRAP, and cable chest fly',
                 'day_of_week' => 4, // Friday
                 'exercises' => [
-                    ['name' => 'Walking Lunges', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 90],
-                    ['name' => 'Hyperextensions', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 45],
-                    ['name' => 'Standing Calf Raises', 'sets' => 3, 'reps' => 15, 'weight' => null, 'rest' => 60],
-                    ['name' => 'Triceps Pushdown (Cable)', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60],
+                    ['name' => 'Hack Squat Machine', 'sets' => 3, 'reps' => 11, 'weight' => null, 'rest' => 90], // 3×10–12
+                    ['name' => 'Hip Thrust Machine', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 90], // 3×12
+                    ['name' => 'Machine Chest Press', 'sets' => 3, 'reps' => null, 'weight' => null, 'rest' => 90], // 3×AMRAP (target_reps = null for AMRAP)
+                    ['name' => 'Single-Arm Cable Chest Fly', 'sets' => 3, 'reps' => 13, 'weight' => null, 'rest' => 60], // 3×12–15
                 ],
             ],
         ];

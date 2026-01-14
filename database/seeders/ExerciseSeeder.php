@@ -240,6 +240,14 @@ class ExerciseSeeder extends Seeder
                 'secondary' => ['Abs'],
                 'description' => 'With one handle, perform a fly arc across your body while bracing core to avoid rotation; control the return to stretch.',
             ],
+            [
+                'name' => 'Single-Arm Cable Chest Fly',
+                'category' => 'isolation',
+                'default_rest_sec' => 60,
+                'primary' => ['Chest'],
+                'secondary' => ['Abs'],
+                'description' => 'With one cable handle, perform a fly arc across your body focusing on chest contraction while bracing core to avoid rotation; control the return to stretch.',
+            ],
 
             [
                 'name' => 'Dumbbell Fly',
@@ -1355,6 +1363,19 @@ class ExerciseSeeder extends Seeder
                 'primary' => ['Forearms'],
                 'secondary' => ['Trapezius', 'Core'],
                 'description' => 'Hold heavy dumbbells/kettlebells at sides, walk with tall posture and braced core, avoid shrugging, set down safely.',
+            ],
+
+            // =========================
+            // CORE / ABS
+            // =========================
+
+            [
+                'name' => 'Ab Crunch Machine',
+                'category' => 'isolation',
+                'default_rest_sec' => 45,
+                'primary' => ['Abs'],
+                'secondary' => [],
+                'description' => 'Sit in machine with pads on chest/shoulders, crunch forward by flexing abs, squeeze at top, return slowly to starting position.',
             ],
 
         ];
