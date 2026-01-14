@@ -1377,6 +1377,14 @@ class ExerciseSeeder extends Seeder
                 'secondary' => [],
                 'description' => 'Sit in machine with pads on chest/shoulders, crunch forward by flexing abs, squeeze at top, return slowly to starting position.',
             ],
+            [
+                'name' => 'Cable Woodchoppers',
+                'category' => 'compound',
+                'default_rest_sec' => 60,
+                'primary' => ['Abs', 'Obliques'],
+                'secondary' => ['Core'],
+                'description' => 'Set cable high, stand sideways, pull cable down and across body in a chopping motion, rotate torso, return slowly; repeat other side.',
+            ],
 
         ];
 

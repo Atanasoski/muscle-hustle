@@ -40,7 +40,7 @@ class WorkoutTemplateSeeder extends Seeder
             [
                 'name' => 'Day 1 – Push Focus',
                 'description' => 'Push focus with leg press, chest press, shoulder press, and triceps',
-                'day_of_week' => 0, // Monday
+                'day_of_week' => 1, // Monday
                 'exercises' => [
                     ['name' => 'Leg Press', 'sets' => 3, 'reps' => 11, 'weight' => null, 'rest' => 90], // 3×10–12
                     ['name' => 'Machine Chest Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
@@ -51,7 +51,7 @@ class WorkoutTemplateSeeder extends Seeder
             [
                 'name' => 'Day 2 – Pull Focus',
                 'description' => 'Pull focus with lower back, lat pulldown, seated row, and biceps',
-                'day_of_week' => 1, // Tuesday
+                'day_of_week' => 2, // Tuesday
                 'exercises' => [
                     ['name' => 'Hyperextensions', 'sets' => 3, 'reps' => 11, 'weight' => null, 'rest' => 60], // 3×10–12 (Lower Back Extension Machine)
                     ['name' => 'Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
@@ -62,17 +62,18 @@ class WorkoutTemplateSeeder extends Seeder
             [
                 'name' => 'Day 3 – Legs + Core',
                 'description' => 'Legs and core focus with leg press, leg curl, and ab crunch',
-                'day_of_week' => 2, // Wednesday
+                'day_of_week' => 3, // Wednesday
                 'exercises' => [
                     ['name' => 'Leg Press', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×10 (Narrow or Medium Stance, using Leg Press instead of Single-Leg Press)
                     ['name' => 'Seated Leg Curl', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60], // 3×12 (Leg Curl Seated or Lying)
                     ['name' => 'Ab Crunch Machine', 'sets' => 3, 'reps' => 13, 'weight' => null, 'rest' => 45], // 3×12–15
+                    ['name' => 'Cable Woodchoppers', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 60], // 3×12
                 ],
             ],
             [
                 'name' => 'Day 4 – Upper Strength',
                 'description' => 'Upper body strength with incline chest press, close-grip lat pulldown, lateral raises, and face pulls',
-                'day_of_week' => 3, // Thursday
+                'day_of_week' => 4, // Thursday
                 'exercises' => [
                     ['name' => 'Incline Chest Press Machine', 'sets' => 3, 'reps' => 9, 'weight' => null, 'rest' => 90], // 3×8–10
                     ['name' => 'Close-Grip Lat Pulldown', 'sets' => 3, 'reps' => 10, 'weight' => null, 'rest' => 90], // 3×8–12
@@ -83,7 +84,7 @@ class WorkoutTemplateSeeder extends Seeder
             [
                 'name' => 'Day 5 – Conditioning + Balance',
                 'description' => 'Conditioning and balance with hack squat, hip thrust, chest press AMRAP, and cable chest fly',
-                'day_of_week' => 4, // Friday
+                'day_of_week' => 5, // Friday
                 'exercises' => [
                     ['name' => 'Hack Squat Machine', 'sets' => 3, 'reps' => 11, 'weight' => null, 'rest' => 90], // 3×10–12
                     ['name' => 'Hip Thrust Machine', 'sets' => 3, 'reps' => 12, 'weight' => null, 'rest' => 90], // 3×12
