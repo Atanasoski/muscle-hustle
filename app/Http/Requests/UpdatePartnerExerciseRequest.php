@@ -11,7 +11,9 @@ class UpdatePartnerExerciseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->partner !== null;
+        $user = $this->user();
+
+        return $user && $user->hasRole('partner_admin') && $user->partner !== null;
     }
 
     /**

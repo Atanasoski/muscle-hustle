@@ -15,7 +15,15 @@ class UpdateExerciseRequest extends FormRequest
     {
         $user = $this->user();
 
-        return $user->hasRole('admin');
+        return $user && $user->hasRole('admin');
+    }
+
+    /**
+     * Handle a failed authorization attempt.
+     */
+    protected function failedAuthorization(): void
+    {
+        abort(403, 'Only system administrators can update exercises.');
     }
 
     /**
