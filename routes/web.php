@@ -11,6 +11,16 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Exercise Library - Admin routes (prefixed with /admin, no conflict with API routes since API routes use 'api.' prefix)
+    Route::prefix('admin')->group(function () {
+        Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
+        Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
+        Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
+        Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
+    });
+
+    
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -27,11 +37,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/user-invitations/{invitation}/resend', [UserController::class, 'invitationsResend'])->name('user-invitations.resend');
     Route::delete('/user-invitations/{invitation}', [UserController::class, 'invitationsDestroy'])->name('user-invitations.destroy');
 
-    // Exercise Library
-    Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
-    Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
-    Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
-    Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
+    // Exercise Library - Partner routes
+    Route::get('/partner/exercises', [ExerciseController::class, 'partnerIndex'])->name('partner.exercises.index');
+    Route::put('/exercises/{exercise}/partner', [ExerciseController::class, 'updatePartnerExercises'])->name('exercises.updatePartner');
+    Route::post('/exercises/{exercise}/link', [ExerciseController::class, 'linkExercise'])->name('exercises.link');
+    Route::post('/exercises/{exercise}/unlink', [ExerciseController::class, 'unlinkExercise'])->name('exercises.unlink');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

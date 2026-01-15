@@ -62,6 +62,9 @@ class PartnerController extends Controller
 
         $partner->identity()->create($identityData);
 
+        // Link all default exercises to this partner
+        $partner->syncDefaultExercises();
+
         return redirect()->route('partners.index')
             ->with('success', 'Partner created successfully.');
     }

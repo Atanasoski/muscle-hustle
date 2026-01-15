@@ -20,6 +20,7 @@ class Exercise extends Model
         'name',
         'description',
         'image_url',
+        'video_url',
         'default_rest_sec',
     ];
 
@@ -78,5 +79,61 @@ class Exercise extends Model
     public function secondaryMuscleGroups(): BelongsToMany
     {
         return $this->muscleGroups()->wherePivot('is_primary', false);
+    }
+
+    /**
+     * Relationship: Exercise belongs to many Partners (many-to-many)
+     */
+    public function partners(): BelongsToMany
+    {
+        return $this->belongsToMany(Partner::class, 'partner_exercises')
+            ->withPivot(['description', 'image_url', 'video_url'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Scope: Get exercises for a specific partner
+     */
+    public function scopeForPartner($query, Partner $partner)
+    {
+        return $query->whereHas('partners', function ($q) use ($partner) {
+            $q->where('partners.id', $partner->id);
+        });
+    }
+
+    /**
+     * Get the effective description (pivot override or exercise default)
+     */
+    public function getEffectiveDescription(?Partner $partner = null): ?string
+    {
+        if ($partner && $this->relationLoaded('pivot') && $this->pivot) {
+            return $this->pivot->description ?? $this->description;
+        }
+
+        return $this->description;
+    }
+
+    /**
+     * Get the effective image URL (pivot override or exercise default)
+     */
+    public function getEffectiveImageUrl(?Partner $partner = null): ?string
+    {
+        if ($partner && $this->relationLoaded('pivot') && $this->pivot) {
+            return $this->pivot->image_url ?? $this->image_url;
+        }
+
+        return $this->image_url;
+    }
+
+    /**
+     * Get the effective video URL (pivot override or exercise default)
+     */
+    public function getEffectiveVideoUrl(?Partner $partner = null): ?string
+    {
+        if ($partner && $this->relationLoaded('pivot') && $this->pivot) {
+            return $this->pivot->video_url ?? $this->video_url;
+        }
+
+        return $this->video_url;
     }
 }

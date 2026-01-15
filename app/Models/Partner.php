@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -47,6 +48,35 @@ class Partner extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(UserInvitation::class);
+    }
+
+    /**
+     * Relationship: Partner belongs to many Exercises (many-to-many)
+     */
+    public function exercises(): BelongsToMany
+    {
+        return $this->belongsToMany(Exercise::class, 'partner_exercises', 'partner_id', 'exercise_id')
+            ->withPivot(['description', 'image_url', 'video_url'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Sync all default exercises (where user_id is null) to this partner.
+     * This creates pivot rows with null override values, which will fall back to exercise defaults.
+     */
+    public function syncDefaultExercises(): void
+    {
+        $defaultExercises = Exercise::whereNull('user_id')->pluck('id');
+
+        $pivotData = $defaultExercises->mapWithKeys(function ($exerciseId) {
+            return [$exerciseId => [
+                'description' => null,
+                'image_url' => null,
+                'video_url' => null,
+            ]];
+        })->toArray();
+
+        $this->exercises()->syncWithoutDetaching($pivotData);
     }
 
     /**

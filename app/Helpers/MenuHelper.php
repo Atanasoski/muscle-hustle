@@ -34,12 +34,20 @@ class MenuHelper
             ];
         }
 
-        // Exercises - For admins and partner admins
-        if ($user && $user->hasAnyRole(['admin', 'partner_admin'])) {
+        // Exercises - Route based on user type
+        if ($user && $user->hasRole('admin')) {
+            // System admin - manage global exercises
             $items[] = [
                 'icon' => 'task',
                 'name' => 'Exercises',
-                'path' => '/exercises',
+                'path' => '/admin/exercises',
+            ];
+        } elseif ($user && $user->hasRole('partner_admin')) {
+            // Partner admin - link/customize exercises
+            $items[] = [
+                'icon' => 'task',
+                'name' => 'Exercises',
+                'path' => '/partner/exercises',
             ];
         }
 

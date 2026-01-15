@@ -10,19 +10,18 @@
     <!-- Page Header -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">
-                Exercise Library
-            </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your exercises and video tutorials</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Manage your exercises and video tutorials
+            </p>
         </div>
         <x-ui.button @click="createModal = true" variant="primary">
-            <x-slot:startIcon>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-            </x-slot:startIcon>
-            Add Custom Exercise
-        </x-ui.button>
+                <x-slot:startIcon>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </x-slot:startIcon>
+                Add Custom Exercise
+            </x-ui.button>
     </div>
 
     <!-- Search Bar -->
@@ -87,11 +86,6 @@
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center gap-2">
                                                 <span class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $exercise->name }}</span>
-                                                @if($exercise->user_id)
-                                                    <x-ui.badge variant="light" color="warning" size="sm">
-                                                        Custom
-                                                    </x-ui.badge>
-                                                @endif
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 text-center sm:px-6 hidden md:table-cell">
@@ -100,15 +94,9 @@
                                             </x-ui.badge>
                                         </td>
                                         <td class="px-5 py-4 text-center sm:px-6">
-                                            @if($exercise->user_id)
-                                                <x-ui.badge variant="light" color="warning" size="sm">
-                                                    Custom
-                                                </x-ui.badge>
-                                            @else
-                                                <x-ui.badge variant="light" color="success" size="sm">
-                                                    Global
-                                                </x-ui.badge>
-                                            @endif
+                                            <x-ui.badge variant="light" color="success" size="sm">
+                                                Global
+                                            </x-ui.badge>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center justify-end gap-2">
@@ -119,22 +107,6 @@
                                                         </svg>
                                                     </x-slot:startIcon>
                                                 </x-ui.button>
-                                                @if($exercise->user_id)
-                                                    <form action="{{ route('exercises.destroy', $exercise) }}" 
-                                                          method="POST" 
-                                                          class="inline"
-                                                          onsubmit="return confirm('Delete this exercise?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <x-ui.button type="submit" variant="outline" size="sm" className="px-3! py-1.5! text-red-600! ring-red-300! hover:bg-red-50! dark:text-red-400! dark:ring-red-700! dark:hover:bg-red-500/10!">
-                                                            <x-slot:startIcon>
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                                </svg>
-                                                            </x-slot:startIcon>
-                                                        </x-ui.button>
-                                                    </form>
-                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -182,57 +154,57 @@
                                                 </h3>
 
                                                 <!-- Form -->
-                                                <form action="{{ route('exercises.update', $exercise) }}" method="POST">
+                                                <form action="{{ route('exercises.update', $exercise) }}" method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('PUT')
                                                     
                                                     <div class="space-y-4">
                                                         <div>
-                                                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                Exercise Name <span class="text-red-500">*</span>
-                                                            </label>
-                                                            <input type="text" 
-                                                                   name="name" 
-                                                                   value="{{ $exercise->name }}" 
-                                                                   required
-                                                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                        </div>
+                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                    Exercise Name <span class="text-red-500">*</span>
+                                                                </label>
+                                                                <input type="text" 
+                                                                       name="name" 
+                                                                       value="{{ $exercise->name }}" 
+                                                                       required
+                                                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                                            </div>
 
-                                                        <div>
-                                                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                Description
-                                                            </label>
-                                                            <textarea name="description" 
-                                                                      rows="3"
-                                                                      placeholder="Exercise instructions or notes..."
-                                                                      class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">{{ $exercise->description }}</textarea>
-                                                        </div>
+                                                            <div>
+                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                    Description
+                                                                </label>
+                                                                <textarea name="description" 
+                                                                          rows="3"
+                                                                          placeholder="Exercise instructions or notes..."
+                                                                          class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">{{ $exercise->description }}</textarea>
+                                                            </div>
 
-                                                        <div>
-                                                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                Category <span class="text-red-500">*</span>
-                                                            </label>
-                                                            <select name="category_id" 
-                                                                    required
-                                                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                                @foreach($categories as $cat)
-                                                                    <option value="{{ $cat->id }}" {{ $exercise->category_id == $cat->id ? 'selected' : '' }}>
-                                                                        {{ $cat->icon }} {{ $cat->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
+                                                            <div>
+                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                    Category <span class="text-red-500">*</span>
+                                                                </label>
+                                                                <select name="category_id" 
+                                                                        required
+                                                                        class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                                                    @foreach($categories as $cat)
+                                                                        <option value="{{ $cat->id }}" {{ $exercise->category_id == $cat->id ? 'selected' : '' }}>
+                                                                            {{ $cat->icon }} {{ $cat->name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
 
-                                                        <div>
-                                                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                Default Rest Time (seconds)
-                                                            </label>
-                                                            <input type="number" 
-                                                                   name="default_rest_sec" 
-                                                                   value="{{ $exercise->default_rest_sec }}" 
-                                                                   min="0"
-                                                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                        </div>
+                                                            <div>
+                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                    Default Rest Time (seconds)
+                                                                </label>
+                                                                <input type="number" 
+                                                                       name="default_rest_sec" 
+                                                                       value="{{ $exercise->default_rest_sec }}" 
+                                                                       min="0"
+                                                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                                            </div>
                                                     </div>
 
                                                     <!-- Footer -->
