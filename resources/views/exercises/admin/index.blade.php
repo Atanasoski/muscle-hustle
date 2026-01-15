@@ -57,7 +57,7 @@
                         <table class="w-full min-w-[800px]">
                             <thead>
                                 <tr class="border-b border-gray-100 dark:border-gray-800">
-                                    <th class="px-5 py-3 text-left sm:px-6">
+                                    <th class="px-5 py-3 text-left sm:px-6 min-w-[200px]">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             Exercise Name
                                         </p>
@@ -83,9 +83,9 @@
                                 @foreach($category->exercises as $exercise)
                                     <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2" 
                                         data-name="{{ strtolower($exercise->name) }}">
-                                        <td class="px-5 py-4 sm:px-6">
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $exercise->name }}</span>
+                                        <td class="px-5 py-4 sm:px-6 min-w-[200px]">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <span class="font-medium text-gray-800 text-theme-sm dark:text-white/90 truncate max-w-full" title="{{ $exercise->name }}">{{ $exercise->name }}</span>
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 text-center sm:px-6 hidden md:table-cell">
