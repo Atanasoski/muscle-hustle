@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CategoryType;
+use App\Http\Requests\BulkLinkExerciseRequest;
 use App\Http\Requests\StoreExerciseRequest;
 use App\Http\Requests\UpdateExerciseRequest;
 use App\Http\Requests\UpdatePartnerExerciseRequest;
@@ -24,8 +25,7 @@ class ExerciseController extends Controller
 
         $categories = Category::where('type', CategoryType::Workout)
             ->with(['exercises' => function ($query) {
-                $query->whereNull('user_id')
-                    ->orderBy('name');
+                $query->orderBy('name');
             }])
             ->orderBy('display_order')
             ->get();
@@ -49,8 +49,7 @@ class ExerciseController extends Controller
 
         $categories = Category::where('type', CategoryType::Workout)
             ->with(['exercises' => function ($query) use ($partner) {
-                $query->whereNull('user_id')
-                    ->with(['partners' => function ($q) use ($partner) {
+                $query->with(['partners' => function ($q) use ($partner) {
                         $q->where('partners.id', $partner->id)
                             ->withPivot(['description', 'image_url', 'video_url']);
                     }])
@@ -157,7 +156,7 @@ class ExerciseController extends Controller
             $partner->exercises()->attach($exercise->id, $pivotData);
         }
 
-        return redirect()->route('partner.exercises.index')
+        return redirect()->route('partner.exercises.show', $exercise)
             ->with('success', 'Exercise customization updated successfully!');
     }
 
@@ -185,11 +184,6 @@ class ExerciseController extends Controller
 
         if (! $partner) {
             abort(403, 'You must be associated with a partner to link exercises.');
-        }
-
-        // Check if exercise is a default exercise (user_id is null)
-        if ($exercise->user_id !== null) {
-            abort(403, 'Can only link default exercises to partners.');
         }
 
         // Link exercise to partner with null pivot values (will use exercise defaults)
@@ -235,5 +229,120 @@ class ExerciseController extends Controller
 
         return redirect()->back()
             ->with('success', 'Exercise unlinked successfully!');
+    }
+
+    /**
+     * Show exercise details for partner.
+     */
+    public function show(Exercise $exercise)
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole('partner_admin')) {
+            abort(403, 'Only partner administrators can access this page.');
+        }
+
+        $partner = $user->partner;
+
+        if (! $partner) {
+            abort(403, 'You must be associated with a partner to view exercises.');
+        }
+
+        // Load exercise with partner pivot data
+        $exercise->load(['partners' => function ($q) use ($partner) {
+            $q->where('partners.id', $partner->id)
+                ->withPivot(['description', 'image_url', 'video_url']);
+        }, 'category']);
+
+        // Get pivot data if available
+        $pivot = null;
+        if ($exercise->relationLoaded('partners') && $exercise->partners->isNotEmpty()) {
+            $pivot = $exercise->partners->first()->pivot;
+        }
+
+        // Compute effective values (pivot override or exercise default)
+        $effectiveDescription = $pivot?->description ?? $exercise->description;
+        $effectiveImageUrl = $pivot?->image_url ?? $exercise->image_url;
+        $effectiveVideoUrl = $pivot?->video_url ?? $exercise->video_url;
+
+        // Check if exercise is linked
+        $isLinked = $partner->exercises()->where('workout_exercises.id', $exercise->id)->exists();
+
+        return view('exercises.partner.show', compact('exercise', 'partner', 'pivot', 'effectiveDescription', 'effectiveImageUrl', 'effectiveVideoUrl', 'isLinked'));
+    }
+
+    /**
+     * Show edit form for partner exercise customization.
+     */
+    public function edit(Exercise $exercise)
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole('partner_admin')) {
+            abort(403, 'Only partner administrators can access this page.');
+        }
+
+        $partner = $user->partner;
+
+        if (! $partner) {
+            abort(403, 'You must be associated with a partner to customize exercises.');
+        }
+
+        // Load exercise with partner pivot data
+        $exercise->load(['partners' => function ($q) use ($partner) {
+            $q->where('partners.id', $partner->id)
+                ->withPivot(['description', 'image_url', 'video_url']);
+        }, 'category']);
+
+        // Get pivot data if available
+        $pivot = null;
+        if ($exercise->relationLoaded('partners') && $exercise->partners->isNotEmpty()) {
+            $pivot = $exercise->partners->first()->pivot;
+        }
+
+        // Prepare form data (pivot values or defaults)
+        $formDescription = $pivot?->description ?? '';
+        $formImageUrl = $pivot?->image_url ?? null;
+        $formVideoUrl = $pivot?->video_url ?? null;
+
+        return view('exercises.partner.edit', compact('exercise', 'partner', 'pivot', 'formDescription', 'formImageUrl', 'formVideoUrl'));
+    }
+
+    /**
+     * Bulk link exercises to partner.
+     */
+    public function bulkLink(BulkLinkExerciseRequest $request): RedirectResponse
+    {
+        $user = auth()->user();
+        $partner = $user->partner;
+
+        $exerciseIds = $request->validated()['exercise_ids'];
+
+        // Get currently linked exercise IDs
+        $alreadyLinkedIds = $partner->exercises()->whereIn('workout_exercises.id', $exerciseIds)->pluck('workout_exercises.id')->toArray();
+
+        // Prepare pivot data for all exercises (null values = use exercise defaults)
+        $pivotData = [];
+        foreach ($exerciseIds as $exerciseId) {
+            $pivotData[$exerciseId] = [
+                'description' => null,
+                'image_url' => null,
+                'video_url' => null,
+            ];
+        }
+
+        // Link all exercises (syncWithoutDetaching won't duplicate already linked ones)
+        $partner->exercises()->syncWithoutDetaching($pivotData);
+
+        // Count newly linked exercises
+        $newlyLinkedCount = count($exerciseIds) - count($alreadyLinkedIds);
+
+        if ($newlyLinkedCount > 0) {
+            return redirect()->route('partner.exercises.index')
+                ->with('success', "{$newlyLinkedCount} exercise(s) linked successfully!");
+        }
+
+        return redirect()->route('partner.exercises.index')
+            ->with('info', 'All selected exercises were already linked.');
     }
 }

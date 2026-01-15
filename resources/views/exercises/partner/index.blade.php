@@ -3,7 +3,67 @@
 @section('title', 'Exercise Library')
 
 @section('content')
-<div x-data="{ editModal: 0 }" class="space-y-6">
+<div x-data="{ 
+    selectedExercises: [], 
+    selectAll: false,
+    get selectedCount() { return this.selectedExercises.length; },
+    toggleSelectAll() {
+        this.selectAll = !this.selectAll;
+        const visibleUnlinkedRows = document.querySelectorAll('.exercise-row:not(.hidden) .exercise-checkbox:not([disabled])');
+        visibleUnlinkedRows.forEach(checkbox => {
+            const exerciseId = parseInt(checkbox.value);
+            if (this.selectAll) {
+                if (!this.selectedExercises.includes(exerciseId)) {
+                    this.selectedExercises.push(exerciseId);
+                }
+            } else {
+                this.selectedExercises = this.selectedExercises.filter(id => id !== exerciseId);
+            }
+            checkbox.checked = this.selectAll;
+        });
+    },
+    toggleExercise(id) {
+        const index = this.selectedExercises.indexOf(id);
+        if (index > -1) {
+            this.selectedExercises.splice(index, 1);
+        } else {
+            this.selectedExercises.push(id);
+        }
+        this.updateSelectAllState();
+    },
+    isSelected(id) {
+        return this.selectedExercises.includes(id);
+    },
+    clearSelection() {
+        this.selectedExercises = [];
+        this.selectAll = false;
+        document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    },
+    updateSelectAllState() {
+        const visibleUnlinkedRows = document.querySelectorAll('.exercise-row:not(.hidden) .exercise-checkbox:not([disabled])');
+        if (visibleUnlinkedRows.length === 0) {
+            this.selectAll = false;
+            return;
+        }
+        const allChecked = Array.from(visibleUnlinkedRows).every(checkbox => checkbox.checked);
+        this.selectAll = allChecked;
+    },
+    submitBulkLink() {
+        const form = document.getElementById('bulk-link-form');
+        const inputsContainer = document.getElementById('bulk-link-inputs');
+        inputsContainer.innerHTML = '';
+        this.selectedExercises.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'exercise_ids[]';
+            input.value = id;
+            inputsContainer.appendChild(input);
+        });
+        form.submit();
+    }
+}" class="space-y-6">
     <!-- Breadcrumb -->
     <x-common.page-breadcrumb pageTitle="Exercise Library" />
 
@@ -13,6 +73,34 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">
                 Select exercises for your partner and customize them
             </p>
+        </div>
+    </div>
+
+    <!-- Bulk Action Bar -->
+    <div x-show="selectedCount > 0" 
+         x-cloak
+         class="rounded-lg border border-brand-500 bg-brand-50 dark:bg-brand-500/10 p-4">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm font-medium text-brand-700 dark:text-brand-300">
+                <span x-text="selectedCount"></span> exercise(s) selected
+            </p>
+            <div class="flex items-center gap-2">
+                <form id="bulk-link-form" action="{{ route('partner.exercises.bulkLink') }}" method="POST" @submit.prevent="submitBulkLink()">
+                    @csrf
+                    <div id="bulk-link-inputs"></div>
+                    <x-ui.button type="submit" variant="primary" size="md">
+                        <x-slot:startIcon>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </x-slot:startIcon>
+                        Link Selected
+                    </x-ui.button>
+                </form>
+                <x-ui.button @click="clearSelection()" variant="outline" size="md">
+                    Clear Selection
+                </x-ui.button>
+            </div>
         </div>
     </div>
 
@@ -49,7 +137,13 @@
                         <table class="w-full min-w-[800px]">
                             <thead>
                                 <tr class="border-b border-gray-100 dark:border-gray-800">
-                                    <th class="px-5 py-3 text-left sm:px-6 min-w-[200px]">
+                                    <th class="px-5 py-3 text-center sm:px-6 w-12">
+                                        <input type="checkbox" 
+                                               @change="toggleSelectAll()"
+                                               :checked="selectAll"
+                                               class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                    </th>
+                                    <th class="px-5 py-3 text-left sm:px-6">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             Exercise Name
                                         </p>
@@ -75,9 +169,24 @@
                                 @foreach($category->exercises as $exercise)
                                     <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2" 
                                         data-name="{{ strtolower($exercise->name) }}">
-                                        <td class="px-5 py-4 sm:px-6 min-w-[200px]">
-                                            <div class="flex items-center gap-2 min-w-0">
-                                                <span class="font-medium text-gray-800 text-theme-sm dark:text-white/90 truncate max-w-full" title="{{ $exercise->name }}">{{ $exercise->name }}</span>
+                                        <td class="px-5 py-4 text-center sm:px-6">
+                                            @if(!isset($exercise->is_linked) || !$exercise->is_linked)
+                                                <input type="checkbox" 
+                                                       class="exercise-checkbox h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                                                       value="{{ $exercise->id }}"
+                                                       @change="toggleExercise({{ $exercise->id }})"
+                                                       :checked="isSelected({{ $exercise->id }})">
+                                            @else
+                                                <input type="checkbox" 
+                                                       class="exercise-checkbox h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                                                       disabled>
+                                            @endif
+                                        </td>
+                                        <td class="px-5 py-4 sm:px-6">
+                                            <div class="flex items-center gap-2">
+                                                <a href="{{ route('partner.exercises.show', $exercise) }}" class="font-medium text-gray-800 text-theme-sm dark:text-white/90 hover:text-brand-600 dark:hover:text-brand-400">
+                                                    {{ $exercise->name }}
+                                                </a>
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 text-center sm:px-6 hidden md:table-cell">
@@ -99,13 +208,25 @@
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center justify-end gap-2">
                                                 @if(isset($exercise->is_linked) && $exercise->is_linked)
-                                                    <x-ui.button @click="editModal = {{ $exercise->id }}" variant="outline" size="sm" className="px-3! py-1.5!">
-                                                        <x-slot:startIcon>
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                            </svg>
-                                                        </x-slot:startIcon>
-                                                    </x-ui.button>
+                                                    <a href="{{ route('partner.exercises.show', $exercise) }}">
+                                                        <x-ui.button variant="outline" size="sm" className="px-3! py-1.5!">
+                                                            <x-slot:startIcon>
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                                </svg>
+                                                            </x-slot:startIcon>
+                                                        </x-ui.button>
+                                                    </a>
+                                                    <a href="{{ route('partner.exercises.edit', $exercise) }}">
+                                                        <x-ui.button variant="outline" size="sm" className="px-3! py-1.5!">
+                                                            <x-slot:startIcon>
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                                </svg>
+                                                            </x-slot:startIcon>
+                                                        </x-ui.button>
+                                                    </a>
                                                     <form action="{{ route('exercises.unlink', $exercise) }}" 
                                                           method="POST" 
                                                           class="inline"
@@ -137,148 +258,10 @@
                                             </div>
                                         </td>
                                     </tr>
-
-                                <!-- Edit Modal for this exercise -->
-                                <template x-teleport="body">
-                                    <div x-show="editModal === {{ $exercise->id }}" 
-                                         x-cloak
-                                         @click.self="editModal = 0"
-                                         @keydown.escape.window="editModal = 0"
-                                         class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
-                                        <!-- Backdrop -->
-                                        <div @click="editModal = 0" 
-                                             class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"
-                                             x-transition:enter="transition ease-out duration-300" 
-                                             x-transition:enter-start="opacity-0"
-                                             x-transition:enter-end="opacity-100" 
-                                             x-transition:leave="transition ease-in duration-200"
-                                             x-transition:leave-start="opacity-100"
-                                             x-transition:leave-end="opacity-0">
-                                        </div>
-
-                                        <!-- Modal Content -->
-                                        <div @click.stop 
-                                             class="relative w-full max-w-lg rounded-3xl bg-white dark:bg-gray-900"
-                                             x-transition:enter="transition ease-out duration-300" 
-                                             x-transition:enter-start="opacity-0 transform scale-95"
-                                             x-transition:enter-end="opacity-100 transform scale-100" 
-                                             x-transition:leave="transition ease-in duration-200"
-                                             x-transition:leave-start="opacity-100 transform scale-100"
-                                             x-transition:leave-end="opacity-0 transform scale-95">
-                                            <!-- Close Button -->
-                                            <button @click="editModal = 0"
-                                                class="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fillRule="evenodd" clipRule="evenodd"
-                                                        d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z"
-                                                        fill="currentColor" />
-                                                </svg>
-                                            </button>
-
-                                            <div class="p-6 space-y-4">
-                                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-4">
-                                                    Customize Exercise for Partner
-                                                </h3>
-
-                                                <!-- Form -->
-                                                <form action="{{ route('exercises.updatePartner', $exercise) }}" method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    
-                                                    <div class="space-y-4">
-                                                        <div>
-                                                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                Exercise Name
-                                                            </label>
-                                                            <input type="text" 
-                                                                   value="{{ $exercise->name }}" 
-                                                                   disabled
-                                                                   class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-gray-500 outline-none dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400">
-                                                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This is the original exercise name (cannot be changed)</p>
-                                                        </div>
-
-                                                            <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Custom Description
-                                                                </label>
-                                                                <textarea name="description" 
-                                                                          rows="4"
-                                                                          placeholder="Enter custom description for this exercise (leave empty to use default)..."
-                                                                          class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">{{ $exercise->pivot_data?->description ?? '' }}</textarea>
-                                                                @if($exercise->effective_description && ($exercise->pivot_data?->description === null || !$exercise->pivot_data))
-                                                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Currently using default description</p>
-                                                                @endif
-                                                        </div>
-
-                                                        <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Custom Image
-                                                                </label>
-                                                                @if($exercise->effective_image_url)
-                                                                    <div class="mb-2">
-                                                                        <img src="{{ asset($exercise->effective_image_url) }}" alt="Exercise image" class="h-20 w-full object-contain rounded-lg border border-gray-200 dark:border-gray-800">
-                                                                    </div>
-                                                                    <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom image is currently set</p>
-                                                                @endif
-                                                                <input type="file" 
-                                                                       name="image" 
-                                                                       accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                                                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                                    @if($exercise->effective_image_url)
-                                                                        Upload a new image to replace the current one (leave empty to keep current)
-                                                                    @else
-                                                                        Upload a custom image for this exercise (leave empty to use default)
-                                                                    @endif
-                                                                </p>
-                                                        </div>
-
-                                                        <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Custom Video
-                                                                </label>
-                                                                @if($exercise->effective_video_url)
-                                                                    <div class="mb-2">
-                                                                        <video src="{{ asset($exercise->effective_video_url) }}" controls class="h-48 w-full rounded-lg border border-gray-200 dark:border-gray-800"></video>
-                                                                    </div>
-                                                                    <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom video is currently set</p>
-                                                                @endif
-                                                                <input type="file" 
-                                                                       name="video" 
-                                                                       accept="video/mp4,video/webm,video/ogg"
-                                                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                                    @if($exercise->effective_video_url)
-                                                                        Upload a new video to replace the current one (leave empty to keep current)
-                                                                    @else
-                                                                        Upload a custom video for this exercise (leave empty to use default)
-                                                                    @endif
-                                                                </p>
-                                                            </div>
-                                                    </div>
-
-                                                    <!-- Footer -->
-                                                    <div class="flex gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
-                                                        <x-ui.button type="button" 
-                                                                @click="editModal = 0"
-                                                                variant="outline"
-                                                                className="flex-1">
-                                                            Cancel
-                                                        </x-ui.button>
-                                                        <x-ui.button type="submit"
-                                                                variant="primary"
-                                                                className="flex-1">
-                                                            Save Changes
-                                                        </x-ui.button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </x-common.component-card>
         </div>
@@ -317,9 +300,15 @@ if (exerciseSearchInput) {
                 category.classList.remove('hidden');
             }
         });
+        
+        // Update select all state after search
+        if (window.Alpine && window.Alpine.store) {
+            // Trigger Alpine update
+            const event = new Event('alpine:update');
+            document.dispatchEvent(event);
+        }
     });
 }
-
 </script>
 
 <style>
