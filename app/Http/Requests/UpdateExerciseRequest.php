@@ -46,8 +46,9 @@ class UpdateExerciseRequest extends FormRequest
                     }
                 },
             ],
-            'image_url' => ['nullable', 'string', 'url', 'max:255'],
             'default_rest_sec' => ['nullable', 'integer', 'min:0'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'video' => ['nullable', 'mimes:mp4,webm,ogg', 'max:51200'],
         ];
     }
 }

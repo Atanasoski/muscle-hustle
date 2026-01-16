@@ -76,34 +76,6 @@
         </div>
     </div>
 
-    <!-- Bulk Action Bar -->
-    <div x-show="selectedCount > 0" 
-         x-cloak
-         class="rounded-lg border border-brand-500 bg-brand-50 dark:bg-brand-500/10 p-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm font-medium text-brand-700 dark:text-brand-300">
-                <span x-text="selectedCount"></span> exercise(s) selected
-            </p>
-            <div class="flex items-center gap-2">
-                <form id="bulk-link-form" action="{{ route('partner.exercises.bulkLink') }}" method="POST" @submit.prevent="submitBulkLink()">
-                    @csrf
-                    <div id="bulk-link-inputs"></div>
-                    <x-ui.button type="submit" variant="primary" size="md">
-                        <x-slot:startIcon>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                        </x-slot:startIcon>
-                        Link Selected
-                    </x-ui.button>
-                </form>
-                <x-ui.button @click="clearSelection()" variant="outline" size="md">
-                    Clear Selection
-                </x-ui.button>
-            </div>
-        </div>
-    </div>
-
     <!-- Search Bar -->
     <div class="relative">
         <span class="absolute left-4 top-1/2 -translate-y-1/2">
@@ -115,6 +87,48 @@
                id="exercise-search" 
                placeholder="Search exercises by name..."
                class="w-full rounded-lg border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+    </div>
+
+    <!-- Bulk Action Bar - Fixed at Bottom -->
+    <div x-show="selectedCount > 0"
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-4"
+         class="fixed bottom-0 z-50 border-t border-brand-500 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:border-brand-400 dark:bg-gray-900 transition-all duration-300 ease-in-out m-0"
+         :class="{
+             'xl:left-[290px]': $store.sidebar.isExpanded || $store.sidebar.isHovered,
+             'xl:left-[90px]': !$store.sidebar.isExpanded && !$store.sidebar.isHovered,
+             'left-0': $store.sidebar.isMobileOpen
+         }"
+         style="right: 0; margin-bottom: 0; padding-bottom: 0;">
+        <div class="mx-auto w-full max-w-7xl px-4 py-4">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm font-medium text-brand-700 dark:text-brand-300">
+                    <span x-text="selectedCount"></span> exercise(s) selected
+                </p>
+                <div class="flex items-center gap-2">
+                    <form id="bulk-link-form" action="{{ route('partner.exercises.bulkLink') }}" method="POST" @submit.prevent="submitBulkLink()">
+                        @csrf
+                        <div id="bulk-link-inputs"></div>
+                        <x-ui.button type="submit" variant="primary" size="md">
+                            <x-slot:startIcon>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </x-slot:startIcon>
+                            Link Selected
+                        </x-ui.button>
+                    </form>
+                    <x-ui.button @click="clearSelection()" variant="outline" size="md">
+                        Clear Selection
+                    </x-ui.button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Exercises by Category -->
@@ -267,6 +281,12 @@
         </div>
         @endif
     @endforeach
+
+    <!-- Spacer to prevent content from being hidden behind fixed bar -->
+    <div x-show="selectedCount > 0" 
+         x-cloak
+         class="h-24">
+    </div>
 </div>
 @endsection
 

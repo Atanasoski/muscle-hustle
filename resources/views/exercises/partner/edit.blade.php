@@ -64,13 +64,13 @@
                                 @endif
                             </div>
                             @if($formImageUrl)
-                                <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($formImageUrl) }}" alt="Exercise image" class="h-auto w-full object-contain">
+                                <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <img src="{{ asset($formImageUrl) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom image is currently set</p>
                             @elseif($exercise->image_url)
-                                <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($exercise->image_url) }}" alt="Exercise image" class="h-auto w-full object-contain">
+                                <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <img src="{{ asset($exercise->image_url) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Currently using default image</p>
                             @endif
