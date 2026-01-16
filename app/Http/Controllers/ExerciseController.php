@@ -50,9 +50,9 @@ class ExerciseController extends Controller
         $categories = Category::where('type', CategoryType::Workout)
             ->with(['exercises' => function ($query) use ($partner) {
                 $query->with(['partners' => function ($q) use ($partner) {
-                        $q->where('partners.id', $partner->id)
-                            ->withPivot(['description', 'image_url', 'video_url']);
-                    }])
+                    $q->where('partners.id', $partner->id)
+                        ->withPivot(['description', 'image_url', 'video_url']);
+                }])
                     ->orderBy('name');
             }])
             ->orderBy('display_order')
@@ -99,14 +99,34 @@ class ExerciseController extends Controller
 
     public function update(UpdateExerciseRequest $request, Exercise $exercise): RedirectResponse
     {
-        $exercise->update([
+        $updateData = [
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
             'default_rest_sec' => $request->default_rest_sec,
-        ]);
+        ];
 
-        return redirect()->route('exercises.index')
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($exercise->image_url) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $exercise->image_url));
+            }
+            $updateData['image_url'] = 'storage/'.$request->file('image')->store('exercises/images', 'public');
+        }
+
+        // Handle video upload
+        if ($request->hasFile('video')) {
+            // Delete old video if exists
+            if ($exercise->video_url) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $exercise->video_url));
+            }
+            $updateData['video_url'] = 'storage/'.$request->file('video')->store('exercises/videos', 'public');
+        }
+
+        $exercise->update($updateData);
+
+        return redirect()->route('exercises.show', $exercise)
             ->with('success', 'Exercise updated successfully!');
     }
 
@@ -158,6 +178,45 @@ class ExerciseController extends Controller
 
         return redirect()->route('partner.exercises.show', $exercise)
             ->with('success', 'Exercise customization updated successfully!');
+    }
+
+    /**
+     * Show exercise details for admin.
+     */
+    public function adminShow(Exercise $exercise)
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole('admin')) {
+            abort(403, 'Only system administrators can access this page.');
+        }
+
+        // Load exercise with category relationship
+        $exercise->load('category');
+
+        return view('exercises.admin.show', compact('exercise'));
+    }
+
+    /**
+     * Show edit form for admin exercise.
+     */
+    public function adminEdit(Exercise $exercise)
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole('admin')) {
+            abort(403, 'Only system administrators can edit exercises.');
+        }
+
+        // Load exercise with category relationship
+        $exercise->load('category');
+
+        // Get all categories for the dropdown
+        $categories = Category::where('type', CategoryType::Workout)
+            ->orderBy('display_order')
+            ->get();
+
+        return view('exercises.admin.edit', compact('exercise', 'categories'));
     }
 
     public function destroy(Exercise $exercise)

@@ -15,12 +15,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Exercise Library - Admin routes (prefixed with /admin, no conflict with API routes since API routes use 'api.' prefix)
     Route::prefix('admin')->group(function () {
         Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
+        Route::get('/exercises/{exercise}', [ExerciseController::class, 'adminShow'])->name('exercises.show');
+        Route::get('/exercises/{exercise}/edit', [ExerciseController::class, 'adminEdit'])->name('exercises.edit');
         Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
         Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
         Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
     });
 
-    
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

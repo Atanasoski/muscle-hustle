@@ -1,0 +1,210 @@
+@extends('layouts.app')
+
+@section('title', 'Edit ' . $exercise->name)
+
+@section('content')
+<div class="space-y-6">
+    <!-- Breadcrumb -->
+    <x-common.page-breadcrumb :pageTitle="'Edit ' . $exercise->name" />
+
+    <!-- Page Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Edit exercise details
+            </p>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <form action="{{ route('exercises.update', $exercise) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <!-- Left Column: Form Fields -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Exercise Information Card -->
+                <x-common.component-card title="Exercise Information">
+                    <div class="space-y-4">
+                        <!-- Exercise Name -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Exercise Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="name" 
+                                   value="{{ old('name', $exercise->name) }}" 
+                                   required
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Description
+                            </label>
+                            <textarea name="description" 
+                                      rows="6"
+                                      placeholder="Enter exercise description..."
+                                      class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">{{ old('description', $exercise->description) }}</textarea>
+                        </div>
+
+                        <!-- Category -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Category <span class="text-red-500">*</span>
+                            </label>
+                            <select name="category_id" 
+                                    required
+                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}" {{ old('category_id', $exercise->category_id) == $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->icon }} {{ $cat->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Default Rest Time -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Default Rest Time (seconds)
+                            </label>
+                            <input type="number" 
+                                   name="default_rest_sec" 
+                                   value="{{ old('default_rest_sec', $exercise->default_rest_sec) }}" 
+                                   min="0"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                        </div>
+                    </div>
+                </x-common.component-card>
+
+                <!-- Media Section -->
+                <x-common.component-card title="Media">
+                    <div class="grid grid-cols-1 gap-6 {{ $exercise->image_url && $exercise->video_url ? 'md:grid-cols-2' : '' }}">
+                        <!-- Image -->
+                        <div>
+                            <div class="mb-3 flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Image
+                                </label>
+                                @if($exercise->image_url)
+                                    <x-ui.badge variant="light" color="success" size="sm">
+                                        Set
+                                    </x-ui.badge>
+                                @endif
+                            </div>
+                            @if($exercise->image_url)
+                                <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <img src="{{ asset($exercise->image_url) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                </div>
+                                <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Image is currently set</p>
+                            @endif
+                            <input type="file" 
+                                   name="image" 
+                                   accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                @if($exercise->image_url)
+                                    Upload a new image to replace the current one (leave empty to keep current)
+                                @else
+                                    Upload an image for this exercise
+                                @endif
+                            </p>
+                        </div>
+
+                        <!-- Video -->
+                        <div>
+                            <div class="mb-3 flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Video
+                                </label>
+                                @if($exercise->video_url)
+                                    <x-ui.badge variant="light" color="success" size="sm">
+                                        Set
+                                    </x-ui.badge>
+                                @endif
+                            </div>
+                            @if($exercise->video_url)
+                                <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <video src="{{ asset($exercise->video_url) }}" controls class="h-auto w-full">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                                <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Video is currently set</p>
+                            @endif
+                            <input type="file" 
+                                   name="video" 
+                                   accept="video/mp4,video/webm,video/ogg"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                @if($exercise->video_url)
+                                    Upload a new video to replace the current one (leave empty to keep current)
+                                @else
+                                    Upload a video for this exercise
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                </x-common.component-card>
+            </div>
+
+            <!-- Right Column: Status & Quick Info -->
+            <div class="space-y-6">
+                <!-- Status Card -->
+                <x-common.component-card title="Status">
+                    <div class="space-y-6">
+                        <!-- Exercise Name -->
+                        <div>
+                            <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                Exercise Name
+                            </label>
+                            <input type="text" 
+                                   value="{{ $exercise->name }}" 
+                                   disabled
+                                   class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 outline-none dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400">
+                        </div>
+
+                        <!-- Category -->
+                        <div>
+                            <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                Category
+                            </label>
+                            <div class="flex items-center gap-2" style="color: {{ $exercise->category->color }};">
+                                <span class="text-lg">{{ $exercise->category->icon }}</span>
+                                <span class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $exercise->category->name }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Default Rest Time -->
+                        <div>
+                            <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                Default Rest Time
+                            </label>
+                            <p class="text-base font-medium text-gray-800 dark:text-white/90">{{ $exercise->default_rest_sec }} seconds</p>
+                        </div>
+                    </div>
+                </x-common.component-card>
+
+                <!-- Footer Buttons -->
+                <div class="flex gap-2">
+                    <a href="{{ route('exercises.show', $exercise) }}" class="flex-1">
+                        <x-ui.button type="button" 
+                                variant="outline"
+                                className="w-full">
+                            Cancel
+                        </x-ui.button>
+                    </a>
+                    <x-ui.button type="submit"
+                            variant="primary"
+                            className="flex-1">
+                        Save Changes
+                    </x-ui.button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@endsection

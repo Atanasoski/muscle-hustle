@@ -3,7 +3,7 @@
 @section('title', 'Exercise Library')
 
 @section('content')
-<div x-data="{ createModal: false, editModal: 0 }" class="space-y-6">
+<div x-data="{ createModal: false }" class="space-y-6">
     <!-- Breadcrumb -->
     <x-common.page-breadcrumb pageTitle="Exercise Library" />
 
@@ -85,7 +85,9 @@
                                         data-name="{{ strtolower($exercise->name) }}">
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center gap-2">
-                                                <span class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $exercise->name }}</span>
+                                                <a href="{{ route('exercises.show', $exercise) }}" class="font-medium text-gray-800 text-theme-sm dark:text-white/90 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+                                                    {{ $exercise->name }}
+                                                </a>
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 text-center sm:px-6 hidden md:table-cell">
@@ -100,132 +102,28 @@
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center justify-end gap-2">
-                                                <x-ui.button @click="editModal = {{ $exercise->id }}" variant="outline" size="sm" className="px-3! py-1.5!">
-                                                    <x-slot:startIcon>
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                        </svg>
-                                                    </x-slot:startIcon>
-                                                </x-ui.button>
+                                                <a href="{{ route('exercises.show', $exercise) }}">
+                                                    <x-ui.button variant="outline" size="sm" className="px-3! py-1.5!">
+                                                        <x-slot:startIcon>
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                            </svg>
+                                                        </x-slot:startIcon>
+                                                    </x-ui.button>
+                                                </a>
+                                                <a href="{{ route('exercises.edit', $exercise) }}">
+                                                    <x-ui.button variant="outline" size="sm" className="px-3! py-1.5!">
+                                                        <x-slot:startIcon>
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                            </svg>
+                                                        </x-slot:startIcon>
+                                                    </x-ui.button>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
-
-                                <!-- Edit Modal for this exercise -->
-                                <template x-teleport="body">
-                                    <div x-show="editModal === {{ $exercise->id }}" 
-                                         x-cloak
-                                         @click.self="editModal = 0"
-                                         @keydown.escape.window="editModal = 0"
-                                         class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
-                                        <!-- Backdrop -->
-                                        <div @click="editModal = 0" 
-                                             class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"
-                                             x-transition:enter="transition ease-out duration-300" 
-                                             x-transition:enter-start="opacity-0"
-                                             x-transition:enter-end="opacity-100" 
-                                             x-transition:leave="transition ease-in duration-200"
-                                             x-transition:leave-start="opacity-100"
-                                             x-transition:leave-end="opacity-0">
-                                        </div>
-
-                                        <!-- Modal Content -->
-                                        <div @click.stop 
-                                             class="relative w-full max-w-lg rounded-3xl bg-white dark:bg-gray-900"
-                                             x-transition:enter="transition ease-out duration-300" 
-                                             x-transition:enter-start="opacity-0 transform scale-95"
-                                             x-transition:enter-end="opacity-100 transform scale-100" 
-                                             x-transition:leave="transition ease-in duration-200"
-                                             x-transition:leave-start="opacity-100 transform scale-100"
-                                             x-transition:leave-end="opacity-0 transform scale-95">
-                                            <!-- Close Button -->
-                                            <button @click="editModal = 0"
-                                                class="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fillRule="evenodd" clipRule="evenodd"
-                                                        d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z"
-                                                        fill="currentColor" />
-                                                </svg>
-                                            </button>
-
-                                            <div class="p-6 space-y-4">
-                                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-4">
-                                                    Edit Exercise
-                                                </h3>
-
-                                                <!-- Form -->
-                                                <form action="{{ route('exercises.update', $exercise) }}" method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    
-                                                    <div class="space-y-4">
-                                                        <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Exercise Name <span class="text-red-500">*</span>
-                                                                </label>
-                                                                <input type="text" 
-                                                                       name="name" 
-                                                                       value="{{ $exercise->name }}" 
-                                                                       required
-                                                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                            </div>
-
-                                                            <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Description
-                                                                </label>
-                                                                <textarea name="description" 
-                                                                          rows="3"
-                                                                          placeholder="Exercise instructions or notes..."
-                                                                          class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">{{ $exercise->description }}</textarea>
-                                                            </div>
-
-                                                            <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Category <span class="text-red-500">*</span>
-                                                                </label>
-                                                                <select name="category_id" 
-                                                                        required
-                                                                        class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                                    @foreach($categories as $cat)
-                                                                        <option value="{{ $cat->id }}" {{ $exercise->category_id == $cat->id ? 'selected' : '' }}>
-                                                                            {{ $cat->icon }} {{ $cat->name }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div>
-                                                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                                    Default Rest Time (seconds)
-                                                                </label>
-                                                                <input type="number" 
-                                                                       name="default_rest_sec" 
-                                                                       value="{{ $exercise->default_rest_sec }}" 
-                                                                       min="0"
-                                                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                                                            </div>
-                                                    </div>
-
-                                                    <!-- Footer -->
-                                                    <div class="flex gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
-                                                        <x-ui.button type="button" 
-                                                                @click="editModal = 0"
-                                                                variant="outline"
-                                                                className="flex-1">
-                                                            Cancel
-                                                        </x-ui.button>
-                                                        <x-ui.button type="submit"
-                                                                variant="primary"
-                                                                className="flex-1">
-                                                            Save Changes
-                                                        </x-ui.button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
                             @endforeach
                         </tbody>
                     </table>

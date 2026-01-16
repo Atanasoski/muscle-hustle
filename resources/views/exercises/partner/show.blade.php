@@ -123,8 +123,8 @@
                                         </x-ui.badge>
                                     @endif
                                 </div>
-                                <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($effectiveImageUrl) }}" alt="Exercise image" class="h-auto w-full object-contain">
+                                <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <img src="{{ asset($effectiveImageUrl) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                             </div>
                         @endif
