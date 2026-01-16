@@ -18,8 +18,9 @@ class Exercise extends Model
         'category_id',
         'name',
         'description',
-        'image_url',
-        'video_url',
+        'muscle_group_image',
+        'image',
+        'video',
         'default_rest_sec',
     ];
 
@@ -78,7 +79,7 @@ class Exercise extends Model
     public function partners(): BelongsToMany
     {
         return $this->belongsToMany(Partner::class, 'partner_exercises')
-            ->withPivot(['description', 'image_url', 'video_url'])
+            ->withPivot(['description', 'image', 'video'])
             ->withTimestamps();
     }
 
@@ -93,38 +94,71 @@ class Exercise extends Model
     }
 
     /**
-     * Get the effective description (pivot override or exercise default)
+     * Get the description for a partner (pivot override or exercise default)
      */
-    public function getEffectiveDescription(?Partner $partner = null): ?string
+    public function getDescriptionFor(?Partner $partner = null): ?string
     {
-        if ($partner && $this->relationLoaded('pivot') && $this->pivot) {
-            return $this->pivot->description ?? $this->description;
+        if ($partner) {
+            // Check if pivot is loaded on the model (when accessed via partner->exercises)
+            if ($this->relationLoaded('pivot') && $this->pivot) {
+                return $this->pivot->description ?? $this->description;
+            }
+
+            // Check if partners relationship is loaded and get pivot from there
+            if ($this->relationLoaded('partners') && $this->partners->isNotEmpty()) {
+                $partnerRelation = $this->partners->firstWhere('id', $partner->id);
+                if ($partnerRelation && $partnerRelation->pivot) {
+                    return $partnerRelation->pivot->description ?? $this->description;
+                }
+            }
         }
 
         return $this->description;
     }
 
     /**
-     * Get the effective image URL (pivot override or exercise default)
+     * Get the image for a partner (pivot override or exercise default)
      */
-    public function getEffectiveImageUrl(?Partner $partner = null): ?string
+    public function getImageFor(?Partner $partner = null): ?string
     {
-        if ($partner && $this->relationLoaded('pivot') && $this->pivot) {
-            return $this->pivot->image_url ?? $this->image_url;
+        if ($partner) {
+            // Check if pivot is loaded on the model (when accessed via partner->exercises)
+            if ($this->relationLoaded('pivot') && $this->pivot) {
+                return $this->pivot->image ?? $this->image;
+            }
+
+            // Check if partners relationship is loaded and get pivot from there
+            if ($this->relationLoaded('partners') && $this->partners->isNotEmpty()) {
+                $partnerRelation = $this->partners->firstWhere('id', $partner->id);
+                if ($partnerRelation && $partnerRelation->pivot) {
+                    return $partnerRelation->pivot->image ?? $this->image;
+                }
+            }
         }
 
-        return $this->image_url;
+        return $this->image;
     }
 
     /**
-     * Get the effective video URL (pivot override or exercise default)
+     * Get the video for a partner (pivot override or exercise default)
      */
-    public function getEffectiveVideoUrl(?Partner $partner = null): ?string
+    public function getVideoFor(?Partner $partner = null): ?string
     {
-        if ($partner && $this->relationLoaded('pivot') && $this->pivot) {
-            return $this->pivot->video_url ?? $this->video_url;
+        if ($partner) {
+            // Check if pivot is loaded on the model (when accessed via partner->exercises)
+            if ($this->relationLoaded('pivot') && $this->pivot) {
+                return $this->pivot->video ?? $this->video;
+            }
+
+            // Check if partners relationship is loaded and get pivot from there
+            if ($this->relationLoaded('partners') && $this->partners->isNotEmpty()) {
+                $partnerRelation = $this->partners->firstWhere('id', $partner->id);
+                if ($partnerRelation && $partnerRelation->pivot) {
+                    return $partnerRelation->pivot->video ?? $this->video;
+                }
+            }
         }
 
-        return $this->video_url;
+        return $this->video;
     }
 }

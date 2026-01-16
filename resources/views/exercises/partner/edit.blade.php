@@ -46,31 +46,47 @@
 
                 <!-- Media Section -->
                 <x-common.component-card title="Media">
-                    <div class="grid grid-cols-1 gap-6 {{ ($formImageUrl || $exercise->image_url) && ($formVideoUrl || $exercise->video_url) ? 'md:grid-cols-2' : '' }}">
+                    @if($exercise->muscle_group_image)
+                        <div class="mb-6 rounded-lg border border-gray-200 bg-blue-50 p-4 dark:border-gray-800 dark:bg-blue-900/20">
+                            <div class="mb-3 flex items-center gap-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Muscle Group Image (Auto-generated)
+                                </label>
+                                <x-ui.badge variant="light" color="info" size="sm">
+                                    Read-only
+                                </x-ui.badge>
+                            </div>
+                            <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-64 w-full object-contain">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">This image is automatically generated based on the exercise's muscle groups.</p>
+                        </div>
+                    @endif
+                    <div class="grid grid-cols-1 gap-6 {{ ($formImage || $exercise->image) && ($formVideo || $exercise->video) ? 'md:grid-cols-2' : '' }}">
                         <!-- Custom Image -->
                         <div>
                             <div class="mb-3 flex items-center justify-between">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Custom Image
                                 </label>
-                                @if($formImageUrl)
+                                @if($formImage)
                                     <x-ui.badge variant="light" color="success" size="sm">
                                         Custom Set
                                     </x-ui.badge>
-                                @elseif($exercise->image_url)
+                                @elseif($exercise->image)
                                     <x-ui.badge variant="light" color="light" size="sm">
                                         Using Default
                                     </x-ui.badge>
                                 @endif
                             </div>
-                            @if($formImageUrl)
+                            @if($formImage)
                                 <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($formImageUrl) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ asset('storage/' . $formImage) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom image is currently set</p>
-                            @elseif($exercise->image_url)
+                            @elseif($exercise->image)
                                 <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($exercise->image_url) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ asset('storage/' . $exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Currently using default image</p>
                             @endif
@@ -79,7 +95,7 @@
                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if($formImageUrl)
+                                @if($formImage)
                                     Upload a new image to replace the current custom one (leave empty to keep current)
                                 @else
                                     Upload a custom image for this exercise (leave empty to use default)
@@ -93,26 +109,26 @@
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Custom Video
                                 </label>
-                                @if($formVideoUrl)
+                                @if($formVideo)
                                     <x-ui.badge variant="light" color="success" size="sm">
                                         Custom Set
                                     </x-ui.badge>
-                                @elseif($exercise->video_url)
+                                @elseif($exercise->video)
                                     <x-ui.badge variant="light" color="light" size="sm">
                                         Using Default
                                     </x-ui.badge>
                                 @endif
                             </div>
-                            @if($formVideoUrl)
+                            @if($formVideo)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset($formVideoUrl) }}" controls class="h-auto w-full">
+                                    <video src="{{ asset('storage/' . $formVideo) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom video is currently set</p>
-                            @elseif($exercise->video_url)
+                            @elseif($exercise->video)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset($exercise->video_url) }}" controls class="h-auto w-full">
+                                    <video src="{{ asset('storage/' . $exercise->video) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
@@ -123,7 +139,7 @@
                                    accept="video/mp4,video/webm,video/ogg"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if($formVideoUrl)
+                                @if($formVideo)
                                     Upload a new video to replace the current custom one (leave empty to keep current)
                                 @else
                                     Upload a custom video for this exercise (leave empty to use default)
@@ -191,7 +207,7 @@
                                 
                                 <!-- Custom Image -->
                                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                    @if($pivot && $pivot->image_url)
+                                    @if($pivot && $pivot->image)
                                         <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>
@@ -205,7 +221,7 @@
                                 
                                 <!-- Custom Video -->
                                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                    @if($pivot && $pivot->video_url)
+                                    @if($pivot && $pivot->video)
                                         <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>

@@ -38,7 +38,7 @@ class StoreExerciseRequest extends FormRequest
                     }
                 },
             ],
-            'image_url' => ['nullable', 'string', 'url', 'max:255'],
+            'image' => ['nullable', 'string', 'max:255'],
             'default_rest_sec' => ['nullable', 'integer', 'min:0'],
         ];
     }

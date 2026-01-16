@@ -37,7 +37,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
                             </svg>
                         </x-slot:startIcon>
-                        Unlink
+                        Remove from inventory
                     </x-ui.button>
                 </form>
             @else
@@ -51,7 +51,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
                         </x-slot:startIcon>
-                        Link Exercise
+                        Add to inventory
                     </x-ui.button>
                 </form>
             @endif
@@ -70,92 +70,120 @@
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <!-- Left Column: Basic Information -->
+        <!-- Left Column: Form Fields -->
         <div class="lg:col-span-2 space-y-6">
-            <!-- Exercise Details Card -->
+            <!-- Exercise Information Card -->
             <x-common.component-card title="Exercise Information">
                 <div>
-                    <!-- Description -->
+                    <!-- Custom Description -->
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Description
-                            @if($pivot && $pivot->description)
-                                <x-ui.badge variant="light" color="success" size="sm" className="ml-2">
-                                    Custom
-                                </x-ui.badge>
-                            @else
-                                <x-ui.badge variant="light" color="light" size="sm" className="ml-2">
-                                    Default
-                                </x-ui.badge>
-                            @endif
+                            Custom Description
                         </label>
-                        @if($effectiveDescription)
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
-                                <p class="text-base text-gray-800 dark:text-white/90 whitespace-pre-wrap">{{ $effectiveDescription }}</p>
-                            </div>
-                        @else
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
-                                <p class="text-base text-gray-500 dark:text-gray-400 italic">No description available</p>
-                            </div>
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
+                            @if($descriptionForPartner)
+                                <p class="text-base text-gray-800 dark:text-white/90 whitespace-pre-wrap">{{ $descriptionForPartner }}</p>
+                            @else
+                                <p class="text-base text-gray-500 dark:text-gray-400 italic">No custom description (using default)</p>
+                            @endif
+                        </div>
+                        @if($exercise->description && (!$pivot || !$pivot->description))
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Currently using default description</p>
                         @endif
                     </div>
                 </div>
             </x-common.component-card>
 
             <!-- Media Section -->
-            @if($effectiveImageUrl || $effectiveVideoUrl)
-                <x-common.component-card title="Media">
-                    <div class="grid grid-cols-1 gap-6 {{ $effectiveImageUrl && $effectiveVideoUrl ? 'md:grid-cols-2' : '' }}">
-                        <!-- Image -->
-                        @if($effectiveImageUrl)
-                            <div>
-                                <div class="mb-3 flex items-center justify-between">
-                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Image
-                                    </label>
-                                    @if($pivot && $pivot->image_url)
-                                        <x-ui.badge variant="light" color="success" size="sm">
-                                            Custom
-                                        </x-ui.badge>
-                                    @else
-                                        <x-ui.badge variant="light" color="light" size="sm">
-                                            Default
-                                        </x-ui.badge>
-                                    @endif
-                                </div>
-                                <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($effectiveImageUrl) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Video -->
-                        @if($effectiveVideoUrl)
-                            <div>
-                                <div class="mb-3 flex items-center justify-between">
-                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Video
-                                    </label>
-                                    @if($pivot && $pivot->video_url)
-                                        <x-ui.badge variant="light" color="success" size="sm">
-                                            Custom
-                                        </x-ui.badge>
-                                    @else
-                                        <x-ui.badge variant="light" color="light" size="sm">
-                                            Default
-                                        </x-ui.badge>
-                                    @endif
-                                </div>
-                                <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset($effectiveVideoUrl) }}" controls class="h-auto w-full">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                </div>
-                            </div>
+            <x-common.component-card title="Media">
+                @if($exercise->muscle_group_image)
+                    <div class="mb-6 rounded-lg border border-gray-200 bg-blue-50 p-4 dark:border-gray-800 dark:bg-blue-900/20">
+                        <div class="mb-3 flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Muscle Group Image (Auto-generated)
+                            </label>
+                            <x-ui.badge variant="light" color="info" size="sm">
+                                Read-only
+                            </x-ui.badge>
+                        </div>
+                        <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                            <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
+                        </div>
+                        <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">This image is automatically generated based on the exercise's muscle groups.</p>
+                    </div>
+                @endif
+                <!-- Custom Image -->
+                <div class="mb-6 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+                    <div class="mb-3 flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Custom Image
+                        </label>
+                        @if($pivot && $pivot->image)
+                            <x-ui.badge variant="light" color="success" size="sm">
+                                Custom Set
+                            </x-ui.badge>
+                        @elseif($exercise->image)
+                            <x-ui.badge variant="light" color="light" size="sm">
+                                Using Default
+                            </x-ui.badge>
                         @endif
                     </div>
-                </x-common.component-card>
-            @endif
+                    @if($imageForPartner || $exercise->image)
+                        <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                            <img src="{{ asset('storage/' . ($imageForPartner ?? $exercise->image)) }}" alt="Exercise image" class="h-auto w-full object-contain">
+                        </div>
+                        <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                            @if($pivot && $pivot->image)
+                                Custom image is currently set
+                            @else
+                                Currently using default image
+                            @endif
+                        </p>
+                    @else
+                        <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                            <p class="py-8 text-sm text-gray-500 dark:text-gray-400">No image available</p>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">Upload an image to customize</p>
+                    @endif
+                </div>
+
+                <!-- Custom Video -->
+                <div class="mb-6 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+                    <div class="mb-3 flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Custom Video
+                        </label>
+                        @if($pivot && $pivot->video)
+                            <x-ui.badge variant="light" color="success" size="sm">
+                                Custom Set
+                            </x-ui.badge>
+                        @elseif($exercise->video)
+                            <x-ui.badge variant="light" color="light" size="sm">
+                                Using Default
+                            </x-ui.badge>
+                        @endif
+                    </div>
+                    @if($videoForPartner || $exercise->video)
+                        <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                            <video src="{{ asset('storage/' . ($videoForPartner ?? $exercise->video)) }}" controls class="max-h-96 w-full">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                            @if($pivot && $pivot->video)
+                                Custom video is currently set
+                            @else
+                                Currently using default video
+                            @endif
+                        </p>
+                    @else
+                        <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                            <p class="py-8 text-sm text-gray-500 dark:text-gray-400">No video available</p>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">Upload a video to customize</p>
+                    @endif
+                </div>
+            </x-common.component-card>
         </div>
 
         <!-- Right Column: Status & Quick Info -->
@@ -168,7 +196,10 @@
                         <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
                             Exercise Name
                         </label>
-                        <p class="text-base font-semibold text-gray-800 dark:text-white/90">{{ $exercise->name }}</p>
+                        <input type="text" 
+                               value="{{ $exercise->name }}" 
+                               disabled
+                               class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 outline-none dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400">
                     </div>
 
                     <!-- Category -->
@@ -190,56 +221,55 @@
                         <p class="text-base font-medium text-gray-800 dark:text-white/90">{{ $exercise->default_rest_sec }} seconds</p>
                     </div>
 
-                    @if($isLinked)
-                        <div class="pt-4 border-t border-gray-200 dark:border-gray-800">
-                            <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
-                                Customizations
-                            </label>
-                            <div class="space-y-2">
-                                <!-- Custom Description -->
-                                <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                    @if($pivot && $pivot->description)
-                                        <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                    @else
-                                        <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    @endif
-                                    <span>Custom Description</span>
-                                </div>
-                                
-                                <!-- Custom Image -->
-                                <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                    @if($pivot && $pivot->image_url)
-                                        <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                    @else
-                                        <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    @endif
-                                    <span>Custom Image</span>
-                                </div>
-                                
-                                <!-- Custom Video -->
-                                <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                                    @if($pivot && $pivot->video_url)
-                                        <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                    @else
-                                        <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    @endif
-                                    <span>Custom Video</span>
-                                </div>
+                    <!-- Current Customizations -->
+                    <div class="pt-4 border-t border-gray-200 dark:border-gray-800">
+                        <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Current Customizations
+                        </label>
+                        <div class="space-y-2">
+                            <!-- Custom Description -->
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                @if($pivot && $pivot->description)
+                                    <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                @else
+                                    <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                @endif
+                                <span>Custom Description</span>
+                            </div>
+                            
+                            <!-- Custom Image -->
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                @if($pivot && $pivot->image)
+                                    <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                @else
+                                    <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                @endif
+                                <span>Custom Image</span>
+                            </div>
+                            
+                            <!-- Custom Video -->
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                @if($pivot && $pivot->video)
+                                    <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                @else
+                                    <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                @endif
+                                <span>Custom Video</span>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
             </x-common.component-card>
         </div>

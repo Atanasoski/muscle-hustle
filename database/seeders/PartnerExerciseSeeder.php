@@ -25,8 +25,8 @@ class PartnerExerciseSeeder extends Seeder
             foreach ($defaultExercises as $exercise) {
                 $pivotData[$exercise->id] = [
                     'description' => null,
-                    'image_url' => null,
-                    'video_url' => null,
+                    'image' => null,
+                    'video' => null,
                 ];
             }
 

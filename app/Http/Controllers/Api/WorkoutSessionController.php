@@ -161,7 +161,7 @@ class WorkoutSessionController extends Controller
         if (! empty($exerciseIds)) {
             // Subquery to find the latest completed session ID for each exercise
             $latestSessionsSubquery = DB::table('workout_sessions as ws')
-                ->join('workout_set_logs as wsl', 'ws.id', '=', 'wsl.workout_session_id')
+                ->join('workout_session_set_logs as wsl', 'ws.id', '=', 'wsl.workout_session_id')
                 ->select('wsl.exercise_id', DB::raw('MAX(ws.id) as latest_session_id'))
                 ->where('ws.user_id', Auth::id())
                 ->where('ws.id', '!=', $session->id)
@@ -172,11 +172,11 @@ class WorkoutSessionController extends Controller
             // Fetch all previous set logs in one query
             $previousSetLogs = SetLog::query()
                 ->joinSub($latestSessionsSubquery, 'latest', function ($join) {
-                    $join->on('workout_set_logs.workout_session_id', '=', 'latest.latest_session_id')
-                        ->on('workout_set_logs.exercise_id', '=', 'latest.exercise_id');
+                    $join->on('workout_session_set_logs.workout_session_id', '=', 'latest.latest_session_id')
+                        ->on('workout_session_set_logs.exercise_id', '=', 'latest.exercise_id');
                 })
-                ->select('workout_set_logs.*')
-                ->orderBy('workout_set_logs.set_number')
+                ->select('workout_session_set_logs.*')
+                ->orderBy('workout_session_set_logs.set_number')
                 ->get()
                 ->groupBy('exercise_id');
         }

@@ -1399,7 +1399,7 @@ class ExerciseSeeder extends Seeder
         $imagesSkipped = 0;
 
         foreach ($exercises as $exerciseData) {
-            $imageUrl = null;
+            $muscleGroupImagePath = null;
 
             // Fetch muscle group image if service is configured
             if ($canFetchImages) {
@@ -1408,17 +1408,15 @@ class ExerciseSeeder extends Seeder
 
                 // Check if we already have this image (to avoid duplicate API calls)
                 if ($this->muscleImageService->imageExists($primaryMuscles, $secondaryMuscles)) {
-                    $imagePath = $this->muscleImageService->getImagePath($primaryMuscles, $secondaryMuscles);
-                    $imageUrl = $this->muscleImageService->getImageUrl($imagePath);
+                    $muscleGroupImagePath = $this->muscleImageService->getImagePath($primaryMuscles, $secondaryMuscles);
                     $imagesSkipped++;
                 } else {
-                    $imagePath = $this->muscleImageService->fetchAndStoreMuscleImage(
+                    $muscleGroupImagePath = $this->muscleImageService->fetchAndStoreMuscleImage(
                         $primaryMuscles,
                         $secondaryMuscles
                     );
 
-                    if ($imagePath !== null) {
-                        $imageUrl = $this->muscleImageService->getImageUrl($imagePath);
+                    if ($muscleGroupImagePath !== null) {
                         $imagesFetched++;
                         $this->command->info("Fetched image for: {$exerciseData['name']}");
                     }
@@ -1432,13 +1430,13 @@ class ExerciseSeeder extends Seeder
                 [
                     'category_id' => $categories[$exerciseData['category']] ?? null,
                     'default_rest_sec' => $exerciseData['default_rest_sec'],
-                    'image_url' => $imageUrl,
+                    'muscle_group_image' => $muscleGroupImagePath,
                 ]
             );
 
-            // Update image_url if exercise exists but has no image
-            if (! $exercise->wasRecentlyCreated && empty($exercise->image_url) && $imageUrl !== null) {
-                $exercise->update(['image_url' => $imageUrl]);
+            // Update muscle_group_image if exercise exists but has no image
+            if (! $exercise->wasRecentlyCreated && empty($exercise->muscle_group_image) && $muscleGroupImagePath !== null) {
+                $exercise->update(['muscle_group_image' => $muscleGroupImagePath]);
             }
 
             // Attach muscle groups if the exercise was newly created or has no muscle groups

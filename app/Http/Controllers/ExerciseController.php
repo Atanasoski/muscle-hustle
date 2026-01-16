@@ -51,7 +51,7 @@ class ExerciseController extends Controller
             ->with(['exercises' => function ($query) use ($partner) {
                 $query->with(['partners' => function ($q) use ($partner) {
                     $q->where('partners.id', $partner->id)
-                        ->withPivot(['description', 'image_url', 'video_url']);
+                        ->withPivot(['description', 'image', 'video']);
                 }])
                     ->orderBy('name');
             }])
@@ -71,10 +71,10 @@ class ExerciseController extends Controller
                     $pivot = $exercise->partners->first()->pivot;
                 }
 
-                // Compute effective values (pivot override or exercise default)
-                $exercise->effective_description = $pivot?->description ?? $exercise->description;
-                $exercise->effective_image_url = $pivot?->image_url ?? $exercise->image_url;
-                $exercise->effective_video_url = $pivot?->video_url ?? $exercise->video_url;
+                // Compute values for partner (pivot override or exercise default)
+                $exercise->descriptionForPartner = $exercise->getDescriptionFor($partner);
+                $exercise->imageForPartner = $exercise->getImageFor($partner);
+                $exercise->videoForPartner = $exercise->getVideoFor($partner);
 
                 // Store pivot data for editing forms
                 $exercise->pivot_data = $pivot;
@@ -109,19 +109,19 @@ class ExerciseController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($exercise->image_url) {
-                Storage::disk('public')->delete(str_replace('storage/', '', $exercise->image_url));
+            if ($exercise->image) {
+                Storage::disk('public')->delete($exercise->image);
             }
-            $updateData['image_url'] = 'storage/'.$request->file('image')->store('exercises/images', 'public');
+            $updateData['image'] = $request->file('image')->store('exercises/images', 'public');
         }
 
         // Handle video upload
         if ($request->hasFile('video')) {
             // Delete old video if exists
-            if ($exercise->video_url) {
-                Storage::disk('public')->delete(str_replace('storage/', '', $exercise->video_url));
+            if ($exercise->video) {
+                Storage::disk('public')->delete($exercise->video);
             }
-            $updateData['video_url'] = 'storage/'.$request->file('video')->store('exercises/videos', 'public');
+            $updateData['video'] = $request->file('video')->store('exercises/videos', 'public');
         }
 
         $exercise->update($updateData);
@@ -147,8 +147,8 @@ class ExerciseController extends Controller
 
         $pivotData = [
             'description' => $pivot?->description,
-            'image_url' => $pivot?->image_url,
-            'video_url' => $pivot?->video_url,
+            'image' => $pivot?->image,
+            'video' => $pivot?->video,
         ];
 
         // Update description (allow setting to null/empty to use default)
@@ -157,17 +157,17 @@ class ExerciseController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($pivot?->image_url) {
-                Storage::disk('public')->delete(str_replace('storage/', '', $pivot->image_url));
+            if ($pivot?->image) {
+                Storage::disk('public')->delete($pivot->image);
             }
-            $pivotData['image_url'] = 'storage/'.$request->file('image')->store('exercises/images', 'public');
+            $pivotData['image'] = $request->file('image')->store('exercises/images', 'public');
         }
 
         if ($request->hasFile('video')) {
-            if ($pivot?->video_url) {
-                Storage::disk('public')->delete(str_replace('storage/', '', $pivot->video_url));
+            if ($pivot?->video) {
+                Storage::disk('public')->delete($pivot->video);
             }
-            $pivotData['video_url'] = 'storage/'.$request->file('video')->store('exercises/videos', 'public');
+            $pivotData['video'] = $request->file('video')->store('exercises/videos', 'public');
         }
 
         if ($existingPivot) {
@@ -249,8 +249,8 @@ class ExerciseController extends Controller
         $partner->exercises()->syncWithoutDetaching([
             $exercise->id => [
                 'description' => null,
-                'image_url' => null,
-                'video_url' => null,
+                'image' => null,
+                'video' => null,
             ],
         ]);
 
@@ -273,20 +273,18 @@ class ExerciseController extends Controller
         // Delete custom files if they exist
         $pivotData = $partner->exercises()->find($exercise->id);
         if ($pivotData && $pivotData->pivot) {
-            if ($pivotData->pivot->image_url) {
-                $imagePath = str_replace('storage/', '', $pivotData->pivot->image_url);
-                Storage::disk('public')->delete($imagePath);
+            if ($pivotData->pivot->image) {
+                Storage::disk('public')->delete($pivotData->pivot->image);
             }
-            if ($pivotData->pivot->video_url) {
-                $videoPath = str_replace('storage/', '', $pivotData->pivot->video_url);
-                Storage::disk('public')->delete($videoPath);
+            if ($pivotData->pivot->video) {
+                Storage::disk('public')->delete($pivotData->pivot->video);
             }
         }
 
         // Unlink exercise from partner
         $partner->exercises()->detach($exercise->id);
 
-        return redirect()->back()
+        return redirect()->route('partner.exercises.index')
             ->with('success', 'Exercise unlinked successfully!');
     }
 
@@ -310,7 +308,7 @@ class ExerciseController extends Controller
         // Load exercise with partner pivot data
         $exercise->load(['partners' => function ($q) use ($partner) {
             $q->where('partners.id', $partner->id)
-                ->withPivot(['description', 'image_url', 'video_url']);
+                ->withPivot(['description', 'image', 'video']);
         }, 'category']);
 
         // Get pivot data if available
@@ -319,15 +317,15 @@ class ExerciseController extends Controller
             $pivot = $exercise->partners->first()->pivot;
         }
 
-        // Compute effective values (pivot override or exercise default)
-        $effectiveDescription = $pivot?->description ?? $exercise->description;
-        $effectiveImageUrl = $pivot?->image_url ?? $exercise->image_url;
-        $effectiveVideoUrl = $pivot?->video_url ?? $exercise->video_url;
+        // Get values for partner (pivot override or exercise default)
+        $descriptionForPartner = $exercise->getDescriptionFor($partner);
+        $imageForPartner = $exercise->getImageFor($partner);
+        $videoForPartner = $exercise->getVideoFor($partner);
 
         // Check if exercise is linked
         $isLinked = $partner->exercises()->where('workout_exercises.id', $exercise->id)->exists();
 
-        return view('exercises.partner.show', compact('exercise', 'partner', 'pivot', 'effectiveDescription', 'effectiveImageUrl', 'effectiveVideoUrl', 'isLinked'));
+        return view('exercises.partner.show', compact('exercise', 'partner', 'pivot', 'descriptionForPartner', 'imageForPartner', 'videoForPartner', 'isLinked'));
     }
 
     /**
@@ -350,7 +348,7 @@ class ExerciseController extends Controller
         // Load exercise with partner pivot data
         $exercise->load(['partners' => function ($q) use ($partner) {
             $q->where('partners.id', $partner->id)
-                ->withPivot(['description', 'image_url', 'video_url']);
+                ->withPivot(['description', 'image', 'video']);
         }, 'category']);
 
         // Get pivot data if available
@@ -361,10 +359,10 @@ class ExerciseController extends Controller
 
         // Prepare form data (pivot values or defaults)
         $formDescription = $pivot?->description ?? '';
-        $formImageUrl = $pivot?->image_url ?? null;
-        $formVideoUrl = $pivot?->video_url ?? null;
+        $formImage = $pivot?->image ?? null;
+        $formVideo = $pivot?->video ?? null;
 
-        return view('exercises.partner.edit', compact('exercise', 'partner', 'pivot', 'formDescription', 'formImageUrl', 'formVideoUrl'));
+        return view('exercises.partner.edit', compact('exercise', 'partner', 'pivot', 'formDescription', 'formImage', 'formVideo'));
     }
 
     /**
@@ -385,8 +383,8 @@ class ExerciseController extends Controller
         foreach ($exerciseIds as $exerciseId) {
             $pivotData[$exerciseId] = [
                 'description' => null,
-                'image_url' => null,
-                'video_url' => null,
+                'image' => null,
+                'video' => null,
             ];
         }
 

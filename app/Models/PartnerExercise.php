@@ -10,7 +10,7 @@ class PartnerExercise extends Pivot
         'partner_id',
         'exercise_id',
         'description',
-        'image_url',
-        'video_url',
+        'image',
+        'video',
     ];
 }

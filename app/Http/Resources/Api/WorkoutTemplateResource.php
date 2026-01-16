@@ -28,7 +28,7 @@ class WorkoutTemplateResource extends JsonResource
                     return [
                         'id' => $exercise->id,
                         'name' => $exercise->name,
-                        'image_url' => $exercise->image_url,
+                        'image' => $exercise->image ? asset('storage/'.$exercise->image) : null,
                         'default_rest_sec' => $exercise->default_rest_sec,
                         'category' => $exercise->category ? new CategoryResource($exercise->category) : null,
                         'muscle_groups' => $exercise->relationLoaded('muscleGroups')

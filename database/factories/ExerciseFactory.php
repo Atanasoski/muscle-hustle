@@ -23,7 +23,9 @@ class ExerciseFactory extends Factory
             'name' => fake()->unique()->words(3, true),
             'description' => fake()->optional()->sentence(),
             'category_id' => null,
-            'image_url' => null,
+            'muscle_group_image' => null,
+            'image' => null,
+            'video' => null,
             'default_rest_sec' => fake()->randomElement([60, 90, 120, 180]),
         ];
     }

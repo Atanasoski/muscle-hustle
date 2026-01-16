@@ -79,29 +79,44 @@
             </x-common.component-card>
 
             <!-- Media Section -->
-            @if($exercise->image_url || $exercise->video_url)
+            @if($exercise->muscle_group_image || $exercise->image || $exercise->video)
                 <x-common.component-card title="Media">
-                    <div class="grid grid-cols-1 gap-6 {{ $exercise->image_url && $exercise->video_url ? 'md:grid-cols-2' : '' }}">
+                    <div class="grid grid-cols-1 gap-6 {{ ($exercise->image && $exercise->video) || ($exercise->muscle_group_image && ($exercise->image || $exercise->video)) ? 'md:grid-cols-2' : '' }}">
+                        <!-- Muscle Group Image -->
+                        @if($exercise->muscle_group_image)
+                            <div>
+                                <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Muscle Group Image
+                                    <x-ui.badge variant="light" color="info" size="sm" className="ml-2">
+                                        Auto-generated
+                                    </x-ui.badge>
+                                </label>
+                                <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                    <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Image -->
-                        @if($exercise->image_url)
+                        @if($exercise->image)
                             <div>
                                 <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Image
                                 </label>
                                 <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($exercise->image_url) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ asset('storage/' . $exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                             </div>
                         @endif
 
                         <!-- Video -->
-                        @if($exercise->video_url)
+                        @if($exercise->video)
                             <div>
                                 <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Video
                                 </label>
                                 <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset($exercise->video_url) }}" controls class="h-auto w-full">
+                                    <video src="{{ asset('storage/' . $exercise->video) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>

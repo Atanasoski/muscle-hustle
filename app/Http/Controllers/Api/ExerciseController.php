@@ -33,7 +33,7 @@ class ExerciseController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
-            'image_url' => $request->image_url,
+            'image' => $request->image,
             'default_rest_sec' => $request->default_rest_sec ?? 90,
         ]);
 
@@ -64,7 +64,7 @@ class ExerciseController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
-            'image_url' => $request->image_url,
+            'image' => $request->image,
             'default_rest_sec' => $request->default_rest_sec,
         ]);
 

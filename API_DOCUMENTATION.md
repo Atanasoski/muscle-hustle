@@ -193,7 +193,9 @@ GET /api/exercises
         }
       ],
       "name": "Bench Press",
-      "image_url": "https://example.com/bench-press.jpg",
+      "muscle_group_image": "https://example.com/storage/exercises/muscle-images/...",
+      "image": "https://example.com/storage/exercises/images/...",
+      "video": null,
       "default_rest_sec": 90,
       "created_at": "2025-01-01T00:00:00.000000Z",
       "updated_at": "2025-01-01T00:00:00.000000Z"
@@ -223,7 +225,7 @@ POST /api/exercises
 {
   "name": "Custom Exercise",
   "category_id": 1,
-  "image_url": "https://example.com/image.jpg",
+  "image": "exercises/images/custom.jpg",
   "default_rest_sec": 120
 }
 ```
@@ -231,7 +233,7 @@ POST /api/exercises
 **Validation Rules**:
 - `name`: required, string, max 255 characters
 - `category_id`: required, must exist in categories table, must be a workout category type
-- `image_url`: nullable, string, valid URL, max 255 characters
+- `image`: nullable, string, max 255 characters (storage path)
 - `default_rest_sec`: nullable, integer, minimum 0 (defaults to 90 if not provided)
 
 **Response** (201 Created):
@@ -243,7 +245,9 @@ POST /api/exercises
     "user_id": 1,
     "category": { /* CategoryResource */ },
     "name": "Custom Exercise",
-    "image_url": "https://example.com/image.jpg",
+    "muscle_group_image": "https://example.com/storage/exercises/muscle-images/...",
+    "image": "https://example.com/storage/exercises/images/...",
+    "video": null,
     "default_rest_sec": 120,
     "created_at": "2025-01-01T00:00:00.000000Z",
     "updated_at": "2025-01-01T00:00:00.000000Z"
@@ -292,7 +296,7 @@ interface ExerciseResource {
   primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
   secondary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
   name: string;
-  image_url: string | null;
+  image: string | null;  // Full URL to user-uploaded image
   default_rest_sec: number;
   created_at: string;  // ISO 8601 datetime
   updated_at: string;  // ISO 8601 datetime
@@ -475,7 +479,7 @@ GET /api/workout-templates
         {
           "id": 1,
           "name": "Bench Press",
-          "image_url": "https://example.com/bench-press.jpg",
+          "image": "https://example.com/storage/exercises/images/...",
           "default_rest_sec": 90,
           "category": {
             "id": 1,
@@ -620,7 +624,7 @@ POST /api/workout-templates/{id}/exercises
       {
         "id": 1,
         "name": "Bench Press",
-        "image_url": "https://example.com/bench-press.jpg",
+        "image": "https://example.com/storage/exercises/images/...",
         "default_rest_sec": 90,
         "category": { /* CategoryResource */ },
         "pivot": {
@@ -739,7 +743,7 @@ interface WorkoutTemplateResource {
 interface WorkoutTemplateExercise {
   id: number;  // Exercise ID
   name: string;
-  image_url: string | null;
+  image: string | null;  // Full URL to user-uploaded image
   default_rest_sec: number;
   category: CategoryResource | null;
   pivot: {
@@ -906,7 +910,7 @@ POST /api/exercises
 {
   "name": "Dumbbell Flyes",
   "category_id": 1,
-  "image_url": "https://example.com/dumbbell-flyes.jpg",
+  "image": "exercises/images/dumbbell-flyes.jpg",
   "default_rest_sec": 60
 }
 ```
@@ -1051,7 +1055,9 @@ interface ExerciseResource {
   primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
   secondary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
   name: string;
-  image_url: string | null;
+  muscle_group_image: string | null;  // Full URL to muscle group image
+  image: string | null;  // Full URL to user-uploaded image
+  video: string | null;  // Full URL to user-uploaded video
   default_rest_sec: number;
   created_at: string;  // ISO 8601 datetime
   updated_at: string;  // ISO 8601 datetime
@@ -1117,7 +1123,7 @@ interface WorkoutTemplateResource {
 interface WorkoutTemplateExercise {
   id: number;  // Exercise ID
   name: string;
-  image_url: string | null;
+  image: string | null;  // Full URL to user-uploaded image
   default_rest_sec: number;
   category: CategoryResource | null;
   pivot: {

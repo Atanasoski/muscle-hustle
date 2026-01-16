@@ -83,22 +83,38 @@
 
                 <!-- Media Section -->
                 <x-common.component-card title="Media">
-                    <div class="grid grid-cols-1 gap-6 {{ $exercise->image_url && $exercise->video_url ? 'md:grid-cols-2' : '' }}">
+                    @if($exercise->muscle_group_image)
+                        <div class="mb-6 rounded-lg border border-gray-200 bg-blue-50 p-4 dark:border-gray-800 dark:bg-blue-900/20">
+                            <div class="mb-3 flex items-center gap-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Muscle Group Image (Auto-generated)
+                                </label>
+                                <x-ui.badge variant="light" color="info" size="sm">
+                                    Read-only
+                                </x-ui.badge>
+                            </div>
+                            <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-64 w-full object-contain">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">This image is automatically generated based on the exercise's muscle groups.</p>
+                        </div>
+                    @endif
+                    <div class="grid grid-cols-1 gap-6 {{ $exercise->image && $exercise->video ? 'md:grid-cols-2' : '' }}">
                         <!-- Image -->
                         <div>
                             <div class="mb-3 flex items-center justify-between">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Image
                                 </label>
-                                @if($exercise->image_url)
+                                @if($exercise->image)
                                     <x-ui.badge variant="light" color="success" size="sm">
                                         Set
                                     </x-ui.badge>
                                 @endif
                             </div>
-                            @if($exercise->image_url)
+                            @if($exercise->image)
                                 <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset($exercise->image_url) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ asset('storage/' . $exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Image is currently set</p>
                             @endif
@@ -107,7 +123,7 @@
                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if($exercise->image_url)
+                                @if($exercise->image)
                                     Upload a new image to replace the current one (leave empty to keep current)
                                 @else
                                     Upload an image for this exercise
@@ -121,15 +137,15 @@
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Video
                                 </label>
-                                @if($exercise->video_url)
+                                @if($exercise->video)
                                     <x-ui.badge variant="light" color="success" size="sm">
                                         Set
                                     </x-ui.badge>
                                 @endif
                             </div>
-                            @if($exercise->video_url)
+                            @if($exercise->video)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset($exercise->video_url) }}" controls class="h-auto w-full">
+                                    <video src="{{ asset('storage/' . $exercise->video) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
@@ -140,7 +156,7 @@
                                    accept="video/mp4,video/webm,video/ogg"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if($exercise->video_url)
+                                @if($exercise->video)
                                     Upload a new video to replace the current one (leave empty to keep current)
                                 @else
                                     Upload a video for this exercise

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('partner_id')->constrained()->onDelete('cascade');
             $table->foreignId('exercise_id')->constrained('workout_exercises')->onDelete('cascade');
             $table->text('description')->nullable();
-            $table->string('image_url')->nullable();
-            $table->string('video_url')->nullable();
+            $table->string('image')->nullable();
+            $table->string('video')->nullable();
             $table->timestamps();
 
             $table->unique(['partner_id', 'exercise_id']);

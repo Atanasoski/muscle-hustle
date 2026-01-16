@@ -56,7 +56,7 @@ class Partner extends Model
     public function exercises(): BelongsToMany
     {
         return $this->belongsToMany(Exercise::class, 'partner_exercises', 'partner_id', 'exercise_id')
-            ->withPivot(['description', 'image_url', 'video_url'])
+            ->withPivot(['description', 'image', 'video'])
             ->withTimestamps();
     }
 
@@ -71,8 +71,8 @@ class Partner extends Model
         $pivotData = $defaultExercises->mapWithKeys(function ($exerciseId) {
             return [$exerciseId => [
                 'description' => null,
-                'image_url' => null,
-                'video_url' => null,
+                'image' => null,
+                'video' => null,
             ]];
         })->toArray();
 
