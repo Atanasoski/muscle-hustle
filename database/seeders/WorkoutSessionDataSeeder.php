@@ -41,8 +41,7 @@ class WorkoutSessionDataSeeder extends Seeder
         }
 
         // Get exercises by category for realistic workout distribution
-        $exercises = Exercise::whereNull('user_id')
-            ->with('category')
+        $exercises = Exercise::with('category')
             ->get()
             ->groupBy('category.name');
 

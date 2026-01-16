@@ -15,7 +15,6 @@ class Exercise extends Model
     protected $table = 'workout_exercises';
 
     protected $fillable = [
-        'user_id',
         'category_id',
         'name',
         'description',
@@ -23,14 +22,6 @@ class Exercise extends Model
         'video_url',
         'default_rest_sec',
     ];
-
-    /**
-     * Relationship: Exercise belongs to User (nullable for global exercises)
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     /**
      * Relationship: Exercise belongs to Category

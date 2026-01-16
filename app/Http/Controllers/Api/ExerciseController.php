@@ -13,15 +13,11 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class ExerciseController extends Controller
 {
     /**
-     * Display a listing of exercises (global + user's own).
+     * Display a listing of exercises.
      */
     public function index(): AnonymousResourceCollection
     {
         $exercises = Exercise::with('category', 'muscleGroups')
-            ->where(function ($query) {
-                $query->whereNull('user_id')
-                    ->orWhere('user_id', auth()->id());
-            })
             ->latest()
             ->get();
 
@@ -34,7 +30,6 @@ class ExerciseController extends Controller
     public function store(StoreExerciseRequest $request): JsonResponse
     {
         $exercise = Exercise::create([
-            'user_id' => auth()->id(),
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
@@ -53,13 +48,6 @@ class ExerciseController extends Controller
      */
     public function show(Exercise $exercise): JsonResponse
     {
-        // Authorization: can view global exercises or own exercises
-        if ($exercise->user_id && $exercise->user_id !== auth()->id()) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 403);
-        }
-
         $exercise->load('category');
 
         return response()->json([
@@ -72,13 +60,6 @@ class ExerciseController extends Controller
      */
     public function update(UpdateExerciseRequest $request, Exercise $exercise): JsonResponse
     {
-        // Authorization: can only edit own exercises (not global ones)
-        if (! $exercise->user_id || $exercise->user_id !== auth()->id()) {
-            return response()->json([
-                'message' => 'Unauthorized. You can only edit your own exercises.',
-            ], 403);
-        }
-
         $exercise->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -98,13 +79,6 @@ class ExerciseController extends Controller
      */
     public function destroy(Exercise $exercise): JsonResponse
     {
-        // Authorization: can only delete own exercises (not global ones)
-        if (! $exercise->user_id || $exercise->user_id !== auth()->id()) {
-            return response()->json([
-                'message' => 'Unauthorized. You can only delete your own exercises.',
-            ], 403);
-        }
-
         $exercise->delete();
 
         return response()->json([

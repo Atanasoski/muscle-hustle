@@ -287,7 +287,6 @@ DELETE /api/exercises/{id}
 ```typescript
 interface ExerciseResource {
   id: number;
-  user_id: number | null;  // null for global exercises
   category: CategoryResource | null;  // Only present if relationship loaded
   muscle_groups: MuscleGroupResource[] | null;  // Only present if relationship loaded
   primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
@@ -953,8 +952,8 @@ This sets the order based on WorkoutTemplateExercise IDs (not exercise IDs).
 ## Important Notes for AI Integration
 
 1. **Authentication Required**: All exercise and workout endpoints require valid Sanctum token
-2. **User Isolation**: Users can only see/modify their own workout templates and custom exercises
-3. **Global Exercises**: Exercises with `user_id: null` are available to all users but cannot be modified
+2. **User Isolation**: Users can only see/modify their own workout templates
+3. **Global Exercises**: All exercises are global and available to all users
 4. **Category Validation**: When creating exercises, the category must be of type "workout"
 5. **Day of Week**: Use integer 0-6 (Sunday=0, Monday=1, ..., Saturday=6)
 6. **Exercise Order**: In workout templates, exercises are ordered by the `pivot.order` field
@@ -1047,7 +1046,6 @@ interface UserProfileResource {
 // Exercise Resources
 interface ExerciseResource {
   id: number;
-  user_id: number | null;  // null for global exercises
   category: CategoryResource | null;  // Only present if relationship loaded
   muscle_groups: MuscleGroupResource[] | null;  // Only present if relationship loaded
   primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter

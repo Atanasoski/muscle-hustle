@@ -32,9 +32,7 @@ class MuscleGroupController extends Controller
      */
     public function show(MuscleGroup $muscleGroup): MuscleGroupResource
     {
-        $muscleGroup->load(['exercises' => function ($query) {
-            $query->whereNull('user_id'); // Only global exercises
-        }]);
+        $muscleGroup->load('exercises');
 
         return new MuscleGroupResource($muscleGroup);
     }

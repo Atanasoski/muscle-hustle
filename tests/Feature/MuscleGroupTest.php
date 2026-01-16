@@ -125,7 +125,7 @@ class MuscleGroupTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $exercise = Exercise::factory()->create(['user_id' => null]);
+        $exercise = Exercise::factory()->create();
         $primaryMuscle = MuscleGroup::factory()->create(['name' => 'Chest']);
         $secondaryMuscle1 = MuscleGroup::factory()->create(['name' => 'Triceps']);
         $secondaryMuscle2 = MuscleGroup::factory()->create(['name' => 'Front Delts']);
@@ -149,8 +149,8 @@ class MuscleGroupTest extends TestCase
     {
         $muscleGroup = MuscleGroup::factory()->create(['name' => 'Chest']);
 
-        $exercise1 = Exercise::factory()->create(['name' => 'Bench Press', 'user_id' => null]);
-        $exercise2 = Exercise::factory()->create(['name' => 'Dumbbell Flyes', 'user_id' => null]);
+        $exercise1 = Exercise::factory()->create(['name' => 'Bench Press']);
+        $exercise2 = Exercise::factory()->create(['name' => 'Dumbbell Flyes']);
 
         $muscleGroup->exercises()->attach([
             $exercise1->id => ['is_primary' => true],

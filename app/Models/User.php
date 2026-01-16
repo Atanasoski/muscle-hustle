@@ -68,14 +68,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the custom exercises for the user.
-     */
-    public function exercises(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Exercise::class);
-    }
-
-    /**
      * Get the partner that the user belongs to.
      */
     public function partner(): \Illuminate\Database\Eloquent\Relations\BelongsTo

@@ -16,8 +16,8 @@ class PartnerExerciseSeeder extends Seeder
         // Get all partners
         $partners = Partner::all();
 
-        // Get all default exercises (where user_id is null)
-        $defaultExercises = Exercise::whereNull('user_id')->get();
+        // Get all exercises
+        $defaultExercises = Exercise::all();
 
         // Link all default exercises to all partners
         foreach ($partners as $partner) {
@@ -34,6 +34,6 @@ class PartnerExerciseSeeder extends Seeder
             $partner->exercises()->syncWithoutDetaching($pivotData);
         }
 
-        $this->command->info('Linked '.$defaultExercises->count().' default exercises to '.$partners->count().' partners.');
+        $this->command->info('Linked '.$defaultExercises->count().' exercises to '.$partners->count().' partners.');
     }
 }

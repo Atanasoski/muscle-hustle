@@ -1428,7 +1428,6 @@ class ExerciseSeeder extends Seeder
             $exercise = Exercise::firstOrCreate(
                 [
                     'name' => $exerciseData['name'],
-                    'user_id' => null,
                 ],
                 [
                     'category_id' => $categories[$exerciseData['category']] ?? null,

@@ -61,12 +61,12 @@ class Partner extends Model
     }
 
     /**
-     * Sync all default exercises (where user_id is null) to this partner.
+     * Sync all exercises to this partner.
      * This creates pivot rows with null override values, which will fall back to exercise defaults.
      */
     public function syncDefaultExercises(): void
     {
-        $defaultExercises = Exercise::whereNull('user_id')->pluck('id');
+        $defaultExercises = Exercise::pluck('id');
 
         $pivotData = $defaultExercises->mapWithKeys(function ($exerciseId) {
             return [$exerciseId => [

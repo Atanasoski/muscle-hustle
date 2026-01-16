@@ -39,7 +39,7 @@ Seeds 56 global exercises across all major muscle groups.
 - **Cardio** (5 exercises): Running, Cycling, etc.
 
 **Features:**
-- All exercises are global (`user_id = null`)
+- All exercises are global
 - Realistic rest times (60-180 seconds based on exercise type)
 - Proper categorization for easy filtering
 - Uses `firstOrCreate` to avoid duplicates
@@ -198,7 +198,7 @@ Edit `MealPlanSeeder.php` and modify the `$mealsData` array.
 All seeders use Laravel's `firstOrCreate` method to avoid duplicating data:
 
 - **UserSeeder**: Checks email
-- **ExerciseSeeder**: Checks name + user_id
+- **ExerciseSeeder**: Checks name
 - **WorkoutTemplateSeeder**: Checks user_id + name
 - **MealPlanSeeder**: Checks user_id + week_start_date
 
