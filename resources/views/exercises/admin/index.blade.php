@@ -3,7 +3,16 @@
 @section('title', 'Exercise Library')
 
 @section('content')
-<div x-data="{ createModal: false }" class="space-y-6">
+<div x-data="{ 
+    createModal: false,
+    collapsedCategories: {},
+    toggleCategory(categoryId) {
+        this.collapsedCategories[categoryId] = !this.collapsedCategories[categoryId];
+    },
+    isCategoryCollapsed(categoryId) {
+        return this.collapsedCategories[categoryId] || false;
+    }
+}" class="space-y-6">
     <!-- Breadcrumb -->
     <x-common.page-breadcrumb pageTitle="Exercise Library" />
 
@@ -43,16 +52,32 @@
         <div class="exercise-category" data-category="{{ $category->name }}">
             <x-common.component-card>
                 <x-slot:title>
-                    <div class="flex items-center gap-2" style="color: {{ $category->color }};">
-                        <span>{{ $category->icon }} {{ $category->name }}</span>
-                        <x-ui.badge variant="light" color="light" size="sm">
-                            {{ $category->exercises->count() }}
-                        </x-ui.badge>
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2" style="color: {{ $category->color }};">
+                            <span>{{ $category->icon }} {{ $category->name }}</span>
+                            <x-ui.badge variant="light" color="light" size="sm">
+                                {{ $category->exercises->count() }}
+                            </x-ui.badge>
+                        </div>
+                        <x-ui.button 
+                            @click="toggleCategory({{ $category->id }})"
+                            variant="outline" 
+                            size="sm" 
+                            className="px-3! py-1.5!">
+                            <span x-text="isCategoryCollapsed({{ $category->id }}) ? 'Expand' : 'Collapse'"></span>
+                        </x-ui.button>
                     </div>
                 </x-slot:title>
 
                 <!-- Exercises Table -->
-                <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+                <div x-show="!isCategoryCollapsed({{ $category->id }})"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
                     <div class="max-w-full overflow-x-auto custom-scrollbar">
                         <table class="w-full min-w-[800px]">
                             <thead>
