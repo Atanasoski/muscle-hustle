@@ -286,14 +286,15 @@
                                                           class="inline"
                                                           onsubmit="return confirm('Unlink this exercise? This will remove all customizations.')">
                                                         @csrf
-                                                        <x-ui.button type="submit" variant="outline" size="sm" className="px-3! py-1.5! text-orange-600! ring-orange-300! hover:bg-orange-50! dark:text-orange-400! dark:ring-orange-700! dark:hover:bg-orange-500/10!">
-                                                            <x-slot:startIcon>
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
-                                                                </svg>
-                                                            </x-slot:startIcon>
-                                                            Remove from inventory
-                                                        </x-ui.button>
+                                                        <x-ui.tooltip text="Remove from inventory" position="top">
+                                                            <x-ui.button type="submit" variant="outline" size="sm" className="px-3! py-1.5! text-orange-600! ring-orange-300! hover:bg-orange-50! dark:text-orange-400! dark:ring-orange-700! dark:hover:bg-orange-500/10!">
+                                                                <x-slot:startIcon>
+                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                                                    </svg>
+                                                                </x-slot:startIcon>
+                                                            </x-ui.button>
+                                                        </x-ui.tooltip>
                                                     </form>
                                                 @else
                                                     <form action="{{ route('exercises.link', $exercise) }}" 
