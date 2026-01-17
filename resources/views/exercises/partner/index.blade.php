@@ -259,7 +259,7 @@
                                                 </x-ui.badge>
                                             @endif
                                         </td>
-                                        <td class="px-5 py-4 sm:px-6">
+                                        <td class="px-5 py-4 sm:px-6" style="overflow: visible;">
                                             <div class="flex items-center justify-end gap-2">
                                                 @if(isset($exercise->is_linked) && $exercise->is_linked)
                                                     <a href="{{ route('partner.exercises.show', $exercise) }}">
