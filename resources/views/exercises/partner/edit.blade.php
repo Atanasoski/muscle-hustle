@@ -239,7 +239,7 @@
 
                 <!-- Footer Buttons -->
                 <div class="flex gap-2">
-                    <a href="{{ route('partner.exercises.show', $exercise) }}" class="flex-1">
+                    <a href="{{ route('partner.exercises.index', $exercise) }}" class="flex-1">
                         <x-ui.button type="button" 
                                 variant="outline"
                                 className="w-full">
