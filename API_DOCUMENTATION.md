@@ -1,1193 +1,1758 @@
 # Fit Nation API Documentation
 
-This documentation provides complete information about all API resources and endpoints for AI applications to understand and interact with the Fit Nation API.
+This documentation provides complete information about all API resources and endpoints for React TypeScript frontend integration.
 
-## Base URL
+## Table of Contents
 
-All API endpoints require authentication via Laravel Sanctum. Include the Bearer token in the Authorization header:
+1. [Base Configuration](#base-configuration)
+2. [Authentication](#authentication)
+3. [User Management](#user-management)
+4. [User Profile](#user-profile)
+5. [Exercises](#exercises)
+6. [Muscle Groups](#muscle-groups)
+7. [Fitness Metrics](#fitness-metrics)
+8. [Plans](#plans)
+9. [Workout Templates](#workout-templates)
+10. [Workout Planner](#workout-planner)
+11. [Workout Sessions](#workout-sessions)
+12. [Complete TypeScript Definitions](#complete-typescript-definitions)
+13. [Error Responses](#error-responses)
+
+---
+
+## Base Configuration
+
+### Base URL
 ```
-Authorization: Bearer {token}
+/api
 ```
+
+### Required Headers
+```typescript
+const headers = {
+  'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+};
+```
+
+### Authentication Method
+All protected endpoints require Laravel Sanctum Bearer token authentication.
+
+---
 
 ## Authentication
 
-Before accessing exercise and workout endpoints, authenticate:
-- `POST /api/register` - Register a new user
-- `POST /api/login` - Login and receive authentication token
-- `POST /api/logout` - Logout (requires auth)
+### Register User
+```
+POST /api/register
+```
+
+**Request Body:**
+```typescript
+interface RegisterRequest {
+  name: string;                // required, max 255 chars
+  email: string;               // required, unique, lowercase email
+  password: string;            // required, min 8 chars
+  password_confirmation: string; // required, must match password
+  partner_id?: number;         // optional, existing partner ID
+}
+```
+
+**Response (201 Created):**
+```typescript
+interface RegisterResponse {
+  message: "User registered successfully";
+  user: UserResource;
+  token: string;
+}
+```
+
+---
+
+### Login
+```
+POST /api/login
+```
+
+**Request Body:**
+```typescript
+interface LoginRequest {
+  email: string;    // required
+  password: string; // required
+}
+```
+
+**Response (200 OK):**
+```typescript
+interface LoginResponse {
+  message: "Login successful";
+  user: UserResource;
+  token: string;
+}
+```
+
+**Error Response (422):**
+```typescript
+interface LoginError {
+  message: "The given data was invalid.";
+  errors: {
+    email: ["The provided credentials are incorrect."];
+  };
+}
+```
+
+---
+
+### Logout
+```
+POST /api/logout
+```
+*Requires authentication*
+
+**Response (200 OK):**
+```typescript
+interface LogoutResponse {
+  message: "Logged out successfully";
+}
+```
 
 ---
 
 ## User Management
 
-User profile management endpoints:
-- `GET /api/user` - Get current authenticated user (requires auth)
-- `PUT/PATCH /api/user` - Update authenticated user's profile (requires auth)
-
----
-
-## User Profile Resource
-
-### Overview
-User profiles contain fitness-related information separate from the main user account. Each user can have one profile with fitness goals, physical attributes, and training preferences.
-
-### API Endpoints
-
-#### Get Current User (with Profile)
+### Get Current User
 ```
 GET /api/user
 ```
+*Requires authentication*
 
-**Response Structure**:
-```json
-{
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
-    "profile_photo": "profile-photos/abc123.jpg",
-    "profile": {
-      "fitness_goal": "muscle_gain",
-      "age": 30,
-      "gender": "male",
-      "height": 180,
-      "weight": "75.50",
-      "training_experience": "intermediate",
-      "training_days_per_week": 4,
-      "workout_duration_minutes": 60
-    },
-    "partner": { /* PartnerResource */ },
-    "email_verified_at": "2025-01-01T00:00:00.000000Z",
-    "created_at": "2025-01-01T00:00:00.000000Z",
-    "updated_at": "2025-01-01T00:00:00.000000Z"
-  }
-}
-```
-
-**Note**: The `profile` object will be `null` if the user hasn't created a profile yet.
-
-#### Update User Profile
-```
-PUT/PATCH /api/user
-```
-
-**Request Body** (all fields optional):
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "profile_photo": "<file>",
-  "fitness_goal": "muscle_gain",
-  "age": 30,
-  "gender": "male",
-  "height": 180,
-  "weight": 75.5,
-  "training_experience": "intermediate",
-  "training_days_per_week": 4,
-  "workout_duration_minutes": 60
-}
-```
-
-**Validation Rules**:
-- `name`: sometimes required, string, max 255 characters
-- `email`: sometimes required, string, lowercase, email, max 255, unique (except current user)
-- `profile_photo`: nullable, image file, mimes: jpeg,png,jpg,gif, max 2048KB
-- `fitness_goal`: nullable, enum: `fat_loss`, `muscle_gain`, `strength`, `general_fitness`
-- `age`: nullable, integer, min 1, max 150
-- `gender`: nullable, enum: `male`, `female`, `other`
-- `height`: nullable, integer, min 50, max 300 (in cm)
-- `weight`: nullable, numeric, min 1, max 500 (in kg)
-- `training_experience`: nullable, enum: `beginner`, `intermediate`, `advanced`
-- `training_days_per_week`: nullable, integer, min 1, max 7
-- `workout_duration_minutes`: nullable, integer, min 1, max 600
-
-**Response**:
-```json
-{
-  "message": "Profile updated successfully",
-  "user": { /* UserResource with updated profile */ }
-}
-```
-
-**Note**: 
-- User fields (name, email, profile_photo) update the user record
-- Fitness profile fields create or update the user's profile record
-- You can update user fields and profile fields in the same request
-- Profile fields are stored in a separate `user_profiles` table
-
-### User Resource Structure
-
+**Response:**
 ```typescript
-interface UserResource {
-  id: number;
-  name: string;
-  email: string;
-  profile_photo: string | null;
-  profile: UserProfileResource | null;
-  partner: PartnerResource | null;
-  email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface UserProfileResource {
-  fitness_goal: string | null;  // "fat_loss" | "muscle_gain" | "strength" | "general_fitness"
-  age: number | null;
-  gender: string | null;  // "male" | "female" | "other"
-  height: number | null;  // in cm
-  weight: string | null;  // in kg, decimal as string
-  training_experience: string | null;  // "beginner" | "intermediate" | "advanced"
-  training_days_per_week: number | null;  // 1-7
-  workout_duration_minutes: number | null;  // in minutes
+interface GetUserResponse {
+  user: UserResource;
 }
 ```
 
 ---
 
-## Exercise Resource
+## User Profile
 
-### Overview
-Exercises represent individual workout movements (e.g., "Bench Press", "Squat"). Exercises can be:
-- **Global**: Available to all users (`user_id` is `null`)
-- **User-specific**: Created by individual users (`user_id` is set)
+### Get Profile
+```
+GET /api/profile
+```
+*Requires authentication*
 
-### API Endpoints
+**Response:**
+```typescript
+interface GetProfileResponse {
+  user: UserResource;
+}
+```
 
-#### List All Exercises
+---
+
+### Update Profile
+```
+PUT /api/profile
+PATCH /api/profile
+```
+*Requires authentication*
+
+**Request Body (all fields optional):**
+```typescript
+interface ProfileUpdateRequest {
+  // User fields
+  name?: string;                    // max 255 chars
+  email?: string;                   // unique, lowercase email
+  profile_photo?: File;             // image: jpeg, png, jpg, gif, max 2MB
+
+  // Profile fields
+  fitness_goal?: FitnessGoal;       // enum value
+  age?: number;                     // 1-150
+  gender?: Gender;                  // enum value
+  height?: number;                  // 50-300 (cm)
+  weight?: number;                  // 1-500 (kg)
+  training_experience?: TrainingExperience; // enum value
+  training_days_per_week?: number;  // 1-7
+  workout_duration_minutes?: number; // 1-600
+}
+
+type FitnessGoal = 'fat_loss' | 'muscle_gain' | 'strength' | 'general_fitness';
+type Gender = 'male' | 'female' | 'other';
+type TrainingExperience = 'beginner' | 'intermediate' | 'advanced';
+```
+
+**Response:**
+```typescript
+interface ProfileUpdateResponse {
+  message: "Profile updated successfully";
+  user: UserResource;
+}
+```
+
+---
+
+### Delete Profile Photo
+```
+DELETE /api/profile/photo
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface DeletePhotoResponse {
+  message: "Profile photo deleted successfully";
+  user: UserResource;
+}
+```
+
+---
+
+## Exercises
+
+### List All Exercises
 ```
 GET /api/exercises
 ```
+*Requires authentication*
 
-**Response**: Returns all global exercises plus the authenticated user's custom exercises.
-
-**Response Structure**:
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "user_id": null,
-      "category": {
-        "id": 1,
-        "type": "workout",
-        "name": "Compound",
-        "slug": "compound",
-        "display_order": 1,
-        "icon": "🏋️",
-        "color": "#ef4444",
-        "created_at": "2025-01-01T00:00:00.000000Z",
-        "updated_at": "2025-01-01T00:00:00.000000Z"
-      },
-      "muscle_groups": [
-        {
-          "id": 1,
-          "name": "Chest",
-          "body_region": "upper",
-          "is_primary": true
-        },
-        {
-          "id": 10,
-          "name": "Triceps",
-          "body_region": "upper",
-          "is_primary": false
-        }
-      ],
-      "name": "Bench Press",
-      "muscle_group_image": "https://example.com/storage/exercises/muscle-images/...",
-      "image": "https://example.com/storage/exercises/images/...",
-      "video": null,
-      "default_rest_sec": 90,
-      "created_at": "2025-01-01T00:00:00.000000Z",
-      "updated_at": "2025-01-01T00:00:00.000000Z"
-    }
-  ]
+**Response:**
+```typescript
+interface ExerciseListResponse {
+  data: ExerciseResource[];
 }
 ```
 
-**Note**: The `muscle_groups` array is only present when the relationship is loaded. Each muscle group includes `is_primary` to indicate if it's a primary or secondary target.
+---
 
-#### Get Single Exercise
+### Get Single Exercise
 ```
 GET /api/exercises/{id}
 ```
+*Requires authentication*
 
-**Authorization**: Can view global exercises or own exercises only.
+**Response:**
+```typescript
+interface ExerciseShowResponse {
+  data: ExerciseResource;
+}
+```
 
-**Response Structure**: Same as single exercise object in list response.
+---
 
-#### Create Exercise
+### Create Exercise
 ```
 POST /api/exercises
 ```
+*Requires authentication + admin role*
 
-**Request Body**:
-```json
-{
-  "name": "Custom Exercise",
-  "category_id": 1,
-  "image": "exercises/images/custom.jpg",
-  "default_rest_sec": 120
+**Request Body:**
+```typescript
+interface CreateExerciseRequest {
+  name: string;              // required, max 255 chars
+  description?: string;      // optional, max 5000 chars
+  category_id: number;       // required, must be workout category
+  image?: string;            // optional, storage path, max 255 chars
+  default_rest_sec?: number; // optional, min 0, defaults to 90
 }
 ```
 
-**Validation Rules**:
-- `name`: required, string, max 255 characters
-- `category_id`: required, must exist in categories table, must be a workout category type
-- `image`: nullable, string, max 255 characters (storage path)
-- `default_rest_sec`: nullable, integer, minimum 0 (defaults to 90 if not provided)
-
-**Response** (201 Created):
-```json
-{
-  "message": "Exercise created successfully",
-  "data": {
-    "id": 10,
-    "user_id": 1,
-    "category": { /* CategoryResource */ },
-    "name": "Custom Exercise",
-    "muscle_group_image": "https://example.com/storage/exercises/muscle-images/...",
-    "image": "https://example.com/storage/exercises/images/...",
-    "video": null,
-    "default_rest_sec": 120,
-    "created_at": "2025-01-01T00:00:00.000000Z",
-    "updated_at": "2025-01-01T00:00:00.000000Z"
-  }
+**Response (201 Created):**
+```typescript
+interface CreateExerciseResponse {
+  message: "Exercise created successfully";
+  data: ExerciseResource;
 }
 ```
 
-#### Update Exercise
+---
+
+### Update Exercise
 ```
-PUT/PATCH /api/exercises/{id}
+PUT /api/exercises/{id}
+PATCH /api/exercises/{id}
 ```
+*Requires authentication + admin role*
 
-**Authorization**: Can only update own exercises (not global ones).
-
-**Request Body**: Same as create, all fields optional except validation rules apply.
-
-**Response**:
-```json
-{
-  "message": "Exercise updated successfully",
-  "data": { /* ExerciseResource */ }
+**Request Body:**
+```typescript
+interface UpdateExerciseRequest {
+  name: string;              // required, max 255 chars
+  description?: string;      // optional, max 5000 chars
+  category_id: number;       // required, must be workout category
+  default_rest_sec?: number; // optional, min 0
+  image?: File;              // optional, image file max 5MB
+  video?: File;              // optional, video file max 50MB
 }
 ```
 
-#### Delete Exercise
+**Response:**
+```typescript
+interface UpdateExerciseResponse {
+  message: "Exercise updated successfully";
+  data: ExerciseResource;
+}
+```
+
+---
+
+### Delete Exercise
 ```
 DELETE /api/exercises/{id}
 ```
+*Requires authentication + admin role*
 
-**Authorization**: Can only delete own exercises (not global ones).
-
-**Response**:
-```json
-{
-  "message": "Exercise deleted successfully"
-}
-```
-
-### Exercise Resource Structure
-
+**Response:**
 ```typescript
-interface ExerciseResource {
-  id: number;
-  category: CategoryResource | null;  // Only present if relationship loaded
-  muscle_groups: MuscleGroupResource[] | null;  // Only present if relationship loaded
-  primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
-  secondary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
-  name: string;
-  image: string | null;  // Full URL to user-uploaded image
-  default_rest_sec: number;
-  created_at: string;  // ISO 8601 datetime
-  updated_at: string;  // ISO 8601 datetime
+interface DeleteExerciseResponse {
+  message: "Exercise deleted successfully";
 }
 ```
-
-### Category Resource Structure
-
-Categories represent **workout types** (not body parts):
-
-```typescript
-interface CategoryResource {
-  id: number;
-  type: string;  // Enum: "workout"
-  name: string;  // "Compound" | "Isolation" | "Cardio" | "Plyometrics" | "Mobility"
-  slug: string;  // "compound" | "isolation" | "cardio" | "plyometrics" | "mobility"
-  display_order: number;
-  icon: string | null;
-  color: string | null;
-  created_at: string;
-  updated_at: string;
-}
-```
-
-### Muscle Group Resource Structure
-
-Muscle groups represent **body parts** that exercises target:
-
-```typescript
-interface MuscleGroupResource {
-  id: number;
-  name: string;  // e.g., "Chest", "Biceps", "Quadriceps"
-  body_region: string;  // "upper" | "lower" | "core"
-  is_primary: boolean | null;  // Only present when loaded via exercise relationship
-  created_at: string;
-  updated_at: string;
-}
-```
-
-**Available Muscle Groups (17 total)**:
-- **Upper Body**: Chest, Lats, Upper Back, Lower Back, Front Delts, Side Delts, Rear Delts, Traps, Biceps, Triceps, Forearms
-- **Lower Body**: Quadriceps, Hamstrings, Glutes, Calves
-- **Core**: Abs, Obliques
 
 ---
 
-## Muscle Group Resource
+### Get Exercise Performance History
+```
+GET /api/exercises/{id}/history
+```
+*Requires authentication (owner only - user's own data)*
 
-### Overview
-Muscle Groups represent body parts that exercises target. Each exercise can have multiple primary and secondary muscle groups. This is separate from Categories which represent workout types (Compound, Isolation, etc.).
+**Query Parameters (optional):**
+```typescript
+interface ExerciseHistoryQueryParams {
+  limit?: number;        // Optional: Limit number of data points (default: all)
+  start_date?: string;   // Optional: Filter from date (YYYY-MM-DD)
+  end_date?: string;     // Optional: Filter to date (YYYY-MM-DD)
+}
+```
 
-### API Endpoints
+**Response:**
+```typescript
+interface ExerciseHistoryResponse {
+  data: ExerciseHistoryResource;
+}
 
-#### List All Muscle Groups
+interface ExerciseHistoryResource {
+  exercise_id: number;
+  exercise_name: string;
+  stats: ExerciseHistoryStats;
+  performance_data: PerformanceDataPoint[];
+}
+
+interface ExerciseHistoryStats {
+  current_weight: number;      // Most recent weight used (kg)
+  best_weight: number;         // Highest weight ever used (kg)
+  progress_percentage: number; // Percentage change from first to most recent (+28 means +28%)
+  total_sessions: number;       // Total number of completed sessions with this exercise
+  first_session_date: string | null; // ISO date string of first session (YYYY-MM-DD)
+  last_session_date: string | null; // ISO date string of most recent session (YYYY-MM-DD)
+}
+
+interface PerformanceDataPoint {
+  date: string;                // ISO date string (YYYY-MM-DD)
+  session_id: number;          // Workout session ID (for reference)
+  weight: number;              // Best/max weight used in that session (kg)
+  reps: number;                // Total reps across all sets in that session
+  volume: number;              // Total volume = sum of (weight × reps) for all sets
+  sets: number;                // Number of sets performed
+}
+```
+
+**Example Response:**
+```json
+{
+  "data": {
+    "exercise_id": 42,
+    "exercise_name": "Leg Press",
+    "stats": {
+      "current_weight": 32,
+      "best_weight": 32,
+      "progress_percentage": 28,
+      "total_sessions": 5,
+      "first_session_date": "2024-01-01",
+      "last_session_date": "2024-01-15"
+    },
+    "performance_data": [
+      {
+        "date": "2024-01-01",
+        "session_id": 101,
+        "weight": 25,
+        "reps": 30,
+        "volume": 750,
+        "sets": 3
+      },
+      {
+        "date": "2024-01-15",
+        "session_id": 120,
+        "weight": 32,
+        "reps": 30,
+        "volume": 960,
+        "sets": 3
+      }
+    ]
+  }
+}
+```
+
+**Notes:**
+- Only returns data from completed workout sessions (`completed_at IS NOT NULL`)
+- Performance data is ordered chronologically (oldest first)
+- Weight represents the maximum weight used in that session
+- Volume is calculated as the sum of (weight × reps) for each set
+- If no history exists, returns empty `performance_data` array with stats set to 0/null
+
+---
+
+## Muscle Groups
+
+### List All Muscle Groups
 ```
 GET /api/muscle-groups
 ```
+*Requires authentication*
 
-**Query Parameters**:
-- `body_region` (optional): Filter by region - `upper`, `lower`, or `core`
-
-**Response Structure**:
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "Chest",
-      "body_region": "upper",
-      "created_at": "2025-01-01T00:00:00.000000Z",
-      "updated_at": "2025-01-01T00:00:00.000000Z"
-    },
-    {
-      "id": 12,
-      "name": "Quadriceps",
-      "body_region": "lower",
-      "created_at": "2025-01-01T00:00:00.000000Z",
-      "updated_at": "2025-01-01T00:00:00.000000Z"
-    }
-  ]
+**Query Parameters:**
+```typescript
+interface MuscleGroupQueryParams {
+  body_region?: 'upper' | 'lower' | 'core'; // optional filter
 }
 ```
 
-#### Get Single Muscle Group
+**Response:**
+```typescript
+interface MuscleGroupListResponse {
+  data: MuscleGroupResource[];
+}
+```
+
+---
+
+### Get Single Muscle Group
 ```
 GET /api/muscle-groups/{id}
 ```
+*Requires authentication*
 
-**Response**: Returns muscle group with associated exercises.
+**Response:**
+Returns muscle group with associated exercises loaded.
+```typescript
+// MuscleGroupResource with exercises relationship
+```
 
 ---
 
-## Fitness Metrics Resource
+## Fitness Metrics
 
-### Overview
-Fitness metrics provide analytics about the user's training including strength score, muscle group balance, and weekly progress.
-
-### API Endpoints
-
-#### Get Fitness Metrics
+### Get Fitness Metrics
 ```
 GET /api/user/fitness-metrics
 ```
+*Requires authentication*
 
-**Response Structure**:
-```json
-{
-  "success": true,
-  "data": {
-    "strength_score": {
-      "current": 250,
-      "level": "INTERMEDIATE",
-      "recent_gain": 15,
-      "gain_period": "last_30_days"
-    },
-    "strength_balance": {
-      "percentage": 72,
-      "level": "GOOD",
-      "recent_change": 3,
-      "muscle_groups": {
-        "chest": 10,
-        "lats": 8,
-        "upper back": 5,
-        "lower back": 3,
-        "front delts": 4,
-        "side delts": 3,
-        "rear delts": 2,
-        "traps": 2,
-        "biceps": 8,
-        "triceps": 10,
-        "forearms": 1,
-        "quadriceps": 15,
-        "hamstrings": 8,
-        "glutes": 10,
-        "calves": 3,
-        "abs": 5,
-        "obliques": 3
-      }
-    },
-    "weekly_progress": {
-      "percentage": 25,
-      "trend": "up",
-      "current_week_workouts": 5,
-      "previous_week_workouts": 4
-    }
-  },
-  "message": "Fitness metrics retrieved successfully"
+**Response:**
+```typescript
+interface FitnessMetricsResponse {
+  success: true;
+  data: {
+    strength_score: StrengthScore;
+    strength_balance: StrengthBalance;
+    weekly_progress: WeeklyProgress;
+  };
+  message: "Fitness metrics retrieved successfully";
+}
+
+interface StrengthScore {
+  current: number;           // Relative strength score
+  level: StrengthLevel;      // Based on demographics
+  recent_gain: number;       // Change in last 30 days
+  gain_period: "last_30_days";
+  percentile?: number;        // 0-100, percentile ranking compared to similar users in same partner
+  muscle_groups?: Record<string, number>; // Strength scores by muscle group (chest, back, shoulders, arms, legs, core)
+}
+
+type StrengthLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
+interface StrengthBalance {
+  percentage: number;        // 0-100, how balanced training is
+  level: BalanceLevel;
+  recent_change: number;     // Change from previous period
+  muscle_groups: Record<MuscleGroupName, number>; // % distribution
+  percentile?: number;       // 0-100, percentile ranking compared to similar users in same partner (optional)
+}
+
+type BalanceLevel = 'EXCELLENT' | 'GOOD' | 'FAIR' | 'NEEDS_IMPROVEMENT';
+
+type MuscleGroupName = 
+  | 'chest' | 'lats' | 'upper back' | 'lower back'
+  | 'front delts' | 'side delts' | 'rear delts' | 'traps'
+  | 'biceps' | 'triceps' | 'forearms'
+  | 'quadriceps' | 'hamstrings' | 'glutes' | 'calves'
+  | 'abs' | 'obliques';
+
+interface WeeklyProgress {
+  percentage: number;        // Absolute change %
+  trend: 'up' | 'down' | 'same';
+  current_week_workouts: number;
+  previous_week_workouts: number;
+  current_week_volume?: number;          // Total volume in lbs for current week (converted from KG stored in DB) (optional)
+  current_week_time_minutes?: number;   // Total time in minutes for current week (optional)
+  previous_week_volume?: number;        // Total volume in lbs for previous week (converted from KG stored in DB) (optional)
+  volume_difference?: number;           // Difference in volume between weeks (optional)
+  volume_difference_percent?: number;   // Percentage difference in volume (optional)
+  daily_breakdown?: Array<{              // Daily data for the current week (optional)
+    day_of_week: number;                // 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
+    date: string;                       // ISO date string (e.g., "2024-01-15")
+    volume: number;                     // Volume in lbs for that day (converted from KG stored in DB)
+    workouts: number;                   // Number of workouts
+    time_minutes: number;                // Time spent in minutes
+  }>;
+  historical_weeks?: Array<{ week: string, workouts: number }>; // Historical weekly workout counts for last 8 weeks (optional)
 }
 ```
-
-**Note**: The `muscle_groups` object contains 17 granular muscle groups with their training volume percentage distribution.
 
 ---
 
-## Workout Template Resource
+## Plans
 
-### Overview
-Workout Templates are pre-defined workout plans that contain multiple exercises with specific targets (sets, reps, weight, rest). Each template belongs to a user and can optionally be assigned to a specific day of the week.
+Plans are top-level containers for organizing workout templates.
 
-### API Endpoints
+### List All Plans
+```
+GET /api/plans
+```
+*Requires authentication*
 
-#### List All Workout Templates
+**Response:**
+```typescript
+interface PlanListResponse {
+  data: PlanResource[];
+}
+```
+
+---
+
+### Get Single Plan
+```
+GET /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface PlanShowResponse {
+  data: PlanResource;
+}
+```
+
+---
+
+### Create Plan
+```
+POST /api/plans
+```
+*Requires authentication*
+
+**Request Body:**
+```typescript
+interface CreatePlanRequest {
+  name: string;          // required, max 255 chars
+  description?: string;  // optional
+  is_active?: boolean;   // optional, defaults to false
+}
+```
+
+**Response (201 Created):**
+```typescript
+interface CreatePlanResponse {
+  message: "Plan created successfully";
+  data: PlanResource;
+}
+```
+
+---
+
+### Update Plan
+```
+PUT /api/plans/{id}
+PATCH /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface UpdatePlanRequest {
+  name: string;          // required, max 255 chars
+  description?: string;  // optional
+  is_active?: boolean;   // optional
+}
+```
+
+**Response:**
+```typescript
+interface UpdatePlanResponse {
+  message: "Plan updated successfully";
+  data: PlanResource;
+}
+```
+
+---
+
+### Delete Plan
+```
+DELETE /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface DeletePlanResponse {
+  message: "Plan deleted successfully";
+}
+```
+
+---
+
+## Workout Templates
+
+Workout templates define reusable workout structures with exercises and targets.
+
+### List All Workout Templates
 ```
 GET /api/workout-templates
 ```
+*Requires authentication*
 
-**Response**: Returns all workout templates for the authenticated user, with exercises and categories loaded.
-
-**Response Structure**:
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "user_id": 1,
-      "name": "Push Day",
-      "description": "Chest, shoulders, and triceps",
-      "day_of_week": 1,
-      "exercises": [
-        {
-          "id": 1,
-          "name": "Bench Press",
-          "image": "https://example.com/storage/exercises/images/...",
-          "default_rest_sec": 90,
-          "category": {
-            "id": 1,
-            "type": "workout",
-            "name": "Chest",
-            "slug": "chest",
-            "display_order": 1,
-            "icon": "chest-icon",
-            "color": "#FF5733",
-            "created_at": "2025-01-01T00:00:00.000000Z",
-            "updated_at": "2025-01-01T00:00:00.000000Z"
-          },
-          "pivot": {
-            "order": 1,
-            "target_sets": 4,
-            "target_reps": 8,
-            "target_weight": "80.00",
-            "rest_seconds": 90
-          }
-        }
-      ],
-      "created_at": "2025-01-01T00:00:00.000000Z",
-      "updated_at": "2025-01-01T00:00:00.000000Z"
-    }
-  ]
+**Response:**
+```typescript
+interface WorkoutTemplateListResponse {
+  data: WorkoutTemplateResource[];
 }
 ```
 
-#### Get Single Workout Template
+---
+
+### Get Single Workout Template
 ```
 GET /api/workout-templates/{id}
 ```
+*Requires authentication (owner only)*
 
-**Authorization**: Can only view own workout templates.
+**Response:**
+```typescript
+interface WorkoutTemplateShowResponse {
+  data: WorkoutTemplateResource;
+}
+```
 
-**Response Structure**: Same as single template object in list response.
+---
 
-#### Create Workout Template
+### Create Workout Template
 ```
 POST /api/workout-templates
 ```
+*Requires authentication*
 
-**Request Body**:
-```json
-{
-  "name": "Pull Day",
-  "description": "Back and biceps workout",
-  "day_of_week": 2
+**Request Body:**
+```typescript
+interface CreateWorkoutTemplateRequest {
+  plan_id: number;       // required, must belong to user
+  name: string;          // required, max 255 chars
+  description?: string;  // optional
+  day_of_week?: number;  // optional, 0-6 (Mon=0, Sun=6)
 }
 ```
 
-**Validation Rules**:
-- `name`: required, string, max 255 characters
-- `description`: nullable, string
-- `day_of_week`: nullable, integer, min 0, max 6
-  - 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday
-
-**Response** (201 Created):
-```json
-{
-  "message": "Workout template created successfully",
-  "data": {
-    "id": 2,
-    "user_id": 1,
-    "name": "Pull Day",
-    "description": "Back and biceps workout",
-    "day_of_week": 2,
-    "exercises": [],
-    "created_at": "2025-01-01T00:00:00.000000Z",
-    "updated_at": "2025-01-01T00:00:00.000000Z"
-  }
+**Response (201 Created):**
+```typescript
+interface CreateWorkoutTemplateResponse {
+  message: "Workout template created successfully";
+  data: WorkoutTemplateResource;
 }
 ```
 
-#### Update Workout Template
+---
+
+### Update Workout Template
 ```
-PUT/PATCH /api/workout-templates/{id}
+PUT /api/workout-templates/{id}
+PATCH /api/workout-templates/{id}
 ```
+*Requires authentication (owner only)*
 
-**Authorization**: Can only update own workout templates.
-
-**Request Body**: Same as create, all fields optional except validation rules apply.
-
-**Response**:
-```json
-{
-  "message": "Workout template updated successfully",
-  "data": { /* WorkoutTemplateResource */ }
+**Request Body:**
+```typescript
+interface UpdateWorkoutTemplateRequest {
+  plan_id?: number;      // optional, must belong to user
+  name: string;          // required, max 255 chars
+  description?: string;  // optional
+  day_of_week?: number;  // optional, 0-6
 }
 ```
 
-#### Delete Workout Template
+**Response:**
+```typescript
+interface UpdateWorkoutTemplateResponse {
+  message: "Workout template updated successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+### Delete Workout Template
 ```
 DELETE /api/workout-templates/{id}
 ```
+*Requires authentication (owner only)*
 
-**Authorization**: Can only delete own workout templates.
-
-**Response**:
-```json
-{
-  "message": "Workout template deleted successfully"
-}
-```
-
-#### Add Exercise to Workout Template
-```
-POST /api/workout-templates/{id}/exercises
-```
-
-**Authorization**: Can only add exercises to own workout templates.
-
-**Request Body**:
-```json
-{
-  "exercise_id": 1,
-  "target_sets": 4,
-  "target_reps": 8,
-  "target_weight": 80.00,
-  "rest_seconds": 90
-}
-```
-
-**Validation Rules**:
-- `exercise_id`: required, must exist in workout_exercises table
-- `target_sets`: nullable, integer, minimum 1
-- `target_reps`: nullable, integer, minimum 1
-- `target_weight`: nullable, numeric, minimum 0
-- `rest_seconds`: nullable, integer, minimum 0
-
-**Response** (201 Created):
-```json
-{
-  "message": "Exercise added successfully",
-  "data": {
-    "id": 1,
-    "user_id": 1,
-    "name": "Push Day",
-    "description": "Chest, shoulders, and triceps",
-    "day_of_week": 1,
-    "exercises": [
-      {
-        "id": 1,
-        "name": "Bench Press",
-        "image": "https://example.com/storage/exercises/images/...",
-        "default_rest_sec": 90,
-        "category": { /* CategoryResource */ },
-        "pivot": {
-          "order": 1,
-          "target_sets": 4,
-          "target_reps": 8,
-          "target_weight": "80.00",
-          "rest_seconds": 90
-        }
-      }
-    ],
-    "created_at": "2025-01-01T00:00:00.000000Z",
-    "updated_at": "2025-01-01T00:00:00.000000Z"
-  }
-}
-```
-
-**Note**: The exercise is automatically added at the end of the workout (highest order + 1). Use the update order endpoint to reorder exercises.
-
-#### Remove Exercise from Workout Template
-```
-DELETE /api/workout-templates/{id}/exercises/{exerciseId}
-```
-
-**Authorization**: Can only remove exercises from own workout templates.
-
-**Parameters**:
-- `{id}`: Workout template ID
-- `{exerciseId}`: WorkoutTemplateExercise ID (pivot table record ID, not the exercise ID)
-
-**Response**:
-```json
-{
-  "message": "Exercise removed successfully",
-  "data": { /* WorkoutTemplateResource with updated exercises list */ }
-}
-```
-
-#### Update Exercise in Workout Template
-```
-PUT /api/workout-templates/{id}/exercises/{exerciseId}
-```
-
-**Authorization**: Can only update exercises in own workout templates.
-
-**Request Body**:
-```json
-{
-  "exercise_id": 2,
-  "target_sets": 5,
-  "target_reps": 10,
-  "target_weight": 85.50,
-  "rest_seconds": 120
-}
-```
-
-**Validation Rules**:
-- `exercise_id`: sometimes required (if provided, must exist in workout_exercises table)
-- `target_sets`: nullable, integer, minimum 1
-- `target_reps`: nullable, integer, minimum 1
-- `target_weight`: nullable, numeric, minimum 0
-- `rest_seconds`: nullable, integer, minimum 0
-
-**Response**:
-```json
-{
-  "message": "Exercise updated successfully",
-  "data": { /* WorkoutTemplateResource with updated exercise */ }
-}
-```
-
-**Note**: All fields are optional. Only include fields you want to update.
-
-#### Update Exercise Order in Workout Template
-```
-POST /api/workout-templates/{id}/order
-```
-
-**Authorization**: Can only update order of exercises in own workout templates.
-
-**Request Body**:
-```json
-{
-  "order": [3, 1, 2, 4]
-}
-```
-
-**Validation Rules**:
-- `order`: required, array of integers
-- `order.*`: required, integer (must be valid WorkoutTemplateExercise IDs belonging to this template)
-
-**Response**:
-```json
-{
-  "message": "Order updated successfully",
-  "data": { /* WorkoutTemplateResource with reordered exercises */ }
-}
-```
-
-**Note**: The array should contain all WorkoutTemplateExercise IDs for this template in the desired order. The order will be set based on the array index (0 = first, 1 = second, etc.).
-
-### Workout Template Resource Structure
-
+**Response:**
 ```typescript
-interface WorkoutTemplateResource {
-  id: number;
-  user_id: number;
-  name: string;
-  description: string | null;
-  day_of_week: number | null;  // 0-6 (Sunday-Saturday)
-  exercises: WorkoutTemplateExercise[] | null;  // Only present if relationship loaded
-  created_at: string;
-  updated_at: string;
+interface DeleteWorkoutTemplateResponse {
+  message: "Workout template deleted successfully";
+}
+```
+
+---
+
+### Add Exercise to Template
+```
+POST /api/workout-templates/{workoutTemplate}/exercises
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface AddTemplateExerciseRequest {
+  exercise_id: number;       // required, must exist
+  target_sets?: number;      // optional, min 1
+  target_reps?: number;      // optional, min 1
+  target_weight?: number;    // optional, min 0
+  rest_seconds?: number;     // optional, min 0
+}
+```
+
+**Response (201 Created):**
+```typescript
+interface AddTemplateExerciseResponse {
+  message: "Exercise added successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+### Update Exercise in Template
+```
+PUT /api/workout-templates/{workoutTemplate}/exercises/{exercise}
+```
+*Requires authentication (owner only)*
+
+**Note:** `{exercise}` is the `WorkoutTemplateExercise` pivot ID, not the exercise ID.
+
+**Request Body:**
+```typescript
+interface UpdateTemplateExerciseRequest {
+  target_sets?: number;      // optional, min 1
+  target_reps?: number;      // optional, min 1
+  target_weight?: number;    // optional, min 0
+  rest_seconds?: number;     // optional, min 0
+}
+```
+
+**Response:**
+```typescript
+interface UpdateTemplateExerciseResponse {
+  message: "Exercise updated successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+### Remove Exercise from Template
+```
+DELETE /api/workout-templates/{workoutTemplate}/exercises/{exercise}
+```
+*Requires authentication (owner only)*
+
+**Note:** `{exercise}` is the `WorkoutTemplateExercise` pivot ID.
+
+**Response:**
+```typescript
+interface RemoveTemplateExerciseResponse {
+  message: "Exercise removed successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+### Reorder Exercises in Template
+```
+POST /api/workout-templates/{workoutTemplate}/order
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface ReorderTemplateExercisesRequest {
+  order: number[];  // Array of WorkoutTemplateExercise IDs in desired order
+}
+```
+
+**Response:**
+```typescript
+interface ReorderTemplateExercisesResponse {
+  message: "Order updated successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+## Workout Planner
+
+The planner provides a weekly view of scheduled workouts.
+
+### Get Weekly Planner
+```
+GET /api/planner/weekly
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface WeeklyPlannerResponse {
+  data: {
+    weekly_plan: DayPlan[];
+    available_templates: WorkoutTemplateResource[];
+  };
 }
 
-interface WorkoutTemplateExercise {
-  id: number;  // Exercise ID
-  name: string;
-  image: string | null;  // Full URL to user-uploaded image
-  default_rest_sec: number;
-  category: CategoryResource | null;
-  pivot: {
-    order: number;  // Exercise order in the workout
-    target_sets: number;
-    target_reps: number;
-    target_weight: string;  // Decimal as string (2 decimal places)
-    rest_seconds: number;
+interface DayPlan {
+  day_of_week: number;                    // 0-6 (Mon=0, Sun=6)
+  day_name: string;                       // "Monday", "Tuesday", etc.
+  template: WorkoutTemplateResource | null;
+}
+```
+
+---
+
+### Assign Template to Day
+```
+POST /api/planner/assign
+```
+*Requires authentication*
+
+**Request Body:**
+```typescript
+interface AssignTemplateRequest {
+  template_id: number;   // required, must belong to user
+  day_of_week: number;   // required, 0-6
+}
+```
+
+**Response:**
+```typescript
+interface AssignTemplateResponse {
+  message: "Workout assigned successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+### Unassign Template from Day
+```
+POST /api/planner/unassign
+```
+*Requires authentication*
+
+**Request Body:**
+```typescript
+interface UnassignTemplateRequest {
+  template_id: number;   // required, must belong to user
+}
+```
+
+**Response:**
+```typescript
+interface UnassignTemplateResponse {
+  message: "Workout unassigned successfully";
+  data: WorkoutTemplateResource;
+}
+```
+
+---
+
+## Workout Sessions
+
+Workout sessions track actual performed workouts with logged sets.
+
+### Get Calendar View
+```
+GET /api/workout-sessions/calendar
+```
+*Requires authentication*
+
+**Query Parameters:**
+```typescript
+interface CalendarQueryParams {
+  start_date: string;  // required, format: YYYY-MM-DD
+  end_date: string;    // required, format: YYYY-MM-DD
+}
+```
+
+**Response:**
+```typescript
+interface CalendarResponse {
+  data: {
+    sessions: WorkoutSessionCalendarResource[];
+    date_range: {
+      start: string;
+      end: string;
+    };
   };
 }
 ```
 
 ---
 
-## API Resources Overview
+### Get Today's Workout
+```
+GET /api/workout-sessions/today
+```
+*Requires authentication*
 
-The Fit Nation API uses Laravel API Resources to format all responses. All resources are located in `App\Http\Resources\Api\` namespace. The following resources are available:
-
-### Available Resources
-
-1. **UserResource** - User account information
-2. **UserProfileResource** - User fitness profile data
-3. **ExerciseResource** - Exercise information with muscle groups
-4. **CategoryResource** - Exercise/workout type categories (Compound, Isolation, Cardio, etc.)
-5. **MuscleGroupResource** - Body part muscle groups (Chest, Biceps, Quadriceps, etc.)
-6. **WorkoutTemplateResource** - Workout template plans
-7. **PartnerResource** - Partner/brand information
-8. **PartnerVisualIdentityResource** - Partner visual branding
-9. **FitnessMetricsResource** - User fitness metrics and muscle balance
-
-### Resource Usage
-
-All API endpoints use these resources to ensure consistent response formatting. Resources automatically handle:
-- Conditional loading of relationships (using `whenLoaded()`)
-- Proper data transformation
-- Type casting and formatting
-- Null value handling
+**Response:**
+```typescript
+interface TodayWorkoutResponse {
+  data: {
+    template: WorkoutTemplate | null;  // Scheduled template for today
+    session: WorkoutSessionResource | null;  // Active session if exists
+  };
+}
+```
 
 ---
 
-## Partner Resource
+### Start Workout Session
+```
+POST /api/workout-sessions/start
+```
+*Requires authentication*
 
-### Overview
-Partners represent brands or organizations that can customize the application's visual identity. Partners have a visual identity that includes colors, fonts, logos, and styling options.
+**Request Body:**
+```typescript
+interface StartSessionRequest {
+  template_id?: number;  // optional, creates blank session if not provided
+}
+```
 
-### Partner Resource Structure
+**Response (201 Created):**
+```typescript
+interface StartSessionResponse {
+  data: WorkoutSessionResource;
+  message: "Workout session started successfully";
+}
+```
+
+**Note:** If a session already exists for today, returns the existing session.
+
+---
+
+### Get Session Details
+```
+GET /api/workout-sessions/{session}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface SessionDetailResponse {
+  data: {
+    session: WorkoutSessionResource;
+    exercises: SessionExerciseDetail[];
+    progress: SessionProgress;
+  };
+}
+
+interface SessionExerciseDetail {
+  session_exercise: WorkoutSessionExerciseResource;
+  logged_sets: SetLogResource[];
+  previous_sets: SetLogResource[];  // From last completed session
+  is_completed: boolean;
+}
+
+interface SessionProgress {
+  total_exercises: number;
+  completed_exercises: number;
+  progress_percent: number;  // 0-100
+}
+```
+
+---
+
+### Complete Workout Session
+```
+POST /api/workout-sessions/{session}/complete
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface CompleteSessionRequest {
+  notes?: string;  // optional, max 1000 chars
+}
+```
+
+**Response:**
+```typescript
+interface CompleteSessionResponse {
+  data: WorkoutSessionResource;
+  message: "Workout completed! Great job! 💪";
+}
+```
+
+---
+
+### Cancel Workout Session
+```
+DELETE /api/workout-sessions/{session}/cancel
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface CancelSessionResponse {
+  message: "Workout cancelled successfully";
+}
+```
+
+**Note:** This deletes all set logs and the session itself.
+
+---
+
+### Log a Set
+```
+POST /api/workout-sessions/{session}/sets
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface LogSetRequest {
+  exercise_id: number;    // required, must exist
+  set_number: number;     // required, min 1
+  weight: number;         // required, min 0
+  reps: number;           // required, min 0
+  rest_seconds?: number;  // optional, min 0
+}
+```
+
+**Response (201 Created):**
+```typescript
+interface LogSetResponse {
+  data: SetLogResource;
+  message: "Set logged successfully";
+}
+```
+
+---
+
+### Update a Set
+```
+PUT /api/workout-sessions/{session}/sets/{setLog}
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface UpdateSetRequest {
+  weight: number;  // required, min 0
+  reps: number;    // required, min 0
+}
+```
+
+**Response:**
+```typescript
+interface UpdateSetResponse {
+  data: SetLogResource;
+  message: "Set updated successfully";
+}
+```
+
+---
+
+### Delete a Set
+```
+DELETE /api/workout-sessions/{session}/sets/{setLog}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface DeleteSetResponse {
+  message: "Set deleted successfully";
+}
+```
+
+**Note:** Only the last set for an exercise can be deleted.
+
+---
+
+### Add Exercise to Session
+```
+POST /api/workout-sessions/{session}/exercises
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface AddSessionExerciseRequest {
+  exercise_id: number;       // required, must exist
+  order?: number;            // optional, min 0, defaults to end
+  target_sets?: number;      // optional, min 1, defaults to 3
+  target_reps?: number;      // optional, min 1, defaults to 10
+  target_weight?: number;    // optional, min 0, defaults to 0
+  rest_seconds?: number;     // optional, min 0, uses exercise default
+}
+```
+
+**Response (201 Created):**
+```typescript
+interface AddSessionExerciseResponse {
+  data: WorkoutSessionExerciseResource;
+  message: "Exercise added to session successfully";
+}
+```
+
+---
+
+### Update Session Exercise
+```
+PUT /api/workout-sessions/{session}/exercises/{exercise}
+```
+*Requires authentication (owner only)*
+
+**Note:** `{exercise}` is the `WorkoutSessionExercise` ID.
+
+**Request Body:**
+```typescript
+interface UpdateSessionExerciseRequest {
+  order?: number;            // optional, min 0
+  target_sets?: number;      // optional, min 1
+  target_reps?: number;      // optional, min 1
+  target_weight?: number;    // optional, min 0
+  rest_seconds?: number;     // optional, min 0
+}
+```
+
+**Response:**
+```typescript
+interface UpdateSessionExerciseResponse {
+  data: WorkoutSessionExerciseResource;
+  message: "Exercise updated successfully";
+}
+```
+
+---
+
+### Remove Exercise from Session
+```
+DELETE /api/workout-sessions/{session}/exercises/{exercise}
+```
+*Requires authentication (owner only)*
+
+**Note:** Also deletes all associated set logs for this exercise.
+
+**Response:**
+```typescript
+interface RemoveSessionExerciseResponse {
+  message: "Exercise removed from session successfully";
+}
+```
+
+---
+
+### Reorder Session Exercises
+```
+POST /api/workout-sessions/{session}/exercises/reorder
+```
+*Requires authentication (owner only)*
+
+**Request Body:**
+```typescript
+interface ReorderSessionExercisesRequest {
+  exercise_ids: number[];  // Array of WorkoutSessionExercise IDs in desired order
+}
+```
+
+**Response:**
+```typescript
+interface ReorderSessionExercisesResponse {
+  data: WorkoutSessionExerciseResource[];
+  message: "Exercises reordered successfully";
+}
+```
+
+---
+
+## Complete TypeScript Definitions
+
+### Enums and Constants
 
 ```typescript
-interface PartnerResource {
+// Fitness Goal
+type FitnessGoal = 'fat_loss' | 'muscle_gain' | 'strength' | 'general_fitness';
+
+// Gender
+type Gender = 'male' | 'female' | 'other';
+
+// Training Experience
+type TrainingExperience = 'beginner' | 'intermediate' | 'advanced';
+
+// Strength Level
+type StrengthLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
+// Balance Level
+type BalanceLevel = 'EXCELLENT' | 'GOOD' | 'FAIR' | 'NEEDS_IMPROVEMENT';
+
+// Trend Direction
+type TrendDirection = 'up' | 'down' | 'same';
+
+// Body Region
+type BodyRegion = 'upper' | 'lower' | 'core';
+
+// Day of Week (for planner)
+// 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
+type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+```
+
+### Resource Interfaces
+
+```typescript
+// ============================================
+// USER RESOURCES
+// ============================================
+
+interface UserResource {
+  id: number;
+  name: string;
+  email: string;
+  profile_photo: string;  // Full URL
+  profile: UserProfileResource | null;
+  partner: UserPartner | null;
+  email_verified_at: string | null;  // ISO 8601
+  created_at: string;                 // ISO 8601
+  updated_at: string;                 // ISO 8601
+}
+
+interface UserProfileResource {
+  fitness_goal: FitnessGoal | null;
+  age: number | null;
+  gender: Gender | null;
+  height: number | null;              // in cm
+  weight: number | null;              // in kg
+  training_experience: TrainingExperience | null;
+  training_days_per_week: number | null;  // 1-7
+  workout_duration_minutes: number | null;
+}
+
+interface UserPartner {
   id: number;
   name: string;
   slug: string;
-  domain: string | null;
-  is_active: boolean;
-  identity: PartnerVisualIdentityResource | null;  // Only present if relationship loaded
-  users: UserResource[] | null;  // Only present if relationship loaded
-  created_at: string;
-  updated_at: string;
+  visual_identity: PartnerVisualIdentityResource | null;
 }
 
+// ============================================
+// PARTNER RESOURCES
+// ============================================
+
 interface PartnerVisualIdentityResource {
+  // Core branding
   primary_color: string | null;
   secondary_color: string | null;
-  logo: string | null;
+  logo: string;  // Full URL
   font_family: string | null;
+  
+  // Essential colors
   background_color: string | null;
   card_background_color: string | null;
   text_primary_color: string | null;
   text_secondary_color: string | null;
   text_on_primary_color: string | null;
+  
+  // Semantic colors
   success_color: string | null;
   warning_color: string | null;
   danger_color: string | null;
+  
+  // Optional styling
   accent_color: string | null;
   border_color: string | null;
-  background_pattern: string | null;
+  background_image: string;  // Full URL
+  
+  // Dark mode colors
+  primary_color_dark: string | null;
+  secondary_color_dark: string | null;
+  background_color_dark: string | null;
+  card_background_color_dark: string | null;
+  text_primary_color_dark: string | null;
+  text_secondary_color_dark: string | null;
+  text_on_primary_color_dark: string | null;
+  success_color_dark: string | null;
+  warning_color_dark: string | null;
+  danger_color_dark: string | null;
+  accent_color_dark: string | null;
+  border_color_dark: string | null;
+}
+
+// ============================================
+// EXERCISE RESOURCES
+// ============================================
+
+interface ExerciseResource {
+  id: number;
+  category: CategoryResource | null;
+  muscle_groups: MuscleGroupResource[] | null;
+  primary_muscle_groups: MuscleGroupResource[] | null;
+  secondary_muscle_groups: MuscleGroupResource[] | null;
+  name: string;
+  description: string | null;
+  muscle_group_image: string | null;  // Full URL
+  image: string | null;               // Full URL
+  video: string | null;               // Full URL
+  default_rest_sec: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ExerciseHistoryResource {
+  exercise_id: number;
+  exercise_name: string;
+  stats: ExerciseHistoryStats;
+  performance_data: PerformanceDataPoint[];
+}
+
+interface ExerciseHistoryStats {
+  current_weight: number;      // Most recent weight used (kg)
+  best_weight: number;         // Highest weight ever used (kg)
+  progress_percentage: number; // Percentage change from first to most recent
+  total_sessions: number;      // Total number of completed sessions
+  first_session_date: string | null; // ISO date string (YYYY-MM-DD)
+  last_session_date: string | null; // ISO date string (YYYY-MM-DD)
+}
+
+interface PerformanceDataPoint {
+  date: string;                // ISO date string (YYYY-MM-DD)
+  session_id: number;          // Workout session ID
+  weight: number;              // Best/max weight used in that session (kg)
+  reps: number;                // Total reps across all sets
+  volume: number;              // Total volume = sum of (weight × reps)
+  sets: number;                // Number of sets performed
+}
+
+interface CategoryResource {
+  id: number;
+  type: 'workout';
+  name: string;  // "Compound" | "Isolation" | "Cardio" | "Plyometrics" | "Mobility"
+  slug: string;
+  display_order: number;
+  icon: string | null;
+  color: string | null;  // Hex color
+  created_at: string;
+  updated_at: string;
+}
+
+interface MuscleGroupResource {
+  id: number;
+  name: string;  // e.g., "Chest", "Biceps", "Quadriceps"
+  body_region: BodyRegion;
+  is_primary?: boolean;  // Only present when loaded via exercise relationship
+  created_at: string;
+  updated_at: string;
+}
+
+// Available muscle groups (17 total):
+// Upper: Chest, Lats, Upper Back, Lower Back, Front Delts, Side Delts, 
+//        Rear Delts, Traps, Biceps, Triceps, Forearms
+// Lower: Quadriceps, Hamstrings, Glutes, Calves
+// Core:  Abs, Obliques
+
+// ============================================
+// PLAN RESOURCES
+// ============================================
+
+interface PlanResource {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  workout_templates: WorkoutTemplateResource[] | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================
+// WORKOUT TEMPLATE RESOURCES
+// ============================================
+
+interface WorkoutTemplateResource {
+  id: number;
+  plan_id: number;
+  name: string;
+  description: string | null;
+  day_of_week: DayOfWeek | null;
+  plan: PlanResource | null;
+  exercises: TemplateExercise[] | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TemplateExercise {
+  id: number;  // Exercise ID
+  name: string;
+  description: string;
+  image: string | null;  // Full URL
+  video: string | null;  // Full URL
+  muscle_group_image: string | null;  // Full URL
+  default_rest_sec: number;
+  category: CategoryResource | null;
+  muscle_groups: MuscleGroupResource[];
+  pivot: TemplateExercisePivot;
+}
+
+interface TemplateExercisePivot {
+  id: number;              // WorkoutTemplateExercise ID (pivot record)
+  order: number;
+  target_sets: number | null;
+  target_reps: number | null;
+  target_weight: number | null;
+  rest_seconds: number | null;
+}
+
+// ============================================
+// WORKOUT SESSION RESOURCES
+// ============================================
+
+interface WorkoutSessionResource {
+  id: number;
+  user_id: number;
+  workout_template_id: number | null;
+  performed_at: string;      // ISO 8601
+  completed_at: string | null;
+  notes: string | null;
+  exercises: WorkoutSessionExerciseResource[];
+  set_logs: SetLogResource[];
+  created_at: string;
+  updated_at: string;
+}
+
+interface WorkoutSessionCalendarResource {
+  id: number;
+  date: string;                       // YYYY-MM-DD
+  completed: boolean;
+  workout_template_id: number | null;
+  workout_name: string | null;
+  duration_minutes: number | null;
+}
+
+interface WorkoutSessionExerciseResource {
+  id: number;  // WorkoutSessionExercise ID
+  workout_session_id: number;
+  exercise_id: number;
+  exercise: ExerciseResource | null;
+  order: number;
+  target_sets: number | null;
+  target_reps: number | null;
+  target_weight: number | null;
+  rest_seconds: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface SetLogResource {
+  id: number;
+  workout_session_id: number;
+  exercise_id: number;
+  set_number: number;
+  weight: number;
+  reps: number;
+  rest_seconds: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================
+// FITNESS METRICS RESOURCES
+// ============================================
+
+interface FitnessMetrics {
+  strength_score: {
+    current: number;
+    level: StrengthLevel;
+    recent_gain: number;
+    gain_period: 'last_30_days';
+  };
+  strength_balance: {
+    percentage: number;
+    level: BalanceLevel;
+    recent_change: number;
+    muscle_groups: Record<string, number>;  // Muscle name -> percentage
+  };
+  weekly_progress: {
+    percentage: number;
+    trend: TrendDirection;
+    current_week_workouts: number;
+    previous_week_workouts: number;
+  };
 }
 ```
-
-**Note**: Partner endpoints are not currently exposed in the public API routes, but the resources are available for internal use and future API expansion.
-
----
-
-## Relationships
-
-### Exercise Relationships
-- **Category**: Each exercise belongs to one category (workout type only)
-- **User**: Exercises can belong to a user (nullable for global exercises)
-- **WorkoutTemplateExercises**: Exercises can be part of multiple workout templates
-
-### Workout Template Relationships
-- **User**: Each template belongs to one user
-- **Exercises**: Many-to-many relationship through `workout_template_exercises` pivot table
-- **WorkoutSessions**: Templates can have multiple workout sessions (tracked workouts)
-
-### Pivot Table: workout_template_exercises
-The pivot table connects exercises to workout templates with additional metadata:
-- `workout_template_id`: Foreign key to workout template
-- `exercise_id`: Foreign key to exercise
-- `order`: Integer - determines exercise order in the workout
-- `target_sets`: Integer - target number of sets
-- `target_reps`: Integer - target number of reps per set
-- `target_weight`: Decimal(2) - target weight in appropriate units
-- `rest_seconds`: Integer - rest time between sets for this exercise in this template
 
 ---
 
 ## Error Responses
 
-All endpoints may return the following error responses:
-
 ### 401 Unauthorized
-```json
-{
-  "message": "Unauthenticated."
+```typescript
+interface UnauthorizedError {
+  message: "Unauthenticated.";
 }
 ```
 
 ### 403 Forbidden
-```json
-{
-  "message": "Unauthorized"
+```typescript
+interface ForbiddenError {
+  message: "Unauthorized";
 }
-```
-or
-```json
-{
-  "message": "Unauthorized. You can only edit your own exercises."
+// or
+interface ForbiddenError {
+  message: "Only system administrators can update exercises.";
 }
-```
-
-### 422 Validation Error
-```json
-{
-  "message": "The given data was invalid.",
-  "errors": {
-    "name": ["The name field is required."],
-    "category_id": ["The selected category must be a workout category."],
-    "order": ["Some exercise IDs do not belong to this template"]
-  }
+// or
+interface ForbiddenError {
+  message: "Exercise does not belong to this session.";
 }
 ```
 
 ### 404 Not Found
-```json
+```typescript
+interface NotFoundError {
+  message: string;  // e.g., "No query results for model [App\\Models\\Exercise] 123"
+}
+```
+
+### 422 Validation Error
+```typescript
+interface ValidationError {
+  message: "The given data was invalid.";
+  errors: Record<string, string[]>;
+}
+
+// Example:
 {
-  "message": "No query results for model [App\\Models\\Exercise] {id}"
+  message: "The given data was invalid.",
+  errors: {
+    name: ["The name field is required."],
+    email: ["The email has already been taken."],
+    category_id: ["The selected category must be a workout category."]
+  }
 }
 ```
 
 ---
 
-## Usage Examples for AI Applications
+## API Quick Reference
 
-### Example 1: Create a Complete Workout Template
-1. First, get available exercises: `GET /api/exercises`
-2. Create workout template: `POST /api/workout-templates` with name, description, day_of_week
-3. Add exercises to template: `POST /api/workout-templates/{id}/exercises` for each exercise
-4. Optionally reorder exercises: `POST /api/workout-templates/{id}/order` with array of exercise IDs
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/register` | Register new user |
+| POST | `/api/login` | Login user |
+| POST | `/api/logout` | Logout user |
 
-### Example 2: Create a Custom Exercise
-```json
-POST /api/exercises
-{
-  "name": "Dumbbell Flyes",
-  "category_id": 1,
-  "image": "exercises/images/dumbbell-flyes.jpg",
-  "default_rest_sec": 60
-}
-```
+### User & Profile
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/user` | Get current user |
+| GET | `/api/profile` | Get user profile |
+| PUT/PATCH | `/api/profile` | Update profile |
+| DELETE | `/api/profile/photo` | Delete profile photo |
+| GET | `/api/user/fitness-metrics` | Get fitness metrics |
 
-### Example 3: Get User's Workout Plan for the Week
-1. `GET /api/workout-templates` - Returns all templates with exercises
-2. Filter by `day_of_week` to get templates for specific days
-3. Each template includes full exercise details with targets
+### Exercises
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/exercises` | List all exercises |
+| GET | `/api/exercises/{id}` | Get single exercise |
+| GET | `/api/exercises/{id}/history` | Get exercise performance history |
+| POST | `/api/exercises` | Create exercise (admin) |
+| PUT/PATCH | `/api/exercises/{id}` | Update exercise (admin) |
+| DELETE | `/api/exercises/{id}` | Delete exercise (admin) |
 
-### Example 4: Add Multiple Exercises to a Template
-```json
-POST /api/workout-templates/1/exercises
-{
-  "exercise_id": 1,
-  "target_sets": 4,
-  "target_reps": 8,
-  "target_weight": 80.00,
-  "rest_seconds": 90
-}
+### Muscle Groups
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/muscle-groups` | List muscle groups |
+| GET | `/api/muscle-groups/{id}` | Get muscle group |
 
-POST /api/workout-templates/1/exercises
-{
-  "exercise_id": 5,
-  "target_sets": 3,
-  "target_reps": 12,
-  "target_weight": 25.00,
-  "rest_seconds": 60
-}
-```
+### Plans
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/plans` | List user's plans |
+| GET | `/api/plans/{id}` | Get single plan |
+| POST | `/api/plans` | Create plan |
+| PUT/PATCH | `/api/plans/{id}` | Update plan |
+| DELETE | `/api/plans/{id}` | Delete plan |
 
-### Example 5: Reorder Exercises in a Template
-After adding exercises, you can reorder them:
-```json
-POST /api/workout-templates/1/order
-{
-  "order": [2, 1, 3]
-}
-```
-This sets the order based on WorkoutTemplateExercise IDs (not exercise IDs).
+### Workout Templates
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/workout-templates` | List templates |
+| GET | `/api/workout-templates/{id}` | Get template |
+| POST | `/api/workout-templates` | Create template |
+| PUT/PATCH | `/api/workout-templates/{id}` | Update template |
+| DELETE | `/api/workout-templates/{id}` | Delete template |
+| POST | `/api/workout-templates/{id}/exercises` | Add exercise |
+| PUT | `/api/workout-templates/{id}/exercises/{exerciseId}` | Update exercise |
+| DELETE | `/api/workout-templates/{id}/exercises/{exerciseId}` | Remove exercise |
+| POST | `/api/workout-templates/{id}/order` | Reorder exercises |
 
----
+### Workout Planner
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/planner/weekly` | Get weekly planner |
+| POST | `/api/planner/assign` | Assign template to day |
+| POST | `/api/planner/unassign` | Unassign template |
 
-## Important Notes for AI Integration
-
-1. **Authentication Required**: All exercise and workout endpoints require valid Sanctum token
-2. **User Isolation**: Users can only see/modify their own workout templates
-3. **Global Exercises**: All exercises are global and available to all users
-4. **Category Validation**: When creating exercises, the category must be of type "workout"
-5. **Day of Week**: Use integer 0-6 (Sunday=0, Monday=1, ..., Saturday=6)
-6. **Exercise Order**: In workout templates, exercises are ordered by the `pivot.order` field
-7. **Default Values**: `default_rest_sec` defaults to 90 seconds if not provided when creating exercises
-8. **Weight Format**: Target weights are stored as decimals with 2 decimal places, returned as strings in JSON
-9. **Exercise Management**: When removing or updating exercises in templates, use the WorkoutTemplateExercise ID (pivot record ID), not the exercise ID
-10. **Auto-Ordering**: New exercises are automatically added at the end. Use the order endpoint to rearrange them
-
----
-
-## Quick Reference
-
-### Authentication Endpoints
-- `POST /api/register` - Register a new user
-- `POST /api/login` - Login and receive authentication token
-- `POST /api/logout` - Logout (requires auth)
-- `GET /api/user` - Get current authenticated user (requires auth)
-- `PUT/PATCH /api/user` - Update user profile (requires auth)
-
-### Exercise Endpoints
-- `GET /api/exercises` - List exercises
-- `POST /api/exercises` - Create exercise
-- `GET /api/exercises/{id}` - Get exercise
-- `PUT/PATCH /api/exercises/{id}` - Update exercise
-- `DELETE /api/exercises/{id}` - Delete exercise
-
-### Muscle Group Endpoints
-- `GET /api/muscle-groups` - List muscle groups (filter with `?body_region=upper|lower|core`)
-- `GET /api/muscle-groups/{id}` - Get muscle group with exercises
-
-### Fitness Metrics Endpoints
-- `GET /api/user/fitness-metrics` - Get user's fitness metrics and muscle balance
-
-### Workout Template Endpoints
-- `GET /api/workout-templates` - List templates
-- `POST /api/workout-templates` - Create template
-- `GET /api/workout-templates/{id}` - Get template
-- `PUT/PATCH /api/workout-templates/{id}` - Update template
-- `DELETE /api/workout-templates/{id}` - Delete template
-
-### Workout Template Exercise Management Endpoints
-- `POST /api/workout-templates/{id}/exercises` - Add exercise to template
-- `DELETE /api/workout-templates/{id}/exercises/{exerciseId}` - Remove exercise from template
-- `PUT /api/workout-templates/{id}/exercises/{exerciseId}` - Update exercise in template
-- `POST /api/workout-templates/{id}/order` - Update exercise order
-
-### Required Headers
-```
-Authorization: Bearer {token}
-Content-Type: application/json
-Accept: application/json
-```
+### Workout Sessions
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/workout-sessions/calendar?start_date=&end_date=` | Get calendar view |
+| GET | `/api/workout-sessions/today` | Get today's workout |
+| POST | `/api/workout-sessions/start` | Start session |
+| GET | `/api/workout-sessions/{id}` | Get session details |
+| POST | `/api/workout-sessions/{id}/complete` | Complete session |
+| DELETE | `/api/workout-sessions/{id}/cancel` | Cancel session |
+| POST | `/api/workout-sessions/{id}/sets` | Log set |
+| PUT | `/api/workout-sessions/{id}/sets/{setId}` | Update set |
+| DELETE | `/api/workout-sessions/{id}/sets/{setId}` | Delete set |
+| POST | `/api/workout-sessions/{id}/exercises` | Add exercise |
+| PUT | `/api/workout-sessions/{id}/exercises/{exerciseId}` | Update exercise |
+| DELETE | `/api/workout-sessions/{id}/exercises/{exerciseId}` | Remove exercise |
+| POST | `/api/workout-sessions/{id}/exercises/reorder` | Reorder exercises |
 
 ---
 
-## Complete Resource Type Definitions
+## Usage Examples
 
-For TypeScript/JavaScript integration, here are all resource type definitions:
+### Example: Complete Authentication Flow
 
 ```typescript
-// User Resources
-interface UserResource {
-  id: number;
-  name: string;
-  email: string;
-  profile_photo: string | null;
-  profile: UserProfileResource | null;
-  partner: {
-    id: number;
-    name: string;
-    slug: string;
-    visual_identity: PartnerVisualIdentityResource | null;
-  } | null;
-  email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
+// 1. Register
+const registerResponse = await fetch('/api/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'John Doe',
+    email: 'john@example.com',
+    password: 'password123',
+    password_confirmation: 'password123'
+  })
+});
+const { token, user } = await registerResponse.json();
 
-interface UserProfileResource {
-  fitness_goal: string | null;  // "fat_loss" | "muscle_gain" | "strength" | "general_fitness"
-  age: number | null;
-  gender: string | null;  // "male" | "female" | "other"
-  height: number | null;  // in cm
-  weight: string | null;  // in kg, decimal as string
-  training_experience: string | null;  // "beginner" | "intermediate" | "advanced"
-  training_days_per_week: number | null;  // 1-7
-  workout_duration_minutes: number | null;  // in minutes
-}
+// 2. Use token for subsequent requests
+const headers = {
+  'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+};
+```
 
-// Exercise Resources
-interface ExerciseResource {
-  id: number;
-  category: CategoryResource | null;  // Only present if relationship loaded
-  muscle_groups: MuscleGroupResource[] | null;  // Only present if relationship loaded
-  primary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
-  secondary_muscle_groups: MuscleGroupResource[] | null;  // Convenience filter
-  name: string;
-  muscle_group_image: string | null;  // Full URL to muscle group image
-  image: string | null;  // Full URL to user-uploaded image
-  video: string | null;  // Full URL to user-uploaded video
-  default_rest_sec: number;
-  created_at: string;  // ISO 8601 datetime
-  updated_at: string;  // ISO 8601 datetime
-}
+### Example: Start and Track a Workout
 
-// Categories represent WORKOUT TYPES (not body parts)
-interface CategoryResource {
-  id: number;
-  type: string;  // "workout"
-  name: string;  // "Compound" | "Isolation" | "Cardio" | "Plyometrics" | "Mobility"
-  slug: string;
-  display_order: number;
-  icon: string | null;
-  color: string | null;
-  created_at: string;
-  updated_at: string;
-}
+```typescript
+// 1. Start session from template
+const startResponse = await fetch('/api/workout-sessions/start', {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({ template_id: 1 })
+});
+const { data: session } = await startResponse.json();
 
-// Muscle Groups represent BODY PARTS
-interface MuscleGroupResource {
-  id: number;
-  name: string;  // e.g., "Chest", "Biceps", "Quadriceps"
-  body_region: "upper" | "lower" | "core";
-  is_primary: boolean | null;  // Only when loaded via exercise pivot
-  created_at: string;
-  updated_at: string;
-}
+// 2. Log sets as user completes them
+await fetch(`/api/workout-sessions/${session.id}/sets`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    exercise_id: 1,
+    set_number: 1,
+    weight: 80,
+    reps: 10
+  })
+});
 
-// Fitness Metrics
-interface FitnessMetricsResource {
-  strength_score: {
-    current: number;
-    level: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-    recent_gain: number;
-    gain_period: string;
-  };
-  strength_balance: {
-    percentage: number;
-    level: "EXCELLENT" | "GOOD" | "FAIR" | "NEEDS_IMPROVEMENT";
-    recent_change: number;
-    muscle_groups: Record<string, number>;  // 17 muscle groups with % distribution
-  };
-  weekly_progress: {
-    percentage: number;
-    trend: "up" | "down" | "same";
-    current_week_workouts: number;
-    previous_week_workouts: number;
-  };
-}
+// 3. Complete the workout
+await fetch(`/api/workout-sessions/${session.id}/complete`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({ notes: 'Great workout!' })
+});
+```
 
-// Workout Template Resources
-interface WorkoutTemplateResource {
-  id: number;
-  user_id: number;
-  name: string;
-  description: string | null;
-  day_of_week: number | null;  // 0-6 (Sunday-Saturday)
-  exercises: WorkoutTemplateExercise[] | null;  // Only present if relationship loaded
-  created_at: string;
-  updated_at: string;
-}
+### Example: Create a Complete Workout Plan
 
-interface WorkoutTemplateExercise {
-  id: number;  // Exercise ID
-  name: string;
-  image: string | null;  // Full URL to user-uploaded image
-  default_rest_sec: number;
-  category: CategoryResource | null;
-  pivot: {
-    id: number;  // WorkoutTemplateExercise ID (pivot record ID)
-    order: number;  // Exercise order in the workout
-    target_sets: number | null;
-    target_reps: number | null;
-    target_weight: string | null;  // Decimal as string (2 decimal places)
-    rest_seconds: number | null;
-  };
-}
+```typescript
+// 1. Create a plan
+const planResponse = await fetch('/api/plans', {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    name: 'My PPL Program',
+    description: 'Push/Pull/Legs split',
+    is_active: true
+  })
+});
+const { data: plan } = await planResponse.json();
 
-// Partner Resources
-interface PartnerResource {
-  id: number;
-  name: string;
-  slug: string;
-  domain: string | null;
-  is_active: boolean;
-  identity: PartnerVisualIdentityResource | null;  // Only present if relationship loaded
-  users: UserResource[] | null;  // Only present if relationship loaded
-  created_at: string;
-  updated_at: string;
-}
+// 2. Create templates for each day
+const pushTemplate = await fetch('/api/workout-templates', {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    plan_id: plan.id,
+    name: 'Push Day',
+    day_of_week: 0  // Monday
+  })
+});
 
-interface PartnerVisualIdentityResource {
-  primary_color: string | null;
-  secondary_color: string | null;
-  logo: string | null;
-  font_family: string | null;
-  background_color: string | null;
-  card_background_color: string | null;
-  text_primary_color: string | null;
-  text_secondary_color: string | null;
-  text_on_primary_color: string | null;
-  success_color: string | null;
-  warning_color: string | null;
-  danger_color: string | null;
-  accent_color: string | null;
-  border_color: string | null;
-  background_pattern: string | null;
-}
+// 3. Add exercises to template
+await fetch(`/api/workout-templates/${pushTemplate.data.id}/exercises`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    exercise_id: 1,  // Bench Press
+    target_sets: 4,
+    target_reps: 8,
+    target_weight: 80
+  })
+});
 ```
 
 ---
 
-## Resource Implementation Details
+## Important Notes
 
-### Resource Files Location
-All API resources are located in: `app/Http/Resources/Api/`
-
-### Resource Files
-- `UserResource.php` - Formats user data with profile and partner relationships
-- `UserProfileResource.php` - Formats user fitness profile data
-- `ExerciseResource.php` - Formats exercise data with category and muscle groups
-- `CategoryResource.php` - Formats workout type category data
-- `MuscleGroupResource.php` - Formats muscle group (body part) data
-- `WorkoutTemplateResource.php` - Formats workout template data with exercises
-- `FitnessMetricsResource.php` - Formats fitness metrics and muscle balance data
-- `PartnerResource.php` - Formats partner data with identity and users
-- `PartnerVisualIdentityResource.php` - Formats partner visual branding data
-
-### Resource Features
-- **Conditional Loading**: Resources use `whenLoaded()` to only include relationships when they're eager loaded
-- **Type Safety**: All resources use proper type hints and return type declarations
-- **Consistent Formatting**: All resources follow the same structure and naming conventions
-- **Null Handling**: Resources properly handle null values for optional fields and relationships
+1. **Day of Week Mapping**: 0 = Monday through 6 = Sunday
+2. **Pivot IDs**: When managing exercises in templates/sessions, use the pivot record ID, not the exercise ID
+3. **Set Deletion**: Only the last set for an exercise can be deleted
+4. **Session Uniqueness**: Only one active (uncompleted) session per day per user
+5. **Authorization**: Users can only access their own plans, templates, and sessions
+6. **File Uploads**: Profile photos max 2MB, exercise images max 5MB, videos max 50MB
+7. **Weight Format**: Stored as decimals, may be returned as strings in JSON

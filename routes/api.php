@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 
     // Exercises CRUD
     Route::apiResource('exercises', ExerciseController::class);
+    Route::get('/exercises/{exercise}/history', [ExerciseController::class, 'history']);
 
     // Muscle Groups (read-only)
     Route::get('/muscle-groups', [MuscleGroupController::class, 'index']);

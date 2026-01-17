@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExerciseHistoryRequest;
 use App\Http\Requests\StoreExerciseRequest;
 use App\Http\Requests\UpdateExerciseRequest;
+use App\Http\Resources\Api\ExerciseHistoryResource;
 use App\Http\Resources\Api\ExerciseResource;
 use App\Models\Exercise;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
@@ -84,5 +89,120 @@ class ExerciseController extends Controller
         return response()->json([
             'message' => 'Exercise deleted successfully',
         ]);
+    }
+
+    /**
+     * Get exercise performance history.
+     */
+    public function history(ExerciseHistoryRequest $request, Exercise $exercise): JsonResponse
+    {
+        $userId = Auth::id();
+
+        // Build base query to get completed sessions with set logs for this exercise
+        $query = DB::table('workout_sessions as ws')
+            ->join('workout_session_set_logs as sl', 'ws.id', '=', 'sl.workout_session_id')
+            ->where('ws.user_id', $userId)
+            ->whereNotNull('ws.completed_at')
+            ->where('sl.exercise_id', $exercise->id)
+            ->select([
+                'ws.id as session_id',
+                'ws.completed_at',
+                DB::raw('MAX(sl.weight) as weight'),
+                DB::raw('SUM(sl.reps) as reps'),
+                DB::raw('SUM(sl.weight * sl.reps) as volume'),
+                DB::raw('COUNT(sl.id) as sets'),
+            ])
+            ->groupBy('ws.id', 'ws.completed_at');
+
+        // Apply date range filters if provided
+        if ($request->filled('start_date')) {
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
+            $query->where('ws.completed_at', '>=', $startDate);
+        }
+
+        if ($request->filled('end_date')) {
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
+            $query->where('ws.completed_at', '<=', $endDate);
+        }
+
+        // Order by date ascending
+        $query->orderBy('ws.completed_at', 'asc');
+
+        // Apply limit if provided
+        if ($request->filled('limit')) {
+            $query->limit($request->limit);
+        }
+
+        $sessions = $query->get();
+
+        // Transform to performance data points
+        $performanceData = $sessions->map(function ($session) {
+            return [
+                'date' => Carbon::parse($session->completed_at)->format('Y-m-d'),
+                'session_id' => $session->session_id,
+                'weight' => (float) $session->weight,
+                'reps' => (int) $session->reps,
+                'volume' => (float) $session->volume,
+                'sets' => (int) $session->sets,
+            ];
+        })->values()->toArray();
+
+        // Calculate stats
+        $stats = $this->calculateStats($performanceData);
+
+        // Prepare response data
+        $responseData = [
+            'exercise_id' => $exercise->id,
+            'exercise_name' => $exercise->name,
+            'stats' => $stats,
+            'performance_data' => $performanceData,
+        ];
+
+        return response()->json([
+            'data' => new ExerciseHistoryResource($responseData),
+        ]);
+    }
+
+    /**
+     * Calculate exercise history statistics.
+     *
+     * @param  array<int, array<string, mixed>>  $performanceData
+     * @return array<string, mixed>
+     */
+    private function calculateStats(array $performanceData): array
+    {
+        if (empty($performanceData)) {
+            return [
+                'current_weight' => 0,
+                'best_weight' => 0,
+                'progress_percentage' => 0,
+                'total_sessions' => 0,
+                'first_session_date' => null,
+                'last_session_date' => null,
+            ];
+        }
+
+        $totalSessions = count($performanceData);
+        $firstSession = $performanceData[0];
+        $lastSession = $performanceData[$totalSessions - 1];
+
+        $currentWeight = (float) $lastSession['weight'];
+        $firstWeight = (float) $firstSession['weight'];
+        $bestWeight = max(array_column($performanceData, 'weight'));
+
+        // Calculate progress percentage
+        $progressPercentage = 0;
+        if ($firstWeight > 0) {
+            $progressPercentage = (int) round((($currentWeight - $firstWeight) / $firstWeight) * 100);
+        }
+
+        return [
+            'current_weight' => $currentWeight,
+            'best_weight' => (float) $bestWeight,
+            'progress_percentage' => $progressPercentage,
+            'total_sessions' => $totalSessions,
+            'first_session_date' => $firstSession['date'],
+            'last_session_date' => $lastSession['date'],
+        ];
     }
 }

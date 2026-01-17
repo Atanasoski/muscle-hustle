@@ -21,7 +21,9 @@ return [
 
     'allowed_origins' => [
         'http://localhost:5173',
+        'http://localhost:5174',
         'https://fit-nation-app.vercel.app',
+        'https://fitnation-topaz.vercel.app',
         'https://app.fitnation.mk',
     ],
 
