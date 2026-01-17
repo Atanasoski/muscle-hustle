@@ -25,7 +25,7 @@ class ExerciseController extends Controller
 
         $categories = Category::where('type', CategoryType::Workout)
             ->with(['exercises' => function ($query) {
-                $query->orderBy('name');
+                $query->with('muscleGroups')->orderBy('name');
             }])
             ->orderBy('display_order')
             ->get();
@@ -52,7 +52,7 @@ class ExerciseController extends Controller
                 $query->with(['partners' => function ($q) use ($partner) {
                     $q->where('partners.id', $partner->id)
                         ->withPivot(['description', 'image', 'video']);
-                }])
+                }, 'muscleGroups'])
                     ->orderBy('name');
             }])
             ->orderBy('display_order')

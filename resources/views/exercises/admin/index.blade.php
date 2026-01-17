@@ -42,7 +42,7 @@
         </span>
         <input type="text" 
                id="exercise-search" 
-               placeholder="Search exercises by name..."
+               placeholder="Search exercises by name or muscle group..."
                class="w-full rounded-lg border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
     </div>
 
@@ -87,6 +87,11 @@
                                             Exercise Name
                                         </p>
                                     </th>
+                                    <th class="px-5 py-3 text-left sm:px-6 hidden lg:table-cell">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            Muscle Groups
+                                        </p>
+                                    </th>
                                     <th class="px-5 py-3 text-center sm:px-6 hidden md:table-cell">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             Rest Time
@@ -107,12 +112,24 @@
                             <tbody>
                                 @foreach($category->exercises as $exercise)
                                     <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2" 
-                                        data-name="{{ strtolower($exercise->name) }}">
+                                        data-name="{{ strtolower($exercise->name) }}"
+                                        data-muscle-groups="{{ strtolower($exercise->muscleGroups->pluck('name')->implode(' ')) }}">
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center gap-2">
                                                 <a href="{{ route('exercises.show', $exercise) }}" class="font-medium text-gray-800 text-theme-sm dark:text-white/90 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
                                                     {{ $exercise->name }}
                                                 </a>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
+                                            <div class="flex flex-wrap gap-1">
+                                                @forelse($exercise->muscleGroups as $muscleGroup)
+                                                    <x-ui.badge variant="light" color="light" size="sm">
+                                                        {{ $muscleGroup->name }}
+                                                    </x-ui.badge>
+                                                @empty
+                                                    <span class="text-xs text-gray-400 dark:text-gray-500">—</span>
+                                                @endforelse
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 text-center sm:px-6 hidden md:table-cell">
@@ -293,7 +310,9 @@ if (exerciseSearchInput) {
         
         exerciseRows.forEach(row => {
             const exerciseName = row.getAttribute('data-name');
-            if (exerciseName.includes(searchTerm)) {
+            const muscleGroups = row.getAttribute('data-muscle-groups') || '';
+            const searchableText = exerciseName + ' ' + muscleGroups;
+            if (searchableText.includes(searchTerm)) {
                 row.classList.remove('hidden');
             } else {
                 row.classList.add('hidden');
