@@ -14,6 +14,11 @@ class ExerciseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $partner = auth()->user()?->partner;
+        $description = $this->resource->getDescription($partner);
+        $image = $this->resource->getImage($partner);
+        $video = $this->resource->getVideo($partner);
+
         return [
             'id' => $this->id,
             'category' => $this->whenLoaded('category', function () {
@@ -29,10 +34,10 @@ class ExerciseResource extends JsonResource
                 return MuscleGroupResource::collection($this->secondaryMuscleGroups);
             }),
             'name' => $this->name,
-            'description' => $this->description,
+            'description' => $description,
             'muscle_group_image' => $this->muscle_group_image ? asset('storage/'.$this->muscle_group_image) : null,
-            'image' => $this->image ? asset('storage/'.$this->image) : null,
-            'video' => $this->video ? asset('storage/'.$this->video) : null,
+            'image' => $image ? asset('storage/'.$image) : null,
+            'video' => $video ? asset('storage/'.$video) : null,
             'default_rest_sec' => $this->default_rest_sec,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

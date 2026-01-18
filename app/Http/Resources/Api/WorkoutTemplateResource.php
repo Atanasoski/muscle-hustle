@@ -24,13 +24,18 @@ class WorkoutTemplateResource extends JsonResource
                 return new PlanResource($this->plan);
             }),
             'exercises' => $this->whenLoaded('exercises', function () {
-                return $this->exercises->map(function ($exercise) {
+                $partner = auth()->user()?->partner;
+
+                return $this->exercises->map(function ($exercise) use ($partner) {
+                    $image = $exercise->getImage($partner);
+                    $video = $exercise->getVideo($partner);
+
                     return [
                         'id' => $exercise->id,
                         'name' => $exercise->name,
-                        'description' => $exercise->description,
-                        'image' => $exercise->image ? asset('storage/'.$exercise->image) : null,
-                        'video' => $exercise->video ? asset('storage/'.$exercise->video) : null,
+                        'description' => $exercise->getDescription($partner),
+                        'image' => $image ? asset('storage/'.$image) : null,
+                        'video' => $video ? asset('storage/'.$video) : null,
                         'muscle_group_image' => $exercise->muscle_group_image ? asset('storage/'.$exercise->muscle_group_image) : null,
                         'default_rest_sec' => $exercise->default_rest_sec,
                         'category' => $exercise->category ? new CategoryResource($exercise->category) : null,

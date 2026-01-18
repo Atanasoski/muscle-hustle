@@ -22,7 +22,7 @@ class ExerciseController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $exercises = Exercise::with('category', 'muscleGroups')
+        $exercises = Exercise::with('category', 'muscleGroups', 'partners')
             ->latest()
             ->get();
 
@@ -44,7 +44,7 @@ class ExerciseController extends Controller
 
         return response()->json([
             'message' => 'Exercise created successfully',
-            'data' => new ExerciseResource($exercise->load('category')),
+            'data' => new ExerciseResource($exercise->load(['category', 'partners'])),
         ], 201);
     }
 
@@ -53,7 +53,7 @@ class ExerciseController extends Controller
      */
     public function show(Exercise $exercise): JsonResponse
     {
-        $exercise->load('category');
+        $exercise->load(['category', 'partners']);
 
         return response()->json([
             'data' => new ExerciseResource($exercise),
@@ -75,7 +75,7 @@ class ExerciseController extends Controller
 
         return response()->json([
             'message' => 'Exercise updated successfully',
-            'data' => new ExerciseResource($exercise->load('category')),
+            'data' => new ExerciseResource($exercise->load(['category', 'partners'])),
         ]);
     }
 

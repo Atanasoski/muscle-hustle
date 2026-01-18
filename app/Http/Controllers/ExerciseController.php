@@ -72,9 +72,9 @@ class ExerciseController extends Controller
                 }
 
                 // Compute values for partner (pivot override or exercise default)
-                $exercise->descriptionForPartner = $exercise->getDescriptionFor($partner);
-                $exercise->imageForPartner = $exercise->getImageFor($partner);
-                $exercise->videoForPartner = $exercise->getVideoFor($partner);
+                $exercise->descriptionForPartner = $exercise->getDescription($partner);
+                $exercise->imageForPartner = $exercise->getImage($partner);
+                $exercise->videoForPartner = $exercise->getVideo($partner);
 
                 // Store pivot data for editing forms
                 $exercise->pivot_data = $pivot;
@@ -318,9 +318,9 @@ class ExerciseController extends Controller
         }
 
         // Get values for partner (pivot override or exercise default)
-        $descriptionForPartner = $exercise->getDescriptionFor($partner);
-        $imageForPartner = $exercise->getImageFor($partner);
-        $videoForPartner = $exercise->getVideoFor($partner);
+        $descriptionForPartner = $exercise->getDescription($partner);
+        $imageForPartner = $exercise->getImage($partner);
+        $videoForPartner = $exercise->getVideo($partner);
 
         // Check if exercise is linked
         $isLinked = $partner->exercises()->where('workout_exercises.id', $exercise->id)->exists();

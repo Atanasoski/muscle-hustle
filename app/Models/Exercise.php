@@ -96,20 +96,21 @@ class Exercise extends Model
     /**
      * Get the description for a partner (pivot override or exercise default)
      */
-    public function getDescriptionFor(?Partner $partner = null): ?string
+    public function getDescription(?Partner $partner = null): ?string
     {
         if ($partner) {
-            // Check if pivot is loaded on the model (when accessed via partner->exercises)
-            if ($this->relationLoaded('pivot') && $this->pivot) {
-                return $this->pivot->description ?? $this->description;
-            }
-
             // Check if partners relationship is loaded and get pivot from there
             if ($this->relationLoaded('partners') && $this->partners->isNotEmpty()) {
                 $partnerRelation = $this->partners->firstWhere('id', $partner->id);
                 if ($partnerRelation && $partnerRelation->pivot) {
                     return $partnerRelation->pivot->description ?? $this->description;
                 }
+            }
+
+            // Fallback: check if this was loaded via partner->exercises (pivot on the model itself)
+            // Only use this if the pivot has a partner_id matching the requested partner
+            if ($this->pivot && isset($this->pivot->partner_id) && $this->pivot->partner_id === $partner->id) {
+                return $this->pivot->description ?? $this->description;
             }
         }
 
@@ -119,20 +120,21 @@ class Exercise extends Model
     /**
      * Get the image for a partner (pivot override or exercise default)
      */
-    public function getImageFor(?Partner $partner = null): ?string
+    public function getImage(?Partner $partner = null): ?string
     {
         if ($partner) {
-            // Check if pivot is loaded on the model (when accessed via partner->exercises)
-            if ($this->relationLoaded('pivot') && $this->pivot) {
-                return $this->pivot->image ?? $this->image;
-            }
-
             // Check if partners relationship is loaded and get pivot from there
             if ($this->relationLoaded('partners') && $this->partners->isNotEmpty()) {
                 $partnerRelation = $this->partners->firstWhere('id', $partner->id);
                 if ($partnerRelation && $partnerRelation->pivot) {
                     return $partnerRelation->pivot->image ?? $this->image;
                 }
+            }
+
+            // Fallback: check if this was loaded via partner->exercises (pivot on the model itself)
+            // Only use this if the pivot has a partner_id matching the requested partner
+            if ($this->pivot && isset($this->pivot->partner_id) && $this->pivot->partner_id === $partner->id) {
+                return $this->pivot->image ?? $this->image;
             }
         }
 
@@ -142,20 +144,21 @@ class Exercise extends Model
     /**
      * Get the video for a partner (pivot override or exercise default)
      */
-    public function getVideoFor(?Partner $partner = null): ?string
+    public function getVideo(?Partner $partner = null): ?string
     {
         if ($partner) {
-            // Check if pivot is loaded on the model (when accessed via partner->exercises)
-            if ($this->relationLoaded('pivot') && $this->pivot) {
-                return $this->pivot->video ?? $this->video;
-            }
-
             // Check if partners relationship is loaded and get pivot from there
             if ($this->relationLoaded('partners') && $this->partners->isNotEmpty()) {
                 $partnerRelation = $this->partners->firstWhere('id', $partner->id);
                 if ($partnerRelation && $partnerRelation->pivot) {
                     return $partnerRelation->pivot->video ?? $this->video;
                 }
+            }
+
+            // Fallback: check if this was loaded via partner->exercises (pivot on the model itself)
+            // Only use this if the pivot has a partner_id matching the requested partner
+            if ($this->pivot && isset($this->pivot->partner_id) && $this->pivot->partner_id === $partner->id) {
+                return $this->pivot->video ?? $this->video;
             }
         }
 
