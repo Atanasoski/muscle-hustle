@@ -19,7 +19,7 @@ class PlanController extends Controller
     {
         $plans = Plan::where('user_id', auth()->id())
             ->with('workoutTemplates.exercises.category')
-            ->orderBy('name')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return PlanResource::collection($plans);
@@ -30,6 +30,12 @@ class PlanController extends Controller
      */
     public function store(StorePlanRequest $request): JsonResponse
     {
+        // Deactivate all other plans if this one is being set as active
+        if ($request->is_active) {
+            Plan::where('user_id', auth()->id())
+                ->update(['is_active' => false]);
+        }
+
         $plan = Plan::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
@@ -72,6 +78,13 @@ class PlanController extends Controller
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
+        }
+
+        // Deactivate all other plans if this one is being set as active
+        if ($request->is_active) {
+            Plan::where('user_id', auth()->id())
+                ->where('id', '!=', $plan->id)
+                ->update(['is_active' => false]);
         }
 
         $plan->update($request->validated());

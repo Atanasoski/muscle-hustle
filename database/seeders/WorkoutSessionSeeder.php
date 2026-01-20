@@ -45,14 +45,14 @@ class WorkoutSessionSeeder extends Seeder
      */
     private function createCurrentWeekSessions(User $user, $templates): void
     {
-        $startOfWeek = Carbon::now()->startOfWeek(); // Sunday
+        $startOfWeek = Carbon::now()->startOfWeek(); // Monday
 
         // Monday - Completed Upper Body
         WorkoutSession::create([
             'user_id' => $user->id,
             'workout_template_id' => $templates->random()->id,
-            'performed_at' => $startOfWeek->copy()->addDay()->setTime(8, 30),
-            'completed_at' => $startOfWeek->copy()->addDay()->setTime(9, 15),
+            'performed_at' => $startOfWeek->copy()->setTime(8, 30),
+            'completed_at' => $startOfWeek->copy()->setTime(9, 15),
             'notes' => 'Great morning workout! Felt strong today.',
         ]);
 
@@ -60,7 +60,7 @@ class WorkoutSessionSeeder extends Seeder
         WorkoutSession::create([
             'user_id' => $user->id,
             'workout_template_id' => $templates->random()->id,
-            'performed_at' => $startOfWeek->copy()->addDays(3)->setTime(18, 0),
+            'performed_at' => $startOfWeek->copy()->addDays(2)->setTime(18, 0),
             'completed_at' => null,
             'notes' => 'Had to cut this short due to meeting.',
         ]);
@@ -69,8 +69,8 @@ class WorkoutSessionSeeder extends Seeder
         WorkoutSession::create([
             'user_id' => $user->id,
             'workout_template_id' => $templates->random()->id,
-            'performed_at' => $startOfWeek->copy()->addDays(5)->setTime(7, 0),
-            'completed_at' => $startOfWeek->copy()->addDays(5)->setTime(8, 30),
+            'performed_at' => $startOfWeek->copy()->addDays(4)->setTime(7, 0),
+            'completed_at' => $startOfWeek->copy()->addDays(4)->setTime(8, 30),
             'notes' => 'Intense leg session. Squats felt heavy but manageable.',
         ]);
     }
@@ -83,7 +83,7 @@ class WorkoutSessionSeeder extends Seeder
         $previousWeek = Carbon::now()->startOfWeek()->subWeek();
 
         // Create 4 sessions throughout the previous week
-        $days = [1, 2, 4, 6]; // Mon, Tue, Thu, Sat
+        $days = [0, 1, 3, 5]; // Mon, Tue, Thu, Sat
 
         foreach ($days as $day) {
             $performedAt = $previousWeek->copy()->addDays($day)->setTime(
@@ -130,15 +130,15 @@ class WorkoutSessionSeeder extends Seeder
         WorkoutSession::create([
             'user_id' => $user->id,
             'workout_template_id' => $templates->random()->id,
-            'performed_at' => $nextWeek->copy()->addDays(1)->setTime(9, 0), // Monday
-            'completed_at' => $nextWeek->copy()->addDays(1)->setTime(10, 15),
+            'performed_at' => $nextWeek->copy()->setTime(9, 0), // Monday
+            'completed_at' => $nextWeek->copy()->setTime(10, 15),
             'notes' => 'Early morning session planned.',
         ]);
 
         WorkoutSession::create([
             'user_id' => $user->id,
             'workout_template_id' => $templates->random()->id,
-            'performed_at' => $nextWeek->copy()->addDays(4)->setTime(17, 30), // Thursday
+            'performed_at' => $nextWeek->copy()->addDays(3)->setTime(17, 30), // Thursday
             'completed_at' => null, // Not completed yet (future session)
             'notes' => null,
         ]);
