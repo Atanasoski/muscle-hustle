@@ -195,8 +195,6 @@ class WorkoutTemplateController extends Controller
             'rest_seconds' => 'nullable|integer|min:0',
         ]);
 
-        $validated['exercise_id'] = $exercise->id;
-
         $exercise->update($validated);
 
         $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups', 'exercises.partners']);
