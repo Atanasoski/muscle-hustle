@@ -20,15 +20,15 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,           // Create roles first
             PartnerSeeder::class,        // Create partners with identities
             UserSeeder::class,           // Create demo user first
-            UserProfileSeeder::class,    // Create user profiles
-            CategorySeeder::class,       // Create exercise categories
-            MuscleGroupSeeder::class,    // Create muscle groups
-            ExerciseSeeder::class,       // Create global exercises
-            PartnerExerciseSeeder::class, // Link partners to default exercises
-            PlanSeeder::class,           // Create plans
-            WorkoutTemplateSeeder::class, // Create workout templates with exercises
-            WorkoutSessionSeeder::class,  // Create workout session test data
-            WorkoutSessionDataSeeder::class, // Create workout sessions with set logs for fitness metrics
+            // UserProfileSeeder::class,    // Create user profiles
+            // CategorySeeder::class,       // Create exercise categories
+            // MuscleGroupSeeder::class,    // Create muscle groups
+            // ExerciseSeeder::class,       // Create global exercises
+            // PartnerExerciseSeeder::class, // Link partners to default exercises
+            // PlanSeeder::class,           // Create plans
+            // WorkoutTemplateSeeder::class, // Create workout templates with exercises
+            // WorkoutSessionSeeder::class,  // Create workout session test data
+            // WorkoutSessionDataSeeder::class, // Create workout sessions with set logs for fitness metrics
         ]);
 
         $this->command->info('');
