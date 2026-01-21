@@ -19,7 +19,7 @@ class WorkoutSessionExerciseResource extends JsonResource
             'workout_session_id' => $this->workout_session_id,
             'exercise_id' => $this->exercise_id,
             'exercise' => $this->whenLoaded('exercise', function () {
-                return new ExerciseResource($this->exercise);
+                return new ExerciseResource($this->exercise->load('partners', 'muscleGroups', 'primaryMuscleGroups', 'secondaryMuscleGroups'));
             }),
             'order' => $this->order,
             'target_sets' => $this->target_sets,

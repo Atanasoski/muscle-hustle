@@ -150,72 +150,13 @@ class WorkoutSessionController extends Controller
     {
         $this->authorize('view', $session);
 
-        $session->load(['workoutSessionExercises.exercise.category', 'setLogs']);
-
-        // Get all exercise IDs in this session for batch fetching
-        $exerciseIds = $session->workoutSessionExercises->pluck('exercise_id')->toArray();
-
-        // Batch fetch previous set logs - find the latest completed session per exercise
-        // This replaces the N+1 query pattern with a single optimized query
-        $previousSetLogs = collect();
-        if (! empty($exerciseIds)) {
-            // Subquery to find the latest completed session ID for each exercise
-            $latestSessionsSubquery = DB::table('workout_sessions as ws')
-                ->join('workout_session_set_logs as wsl', 'ws.id', '=', 'wsl.workout_session_id')
-                ->select('wsl.exercise_id', DB::raw('MAX(ws.id) as latest_session_id'))
-                ->where('ws.user_id', Auth::id())
-                ->where('ws.id', '!=', $session->id)
-                ->whereNotNull('ws.completed_at')
-                ->whereIn('wsl.exercise_id', $exerciseIds)
-                ->groupBy('wsl.exercise_id');
-
-            // Fetch all previous set logs in one query
-            $previousSetLogs = SetLog::query()
-                ->joinSub($latestSessionsSubquery, 'latest', function ($join) {
-                    $join->on('workout_session_set_logs.workout_session_id', '=', 'latest.latest_session_id')
-                        ->on('workout_session_set_logs.exercise_id', '=', 'latest.exercise_id');
-                })
-                ->select('workout_session_set_logs.*')
-                ->orderBy('workout_session_set_logs.set_number')
-                ->get()
-                ->groupBy('exercise_id');
-        }
-
-        // Prepare exercise data with set information (no additional queries in loop)
-        $exercisesData = [];
-        foreach ($session->workoutSessionExercises as $sessionExercise) {
-            // Get logged sets for this exercise in current session (in-memory filtering)
-            $loggedSets = $session->setLogs
-                ->where('exercise_id', $sessionExercise->exercise_id)
-                ->sortBy('set_number')
-                ->values();
-
-            // Get previous sets from pre-fetched collection (in-memory lookup)
-            $previousSets = $previousSetLogs->get($sessionExercise->exercise_id, collect());
-
-            $exercisesData[] = [
-                'session_exercise' => new WorkoutSessionExerciseResource($sessionExercise),
-                'logged_sets' => SetLogResource::collection($loggedSets),
-                'previous_sets' => SetLogResource::collection($previousSets),
-                'is_completed' => $loggedSets->count() >= ($sessionExercise->target_sets ?? 3),
-            ];
-        }
-
-        // Calculate progress
-        $totalExercises = count($exercisesData);
-        $completedExercises = collect($exercisesData)->filter(fn ($ex) => $ex['is_completed'])->count();
-        $progressPercent = $totalExercises > 0 ? ($completedExercises / $totalExercises) * 100 : 0;
+        $session->load([
+            'workoutSessionExercises.exercise.category',
+            'setLogs' => fn ($q) => $q->orderBy('set_number'),
+        ]);
 
         return response()->json([
-            'data' => [
-                'session' => new WorkoutSessionResource($session),
-                'exercises' => $exercisesData,
-                'progress' => [
-                    'total_exercises' => $totalExercises,
-                    'completed_exercises' => $completedExercises,
-                    'progress_percent' => round($progressPercent, 2),
-                ],
-            ],
+            'data' => new WorkoutSessionResource($session),
         ]);
     }
 

@@ -19,7 +19,7 @@ class SetLog extends Model
     ];
 
     protected $casts = [
-        'weight' => 'decimal:2',
+        'weight' => 'decimal:1',
     ];
 
     /**

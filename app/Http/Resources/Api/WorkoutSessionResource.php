@@ -14,6 +14,33 @@ class WorkoutSessionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $exercisesData = [];
+
+        if ($this->relationLoaded('workoutSessionExercises') && $this->relationLoaded('setLogs')) {
+            $exerciseIds = $this->workoutSessionExercises->pluck('exercise_id')->toArray();
+            $previousSetLogs = $this->getPreviousSetLogsForExercises($exerciseIds);
+
+            foreach ($this->workoutSessionExercises as $sessionExercise) {
+
+                $loggedSets = $this->setLogs
+                    ->where('exercise_id', $sessionExercise->exercise_id)
+                    ->sortBy('set_number')
+                    ->values();
+
+                $previousSets = $previousSetLogs->get($sessionExercise->exercise_id, collect());
+
+                $exercisesData[] = [
+                    'session_exercise' => new WorkoutSessionExerciseResource($sessionExercise),
+                    'logged_sets' => SetLogResource::collection($loggedSets),
+                    'previous_sets' => SetLogResource::collection($previousSets),
+                    'is_completed' => $loggedSets->count() >= ($sessionExercise->target_sets ?? 3),
+                ];
+            }
+        }
+
+        $completedExercises = collect($exercisesData)->filter(fn ($ex) => $ex['is_completed'])->count();
+        $totalExercises = count($exercisesData);
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
@@ -21,10 +48,24 @@ class WorkoutSessionResource extends JsonResource
             'performed_at' => $this->performed_at,
             'completed_at' => $this->completed_at,
             'notes' => $this->notes,
-            'exercises' => WorkoutSessionExerciseResource::collection($this->whenLoaded('workoutSessionExercises')),
-            'set_logs' => SetLogResource::collection($this->whenLoaded('setLogs')),
+            'exercises' => $exercisesData,
+            'progress' => [
+                'total_exercises' => $totalExercises,
+                'completed_exercises' => $completedExercises,
+                'progress_percent' => $totalExercises > 0
+                    ? round(($completedExercises / $totalExercises) * 100, 2)
+                    : 0,
+            ],
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
+    }
+
+    /**
+     * Get previous set logs for exercises using the model method
+     */
+    protected function getPreviousSetLogsForExercises(array $exerciseIds): \Illuminate\Support\Collection
+    {
+        return $this->resource->getPreviousSetLogsForExercises($exerciseIds);
     }
 }
