@@ -270,7 +270,7 @@
                                 </label>
                                 <input type="number" 
                                        name="default_rest_sec" 
-                                       value="90" 
+                                       value="120" 
                                        min="0"
                                        class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             </div>

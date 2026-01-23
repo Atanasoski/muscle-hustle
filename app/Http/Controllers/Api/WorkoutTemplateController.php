@@ -125,10 +125,6 @@ class WorkoutTemplateController extends Controller
 
         $validated = $request->validate([
             'exercise_id' => 'required|exists:workout_exercises,id',
-            'target_sets' => 'nullable|integer|min:1',
-            'target_reps' => 'nullable|integer|min:1',
-            'target_weight' => 'nullable|numeric|min:0',
-            'rest_seconds' => 'nullable|integer|min:0',
         ]);
 
         // Get the highest order value and increment
@@ -138,10 +134,6 @@ class WorkoutTemplateController extends Controller
             'workout_template_id' => $workoutTemplate->id,
             'exercise_id' => $validated['exercise_id'],
             'order' => $maxOrder + 1,
-            'target_sets' => $validated['target_sets'] ?? null,
-            'target_reps' => $validated['target_reps'] ?? null,
-            'target_weight' => $validated['target_weight'] ?? null,
-            'rest_seconds' => $validated['rest_seconds'] ?? null,
         ]);
 
         $workoutTemplate->load(['exercises.category', 'exercises.muscleGroups', 'exercises.partners']);
