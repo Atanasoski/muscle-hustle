@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Http\Resources\Concerns\FormatsWeights;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WorkoutSessionExerciseResource extends JsonResource
 {
+    use FormatsWeights;
+
     /**
      * Transform the resource into an array.
      *
@@ -24,7 +27,7 @@ class WorkoutSessionExerciseResource extends JsonResource
             'order' => $this->order,
             'target_sets' => $this->target_sets,
             'target_reps' => $this->target_reps,
-            'target_weight' => $this->target_weight,
+            'target_weight' => $this->formatWeight($this->target_weight),
             'rest_seconds' => $this->rest_seconds,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('order')->default(0);
             $table->integer('target_sets')->default(3);
             $table->integer('target_reps')->default(10);
-            $table->decimal('target_weight', 8, 1)->default(0);
+            $table->decimal('target_weight', 8, 2)->default(0);
             $table->integer('rest_seconds')->default(120);
             $table->timestamps();
         });

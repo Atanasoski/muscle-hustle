@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Http\Resources\Concerns\FormatsWeights;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SetLogResource extends JsonResource
 {
+    use FormatsWeights;
+
     /**
      * Transform the resource into an array.
      *
@@ -19,7 +22,7 @@ class SetLogResource extends JsonResource
             'workout_session_id' => $this->workout_session_id,
             'exercise_id' => $this->exercise_id,
             'set_number' => $this->set_number,
-            'weight' => $this->weight,
+            'weight' => $this->formatWeight($this->weight),
             'reps' => $this->reps,
             'rest_seconds' => $this->rest_seconds,
             'created_at' => $this->created_at,

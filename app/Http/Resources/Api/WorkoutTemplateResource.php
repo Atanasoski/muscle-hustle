@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Http\Resources\Concerns\FormatsWeights;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WorkoutTemplateResource extends JsonResource
 {
+    use FormatsWeights;
+
     /**
      * Transform the resource into an array.
      *
@@ -47,7 +50,7 @@ class WorkoutTemplateResource extends JsonResource
                             'order' => $exercise->pivot->order,
                             'target_sets' => $exercise->pivot->target_sets,
                             'target_reps' => $exercise->pivot->target_reps,
-                            'target_weight' => $exercise->pivot->target_weight,
+                            'target_weight' => $this->formatWeight($exercise->pivot->target_weight),
                             'rest_seconds' => $exercise->pivot->rest_seconds,
                         ],
                     ];
