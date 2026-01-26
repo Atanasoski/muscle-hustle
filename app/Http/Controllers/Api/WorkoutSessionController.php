@@ -65,6 +65,7 @@ class WorkoutSessionController extends Controller
         // Get today's template
         $template = WorkoutTemplate::whereHas('plan', function ($query) {
             $query->where('user_id', Auth::id());
+            $query->where('is_active', true);
         })
             ->where('day_of_week', $dayOfWeek)
             ->with(['workoutTemplateExercises.exercise.category'])
