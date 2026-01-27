@@ -60,6 +60,12 @@ export const initUserProgressChart = () => {
             toolbar: {
                 show: false,
             },
+            zoom: {
+                enabled: false,
+            },
+            selection: {
+                enabled: false,
+            },
             animations: {
                 enabled: true,
                 easing: 'easeinout',
