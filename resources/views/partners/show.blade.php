@@ -86,7 +86,7 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="flex items-center justify-between">
             <div>
@@ -147,6 +147,23 @@
                 <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active This Week -->
+    <div class="bg-green-500 rounded-2xl shadow-sm p-6 text-white">
+        <div class="flex items-center">
+            <div class="shrink-0">
+                <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-3xl font-bold">{{ $activeMembersThisWeek }}</h3>
+                <p class="text-sm opacity-90">Active This Week</p>
+                <p class="text-xs opacity-75 mt-1">{{ $totalMembers > 0 ? round(($activeMembersThisWeek / $totalMembers) * 100) : 0 }}% of users</p>
             </div>
         </div>
     </div>

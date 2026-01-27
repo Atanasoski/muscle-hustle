@@ -32,7 +32,6 @@
                 <div class="ml-4">
                     <h3 class="text-3xl font-bold">{{ $totalMembers }}</h3>
                     <p class="text-sm opacity-90">Total Users</p>
-                    <p class="text-xs opacity-75 mt-1">Your gym</p>
                 </div>
             </div>
         </div>
@@ -55,7 +54,7 @@
         </div>
     </div>
 
-    <!-- Main Content Row -->
+    <!-- Main Content Row: Top Active Users + Recent User Signups side by side -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Top Active Users -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -112,11 +111,8 @@
                 @endif
             </div>
         </div>
-    </div>
 
-    <!-- Bottom Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <!-- Recent Users -->
+        <!-- Recent User Signups -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                 <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">

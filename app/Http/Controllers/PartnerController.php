@@ -6,6 +6,7 @@ use App\Helpers\ColorHelper;
 use App\Http\Requests\StorePartnerRequest;
 use App\Http\Requests\UpdatePartnerRequest;
 use App\Models\Partner;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -79,14 +80,36 @@ class PartnerController extends Controller
         $partner->loadCount('users');
         $partner->load('identity');
 
-        // Process colors using ColorHelper
+        $membersQuery = $partner->users()->whereDoesntHave('roles', function ($query) {
+            $query->whereIn('slug', ['admin', 'partner_admin']);
+        });
+
+        $totalMembers = (clone $membersQuery)->count();
+
+        $activeMembersThisWeek = (clone $membersQuery)
+            ->whereHas('workoutSessions', function ($query) {
+                $query->whereBetween('performed_at', [
+                    Carbon::now()->startOfWeek(),
+                    Carbon::now()->endOfWeek(),
+                ]);
+            })
+            ->count();
+
         $colors = ColorHelper::processPartnerColors($partner->identity);
         $colorPalette = ColorHelper::getColorPalette($partner->identity);
         $darkColorPalette = ColorHelper::getDarkColorPalette($partner->identity);
 
         $usersCount = $partner->users_count;
 
-        return view('partners.show', compact('partner', 'colors', 'colorPalette', 'darkColorPalette', 'usersCount'));
+        return view('partners.show', compact(
+            'partner',
+            'colors',
+            'colorPalette',
+            'darkColorPalette',
+            'usersCount',
+            'totalMembers',
+            'activeMembersThisWeek'
+        ));
     }
 
     /**
