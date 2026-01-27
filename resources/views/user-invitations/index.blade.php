@@ -4,21 +4,14 @@
 
 @section('content')
 <div class="p-6">
-    <!-- Header -->
+    <!-- Breadcrumb -->
+    <x-common.page-breadcrumb pageTitle="User Invitations" />
+
+    <!-- Page Header -->
     <div class="mb-6">
-        <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center">
-                @if($partner->identity && $partner->identity->logo_url)
-                    <img src="{{ $partner->identity->logo_url }}" alt="{{ $partner->name }}" class="w-12 h-12 rounded mr-3 object-cover">
-                @endif
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                        User Invitations
-                    </h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Invite new users to join your gym</p>
-                </div>
-            </div>
-        </div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Invite new users to join your gym
+        </p>
     </div>
 
     <!-- Success/Error Messages -->

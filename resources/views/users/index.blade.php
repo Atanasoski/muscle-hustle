@@ -4,25 +4,20 @@
 
 @section('content')
 <div class="p-6">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center">
-                @if($partner->identity && $partner->identity->logo_url)
-                    <img src="{{ $partner->identity->logo_url }}" alt="{{ $partner->name }}" class="w-12 h-12 rounded mr-3 object-cover">
-                @endif
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                        Users
-                    </h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">View and manage your gym users</p>
-                </div>
-            </div>
-            <div>
-                <a href="{{ route('user-invitations.index') }}" class="inline-flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600">
-                    User Invitations
-                </a>
-            </div>
+    <!-- Breadcrumb -->
+    <x-common.page-breadcrumb pageTitle="Users" />
+
+    <!-- Page Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                View and manage your gym users
+            </p>
+        </div>
+        <div>
+            <a href="{{ route('user-invitations.index') }}" class="inline-flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600">
+                User Invitations
+            </a>
         </div>
     </div>
 

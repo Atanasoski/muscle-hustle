@@ -3,18 +3,7 @@
 @section('title', 'Create Partner')
 
 @section('content')
-    <div class="mb-6">
-        <a href="{{ route('partners.index') }}"
-            class="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-            <svg class="stroke-current" width="17" height="16" viewBox="0 0 17 16" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M10.9235 12.667L6.75683 8.50033L10.9235 4.33366" stroke="" stroke-width="1.2"
-                    stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            Back to Partners
-        </a>
-    </div>
-    <x-common.page-breadcrumb pageTitle="Create New Partner" />
+    <x-common.page-breadcrumb pageTitle="Create New Partner" :items="[['label' => 'Partners', 'url' => route('partners.index')]]" />
 
     @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">

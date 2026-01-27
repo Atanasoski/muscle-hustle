@@ -78,7 +78,7 @@
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                Select exercises for your partner and customize them
+                Select exercises from our exercise library and customize them for your gym's needs
             </p>
         </div>
     </div>

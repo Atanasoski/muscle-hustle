@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Breadcrumb -->
-    <x-common.page-breadcrumb :pageTitle="$exercise->name" />
+    <x-common.page-breadcrumb :pageTitle="$exercise->name" :items="[['label' => 'Exercise Library', 'url' => route('partner.exercises.index')]]" />
 
     <!-- Action Buttons -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
