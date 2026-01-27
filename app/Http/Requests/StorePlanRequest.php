@@ -11,6 +11,17 @@ class StorePlanRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        $user = auth()->user();
+
+        if (! $user->hasRole('partner_admin')) {
+            return false;
+        }
+
+        // If creating for a specific user, ensure they belong to the same partner
+        if ($this->route('user')) {
+            return $user->partner_id === $this->route('user')->partner_id;
+        }
+
         return true;
     }
 

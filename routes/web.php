@@ -32,6 +32,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
+    // Plans Management
+    Route::get('/users/{user}/plans/create', [\App\Http\Controllers\PlanController::class, 'create'])->name('plans.create');
+    Route::post('/users/{user}/plans', [\App\Http\Controllers\PlanController::class, 'store'])->name('plans.store');
+    Route::get('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'show'])->name('plans.show');
+    Route::get('/plans/{plan}/edit', [\App\Http\Controllers\PlanController::class, 'edit'])->name('plans.edit');
+    Route::put('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'update'])->name('plans.update');
+    Route::delete('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'destroy'])->name('plans.destroy');
+
+    // Workout Templates Management
+    Route::get('/plans/{plan}/workouts/create', [\App\Http\Controllers\WorkoutTemplateController::class, 'create'])->name('workouts.create');
+    Route::post('/plans/{plan}/workouts', [\App\Http\Controllers\WorkoutTemplateController::class, 'store'])->name('workouts.store');
+    Route::get('/workouts/{workoutTemplate}', [\App\Http\Controllers\WorkoutTemplateController::class, 'show'])->name('workouts.show');
+    Route::get('/workouts/{workoutTemplate}/edit', [\App\Http\Controllers\WorkoutTemplateController::class, 'edit'])->name('workouts.edit');
+    Route::put('/workouts/{workoutTemplate}', [\App\Http\Controllers\WorkoutTemplateController::class, 'update'])->name('workouts.update');
+    Route::delete('/workouts/{workoutTemplate}', [\App\Http\Controllers\WorkoutTemplateController::class, 'destroy'])->name('workouts.destroy');
+
+    // Workout Template Exercises Management
+    Route::get('/workouts/{workoutTemplate}/exercises', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'index'])->name('workout-exercises.index');
+    Route::get('/workouts/{workoutTemplate}/exercises/create', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'create'])->name('workout-exercises.create');
+    Route::post('/workouts/{workoutTemplate}/exercises', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'store'])->name('workout-exercises.store');
+    Route::get('/workouts/{workoutTemplate}/exercises/{workoutTemplateExercise}/edit', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'edit'])->name('workout-exercises.edit');
+    Route::put('/workouts/{workoutTemplate}/exercises/{workoutTemplateExercise}', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'update'])->name('workout-exercises.update');
+    Route::delete('/workouts/{workoutTemplate}/exercises/{workoutTemplateExercise}', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'destroy'])->name('workout-exercises.destroy');
+
     // User Invitations Management
     Route::get('/user-invitations', [UserController::class, 'invitationsIndex'])->name('user-invitations.index');
     Route::post('/user-invitations/invite', [UserController::class, 'invitationsStore'])->name('user-invitations.invite');

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateWorkoutTemplateRequest extends FormRequest
+class UpdateWorkoutTemplateExerciseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -36,21 +36,11 @@ class UpdateWorkoutTemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan_id' => [
-                'nullable',
-                'exists:plans,id',
-                function ($attribute, $value, $fail) {
-                    if ($value) {
-                        $plan = \App\Models\Plan::find($value);
-                        if ($plan && $plan->user_id !== auth()->id()) {
-                            $fail('The selected plan does not belong to you.');
-                        }
-                    }
-                },
-            ],
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'day_of_week' => 'nullable|integer|min:0|max:6',
+            'order' => 'nullable|integer|min:0',
+            'target_sets' => 'nullable|integer|min:1',
+            'target_reps' => 'nullable|integer|min:1',
+            'target_weight' => 'nullable|numeric|min:0',
+            'rest_seconds' => 'nullable|integer|min:0',
         ];
     }
 }

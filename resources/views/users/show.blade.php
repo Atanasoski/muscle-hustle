@@ -232,15 +232,38 @@
 
     <div class="space-y-6">
             <!-- Workout Plans -->
-            @if($user->plans->count() > 0)
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Workout Plans</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Workout Plans</h3>
+                    <a href="{{ route('plans.create', $user) }}" class="inline-flex items-center justify-center rounded-lg border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Create Plan
+                    </a>
+                </div>
+                @if($user->plans->count() > 0)
                     <div class="space-y-4">
                         @foreach($user->plans as $plan)
-                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                 <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="font-medium text-gray-900 dark:text-white">{{ $plan->name }}</h4>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <h4 class="font-medium text-gray-900 dark:text-white">
+                                                <a href="{{ route('plans.show', $plan) }}" class="hover:text-brand-500 dark:hover:text-brand-400">
+                                                    {{ $plan->name }}
+                                                </a>
+                                            </h4>
+                                            @if($plan->is_active)
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                                    Active
+                                                </span>
+                                            @else
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                    Inactive
+                                                </span>
+                                            @endif
+                                        </div>
                                         @if($plan->description)
                                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $plan->description }}</p>
                                         @endif
@@ -248,23 +271,27 @@
                                             {{ $plan->workout_templates_count ?? 0 }} workout templates
                                         </p>
                                     </div>
-                                    <div>
-                                        @if($plan->is_active)
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                Active
-                                            </span>
-                                        @else
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                                Inactive
-                                            </span>
-                                        @endif
+                                    <div class="flex items-center gap-2">
+                                        <a href="{{ route('plans.show', $plan) }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                            Manage
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                </div>
-            @endif
+                @else
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No workout plans yet</p>
+                        <a href="{{ route('plans.create', $user) }}" class="mt-4 inline-flex items-center justify-center rounded-lg border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600">
+                            Create First Plan
+                        </a>
+                    </div>
+                @endif
+            </div>
 
             <!-- Recent Workout Sessions -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
