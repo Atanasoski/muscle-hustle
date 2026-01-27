@@ -31,10 +31,8 @@ class UserController extends Controller
             ->withCount([
                 'workoutSessions as total_workouts',
                 'plans as total_plans',
-                'plans as active_plans' => function ($query) {
-                    $query->where('is_active', true);
-                },
             ])
+            ->with('activePlan')
             ->latest()
             ->paginate(15);
 
@@ -67,7 +65,7 @@ class UserController extends Controller
         // Get additional stats
         $totalWorkouts = $user->workoutSessions()->count();
         $completedWorkouts = $user->workoutSessions()->whereNotNull('completed_at')->count();
-        $activePlans = $user->plans()->where('is_active', true)->count();
+        $activePlan = $user->plans()->where('is_active', true)->first();
         $lastWorkout = $user->workoutSessions()->latest('performed_at')->first();
 
         // Get recent workout sessions for pagination
@@ -88,7 +86,7 @@ class UserController extends Controller
             'user',
             'totalWorkouts',
             'completedWorkouts',
-            'activePlans',
+            'activePlan',
             'lastWorkout',
             'recentWorkouts',
             'fitnessMetrics',

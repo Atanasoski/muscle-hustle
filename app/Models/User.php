@@ -60,6 +60,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the active plan for the user.
+     */
+    public function activePlan(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Plan::class)->where('is_active', true);
+    }
+
+    /**
      * Get the workout sessions for the user.
      */
     public function workoutSessions(): \Illuminate\Database\Eloquent\Relations\HasMany
