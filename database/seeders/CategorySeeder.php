@@ -13,42 +13,63 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        // Workout categories (exercise types)
+        // Workout categories (equipment types)
         $workoutCategories = [
             [
-                'name' => 'Compound',
-                'slug' => 'compound',
+                'name' => 'Bodyweight',
+                'slug' => 'bodyweight',
                 'display_order' => 1,
-                'icon' => '🏋️',
+                'icon' => '🤸',
                 'color' => '#ef4444',
             ],
             [
-                'name' => 'Isolation',
-                'slug' => 'isolation',
+                'name' => 'Dumbbell',
+                'slug' => 'dumbbell',
                 'display_order' => 2,
-                'icon' => '💪',
+                'icon' => '🏋️',
                 'color' => '#3b82f6',
             ],
             [
-                'name' => 'Cardio',
-                'slug' => 'cardio',
+                'name' => 'Barbell',
+                'slug' => 'barbell',
                 'display_order' => 3,
-                'icon' => '🏃',
+                'icon' => '🏋️‍♂️',
                 'color' => '#06b6d4',
             ],
             [
-                'name' => 'Plyometrics',
-                'slug' => 'plyometrics',
+                'name' => 'Machine (Plate Loaded)',
+                'slug' => 'machine-plate-loaded',
                 'display_order' => 4,
-                'icon' => '⚡',
+                'icon' => '⚙️',
                 'color' => '#f59e0b',
             ],
             [
-                'name' => 'Mobility',
-                'slug' => 'mobility',
+                'name' => 'Machine (Cable)',
+                'slug' => 'machine-cable',
                 'display_order' => 5,
-                'icon' => '🧘',
+                'icon' => '🔧',
                 'color' => '#10b981',
+            ],
+            [
+                'name' => 'Cable',
+                'slug' => 'cable',
+                'display_order' => 6,
+                'icon' => '🔗',
+                'color' => '#8b5cf6',
+            ],
+            [
+                'name' => 'Bands',
+                'slug' => 'bands',
+                'display_order' => 7,
+                'icon' => '🎯',
+                'color' => '#ec4899',
+            ],
+            [
+                'name' => 'TRX',
+                'slug' => 'trx',
+                'display_order' => 8,
+                'icon' => '🪢',
+                'color' => '#14b8a6',
             ],
         ];
 
