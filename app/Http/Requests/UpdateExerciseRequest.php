@@ -46,6 +46,10 @@ class UpdateExerciseRequest extends FormRequest
                     }
                 },
             ],
+            'movement_pattern_id' => ['required', 'exists:movement_patterns,id'],
+            'target_region_id' => ['required', 'exists:target_regions,id'],
+            'equipment_type_id' => ['required', 'exists:equipment_types,id'],
+            'angle_id' => ['nullable', 'exists:angles,id'],
             'default_rest_sec' => ['nullable', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
             'video' => ['nullable', 'mimes:mp4,webm,ogg', 'max:51200'],

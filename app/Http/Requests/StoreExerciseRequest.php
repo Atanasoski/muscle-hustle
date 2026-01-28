@@ -38,6 +38,10 @@ class StoreExerciseRequest extends FormRequest
                     }
                 },
             ],
+            'movement_pattern_id' => ['required', 'exists:movement_patterns,id'],
+            'target_region_id' => ['required', 'exists:target_regions,id'],
+            'equipment_type_id' => ['required', 'exists:equipment_types,id'],
+            'angle_id' => ['nullable', 'exists:angles,id'],
             'image' => ['nullable', 'string', 'max:255'],
             'default_rest_sec' => ['nullable', 'integer', 'min:0'],
         ];

@@ -7,9 +7,13 @@ use App\Http\Requests\BulkLinkExerciseRequest;
 use App\Http\Requests\StoreExerciseRequest;
 use App\Http\Requests\UpdateExerciseRequest;
 use App\Http\Requests\UpdatePartnerExerciseRequest;
+use App\Models\Angle;
 use App\Models\Category;
+use App\Models\EquipmentType;
 use App\Models\Exercise;
+use App\Models\MovementPattern;
 use App\Models\Partner;
+use App\Models\TargetRegion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
@@ -90,6 +94,10 @@ class ExerciseController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'movement_pattern_id' => $request->movement_pattern_id,
+            'target_region_id' => $request->target_region_id,
+            'equipment_type_id' => $request->equipment_type_id,
+            'angle_id' => $request->angle_id,
             'default_rest_sec' => $request->default_rest_sec ?? 90,
         ]);
 
@@ -103,6 +111,10 @@ class ExerciseController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'movement_pattern_id' => $request->movement_pattern_id,
+            'target_region_id' => $request->target_region_id,
+            'equipment_type_id' => $request->equipment_type_id,
+            'angle_id' => $request->angle_id,
             'default_rest_sec' => $request->default_rest_sec,
         ];
 
@@ -208,15 +220,78 @@ class ExerciseController extends Controller
             abort(403, 'Only system administrators can edit exercises.');
         }
 
-        // Load exercise with category relationship
-        $exercise->load('category');
+        // Load exercise with relationships
+        $exercise->load(['category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle']);
 
         // Get all categories for the dropdown
         $categories = Category::where('type', CategoryType::Workout)
             ->orderBy('display_order')
             ->get();
 
-        return view('exercises.admin.edit', compact('exercise', 'categories'));
+        $movementPatterns = MovementPattern::query()
+            ->orderBy('display_order')
+            ->get();
+
+        $targetRegions = TargetRegion::query()
+            ->orderBy('display_order')
+            ->get();
+
+        $equipmentTypes = EquipmentType::query()
+            ->orderBy('display_order')
+            ->get();
+
+        $angles = Angle::query()
+            ->orderBy('display_order')
+            ->get();
+
+        return view('exercises.admin.edit', compact(
+            'exercise',
+            'categories',
+            'movementPatterns',
+            'targetRegions',
+            'equipmentTypes',
+            'angles',
+        ));
+    }
+
+    /**
+     * Show create form for admin exercise.
+     */
+    public function adminCreate()
+    {
+        $user = auth()->user();
+
+        if (! $user->hasRole('admin')) {
+            abort(403, 'Only system administrators can create exercises.');
+        }
+
+        $categories = Category::where('type', CategoryType::Workout)
+            ->orderBy('display_order')
+            ->get();
+
+        $movementPatterns = MovementPattern::query()
+            ->orderBy('display_order')
+            ->get();
+
+        $targetRegions = TargetRegion::query()
+            ->orderBy('display_order')
+            ->get();
+
+        $equipmentTypes = EquipmentType::query()
+            ->orderBy('display_order')
+            ->get();
+
+        $angles = Angle::query()
+            ->orderBy('display_order')
+            ->get();
+
+        return view('exercises.admin.create', compact(
+            'categories',
+            'movementPatterns',
+            'targetRegions',
+            'equipmentTypes',
+            'angles',
+        ));
     }
 
     public function destroy(Exercise $exercise)

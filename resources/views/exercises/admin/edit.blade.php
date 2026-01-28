@@ -81,6 +81,86 @@
                     </div>
                 </x-common.component-card>
 
+                <!-- Classification -->
+                <x-common.component-card title="Classification">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Movement Pattern <span class="text-red-500">*</span>
+                            </label>
+                            <select name="movement_pattern_id"
+                                    required
+                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                <option value="">Select movement pattern...</option>
+                                @foreach($movementPatterns as $movementPattern)
+                                    <option value="{{ $movementPattern->id }}" {{ old('movement_pattern_id', $exercise->movement_pattern_id) == $movementPattern->id ? 'selected' : '' }}>
+                                        {{ $movementPattern->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('movement_pattern_id')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Target Region <span class="text-red-500">*</span>
+                            </label>
+                            <select name="target_region_id"
+                                    required
+                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                <option value="">Select target region...</option>
+                                @foreach($targetRegions as $targetRegion)
+                                    <option value="{{ $targetRegion->id }}" {{ old('target_region_id', $exercise->target_region_id) == $targetRegion->id ? 'selected' : '' }}>
+                                        {{ $targetRegion->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('target_region_id')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Equipment Type <span class="text-red-500">*</span>
+                            </label>
+                            <select name="equipment_type_id"
+                                    required
+                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                <option value="">Select equipment type...</option>
+                                @foreach($equipmentTypes as $equipmentType)
+                                    <option value="{{ $equipmentType->id }}" {{ old('equipment_type_id', $exercise->equipment_type_id) == $equipmentType->id ? 'selected' : '' }}>
+                                        {{ $equipmentType->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('equipment_type_id')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Angle
+                            </label>
+                            <select name="angle_id"
+                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+                                <option value="">None</option>
+                                @foreach($angles as $angle)
+                                    <option value="{{ $angle->id }}" {{ old('angle_id', $exercise->angle_id) == $angle->id ? 'selected' : '' }}>
+                                        {{ $angle->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('angle_id')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </x-common.component-card>
+
                 <!-- Media Section -->
                 <x-common.component-card title="Media">
                     @if($exercise->muscle_group_image)
