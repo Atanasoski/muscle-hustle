@@ -23,7 +23,7 @@ class ConfirmWorkoutSessionRequest extends FormRequest
     {
         return [
             'exercises' => 'required|array|min:1',
-            'exercises.*.exercise_id' => 'required|integer|exists:exercises,id',
+            'exercises.*.exercise_id' => 'required|integer|exists:workout_exercises,id',
             'exercises.*.order' => 'required|integer|min:1',
             'exercises.*.target_sets' => 'required|integer|min:1|max:20',
             'exercises.*.target_reps' => 'required|integer|min:1|max:100',
