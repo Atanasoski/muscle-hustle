@@ -11,13 +11,14 @@ This documentation provides complete information about all API resources and end
 5. [Exercises](#exercises)
 6. [Muscle Groups](#muscle-groups)
 7. [Categories](#categories)
-8. [Fitness Metrics](#fitness-metrics)
-9. [Plans](#plans)
-10. [Workout Templates](#workout-templates)
-11. [Workout Planner](#workout-planner)
-12. [Workout Sessions](#workout-sessions)
-13. [Complete TypeScript Definitions](#complete-typescript-definitions)
-14. [Error Responses](#error-responses)
+8. [Exercise Classifications](#exercise-classifications)
+9. [Fitness Metrics](#fitness-metrics)
+10. [Plans](#plans)
+11. [Workout Templates](#workout-templates)
+12. [Workout Planner](#workout-planner)
+13. [Workout Sessions](#workout-sessions)
+14. [Complete TypeScript Definitions](#complete-typescript-definitions)
+15. [Error Responses](#error-responses)
 
 ---
 
@@ -525,6 +526,122 @@ interface CategoryShowResponse {
 - `cable` - Free cable exercises (e.g., Cable Fly, Cable Curl, Cable Row)
 - `bands` - Resistance band exercises
 - `trx` - TRX suspension training exercises
+
+---
+
+## Exercise Classifications
+
+Exercise classification lookup tables used by the workout generator (Fit Nation Engine) to categorize exercises by movement pattern, target region, equipment type, and angle.
+
+### List Movement Patterns
+```
+GET /api/movement-patterns
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface MovementPatternListResponse {
+  data: MovementPatternResource[];
+}
+```
+
+**Example Response:**
+```json
+{
+  "data": [
+    { "id": 1, "code": "PRESS", "name": "Press", "display_order": 1 },
+    { "id": 2, "code": "FLY", "name": "Fly", "display_order": 2 },
+    { "id": 3, "code": "DIP", "name": "Dip", "display_order": 3 },
+    { "id": 4, "code": "ROW", "name": "Row", "display_order": 4 },
+    { "id": 5, "code": "PULL_VERTICAL", "name": "Vertical Pull", "display_order": 5 }
+  ]
+}
+```
+
+---
+
+### List Target Regions
+```
+GET /api/target-regions
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface TargetRegionListResponse {
+  data: TargetRegionResource[];
+}
+```
+
+**Example Response:**
+```json
+{
+  "data": [
+    { "id": 1, "code": "UPPER_PUSH", "name": "Upper Push", "display_order": 1 },
+    { "id": 2, "code": "UPPER_PULL", "name": "Upper Pull", "display_order": 2 },
+    { "id": 3, "code": "LOWER", "name": "Lower Body", "display_order": 3 },
+    { "id": 4, "code": "ARMS", "name": "Arms", "display_order": 4 },
+    { "id": 5, "code": "CORE", "name": "Core", "display_order": 5 }
+  ]
+}
+```
+
+---
+
+### List Equipment Types
+```
+GET /api/equipment-types
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface EquipmentTypeListResponse {
+  data: EquipmentTypeResource[];
+}
+```
+
+**Example Response:**
+```json
+{
+  "data": [
+    { "id": 1, "code": "BARBELL", "name": "Barbell", "display_order": 1 },
+    { "id": 2, "code": "DUMBBELL", "name": "Dumbbell", "display_order": 2 },
+    { "id": 3, "code": "CABLE", "name": "Cable", "display_order": 3 },
+    { "id": 4, "code": "MACHINE", "name": "Machine", "display_order": 4 },
+    { "id": 5, "code": "BODYWEIGHT", "name": "Bodyweight", "display_order": 5 }
+  ]
+}
+```
+
+---
+
+### List Angles
+```
+GET /api/angles
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface AngleListResponse {
+  data: AngleResource[];
+}
+```
+
+**Example Response:**
+```json
+{
+  "data": [
+    { "id": 1, "code": "FLAT", "name": "Flat", "display_order": 1 },
+    { "id": 2, "code": "INCLINE", "name": "Incline", "display_order": 2 },
+    { "id": 3, "code": "DECLINE", "name": "Decline", "display_order": 3 },
+    { "id": 4, "code": "VERTICAL", "name": "Vertical", "display_order": 4 },
+    { "id": 5, "code": "HORIZONTAL", "name": "Horizontal", "display_order": 5 }
+  ]
+}
+```
 
 ---
 
@@ -1700,6 +1817,38 @@ interface MuscleGroupResource {
 // Core:  Abs, Obliques
 
 // ============================================
+// EXERCISE CLASSIFICATION RESOURCES
+// ============================================
+
+interface MovementPatternResource {
+  id: number;
+  code: string;              // e.g., "PRESS", "FLY", "ROW", "SQUAT"
+  name: string;              // e.g., "Press", "Fly", "Row", "Squat"
+  display_order: number;
+}
+
+interface TargetRegionResource {
+  id: number;
+  code: string;              // e.g., "UPPER_PUSH", "UPPER_PULL", "LOWER"
+  name: string;              // e.g., "Upper Push", "Upper Pull", "Lower Body"
+  display_order: number;
+}
+
+interface EquipmentTypeResource {
+  id: number;
+  code: string;              // e.g., "BARBELL", "DUMBBELL", "MACHINE"
+  name: string;              // e.g., "Barbell", "Dumbbell", "Machine"
+  display_order: number;
+}
+
+interface AngleResource {
+  id: number;
+  code: string;              // e.g., "FLAT", "INCLINE", "DECLINE"
+  name: string;              // e.g., "Flat", "Incline", "Decline"
+  display_order: number;
+}
+
+// ============================================
 // PLAN RESOURCES
 // ============================================
 
@@ -1927,6 +2076,14 @@ interface ValidationError {
 |--------|----------|-------------|
 | GET | `/api/categories` | List all categories |
 | GET | `/api/categories/{id}` | Get single category |
+
+### Exercise Classifications
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/movement-patterns` | List movement patterns |
+| GET | `/api/target-regions` | List target regions |
+| GET | `/api/equipment-types` | List equipment types |
+| GET | `/api/angles` | List angles |
 
 ### Plans
 | Method | Endpoint | Description |

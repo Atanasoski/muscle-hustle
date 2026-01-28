@@ -7,7 +7,6 @@ use App\Http\Requests\ConfirmWorkoutSessionRequest;
 use App\Http\Requests\GenerateWorkoutSessionRequest;
 use App\Http\Resources\Api\GeneratedWorkoutSessionResource;
 use App\Http\Resources\Api\WorkoutPreviewResource;
-use App\Models\User;
 use App\Services\WorkoutGenerator\WorkoutGenerationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +25,7 @@ class WorkoutGeneratorController extends Controller
     public function preview(GenerateWorkoutSessionRequest $request): JsonResponse
     {
         try {
-            // $user = Auth::user();
-            $user = User::find(1);
+            $user = Auth::user();
 
             $preferences = [
                 'focus_muscle_groups' => $request->input('focus_muscle_groups'),
