@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ExerciseClassificationController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\MuscleGroupController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WorkoutGeneratorController;
 use App\Http\Controllers\Api\WorkoutPlannerController;
 use App\Http\Controllers\Api\WorkoutSessionController;
 use App\Http\Controllers\Api\WorkoutTemplateController;
@@ -44,6 +46,12 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{category}', [CategoryController::class, 'show']);
 
+    // Exercise Classification Lookup Tables (read-only)
+    Route::get('/movement-patterns', [ExerciseClassificationController::class, 'movementPatterns']);
+    Route::get('/target-regions', [ExerciseClassificationController::class, 'targetRegions']);
+    Route::get('/equipment-types', [ExerciseClassificationController::class, 'equipmentTypes']);
+    Route::get('/angles', [ExerciseClassificationController::class, 'angles']);
+
     // Plans CRUD
     Route::apiResource('plans', PlanController::class);
 
@@ -65,6 +73,8 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/workout-sessions/calendar', [WorkoutSessionController::class, 'calendar']);
     Route::get('/workout-sessions/today', [WorkoutSessionController::class, 'today']);
     Route::post('/workout-sessions/start', [WorkoutSessionController::class, 'start']);
+    Route::post('/workout-sessions/preview', [WorkoutGeneratorController::class, 'preview']);
+    Route::post('/workout-sessions/confirm', [WorkoutGeneratorController::class, 'confirm']);
     Route::get('/workout-sessions/{session}', [WorkoutSessionController::class, 'show']);
     Route::post('/workout-sessions/{session}/complete', [WorkoutSessionController::class, 'complete']);
     Route::delete('/workout-sessions/{session}/cancel', [WorkoutSessionController::class, 'cancel']);
