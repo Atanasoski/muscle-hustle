@@ -18,7 +18,7 @@ class AIWorkoutController extends Controller
     ) {}
 
     /**
-     * Generate an AI-powered workout session
+     * Generate a personalized workout session
      */
     public function generateSession(GenerateAISessionRequest $request): JsonResponse
     {
@@ -28,8 +28,11 @@ class AIWorkoutController extends Controller
 
             $preferences = [
                 'focus_muscle_groups' => $request->input('focus_muscle_groups'),
+                'target_regions' => $request->input('target_regions'),
+                'equipment_types' => $request->input('equipment_types'),
+                'movement_patterns' => $request->input('movement_patterns'),
+                'angles' => $request->input('angles'),
                 'duration_minutes' => $request->input('duration_minutes'),
-                'preferred_categories' => $request->input('preferred_categories'),
                 'difficulty' => $request->input('difficulty'),
             ];
 
@@ -40,10 +43,10 @@ class AIWorkoutController extends Controller
 
             return response()->json([
                 'data' => new AIGeneratedSessionResource($session),
-                'message' => 'AI workout session generated successfully',
+                'message' => 'Workout session generated successfully',
             ], 201);
         } catch (\Exception $e) {
-            Log::error('AI workout generation failed', [
+            Log::error('Workout generation failed', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -54,7 +57,7 @@ class AIWorkoutController extends Controller
             // Provide user-friendly error messages
             if (str_contains($message, 'profile is required')) {
                 return response()->json([
-                    'message' => 'Please complete your profile before generating AI workouts.',
+                    'message' => 'Please complete your profile before generating workouts.',
                 ], 422);
             }
 
@@ -67,6 +70,12 @@ class AIWorkoutController extends Controller
             if (str_contains($message, 'Training experience is required')) {
                 return response()->json([
                     'message' => 'Please set your training experience level in your profile.',
+                ], 422);
+            }
+
+            if (str_contains($message, 'No exercises available')) {
+                return response()->json([
+                    'message' => $message,
                 ], 422);
             }
 

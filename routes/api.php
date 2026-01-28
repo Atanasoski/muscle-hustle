@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\AIWorkoutController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ExerciseController;
@@ -9,6 +8,7 @@ use App\Http\Controllers\Api\MuscleGroupController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WorkoutGeneratorController;
 use App\Http\Controllers\Api\WorkoutPlannerController;
 use App\Http\Controllers\Api\WorkoutSessionController;
 use App\Http\Controllers\Api\WorkoutTemplateController;
@@ -66,7 +66,8 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/workout-sessions/calendar', [WorkoutSessionController::class, 'calendar']);
     Route::get('/workout-sessions/today', [WorkoutSessionController::class, 'today']);
     Route::post('/workout-sessions/start', [WorkoutSessionController::class, 'start']);
-    // Route::post('/workout-sessions/ai/generate', [AIWorkoutController::class, 'generateSession']);
+    // Route::post('/workout-sessions/preview', [WorkoutGeneratorController::class, 'preview']);
+    Route::post('/workout-sessions/confirm', [WorkoutGeneratorController::class, 'confirm']);
     Route::get('/workout-sessions/{session}', [WorkoutSessionController::class, 'show']);
     Route::post('/workout-sessions/{session}/complete', [WorkoutSessionController::class, 'complete']);
     Route::delete('/workout-sessions/{session}/cancel', [WorkoutSessionController::class, 'cancel']);
@@ -83,4 +84,4 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::post('/workout-sessions/{session}/exercises/reorder', [WorkoutSessionController::class, 'reorderExercises']);
 });
 
-Route::post('/workout-sessions/ai/generate', [AIWorkoutController::class, 'generateSession']);
+Route::post('/workout-sessions/preview', [WorkoutGeneratorController::class, 'preview']);

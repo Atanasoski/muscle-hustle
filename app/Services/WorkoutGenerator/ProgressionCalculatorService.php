@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AI;
+namespace App\Services\WorkoutGenerator;
 
 use App\Enums\TrainingExperience;
 use App\Models\Exercise;

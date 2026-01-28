@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('performed_at');
             $table->dateTime('completed_at')->nullable();
             $table->text('notes')->nullable();
+            $table->boolean('is_auto_generated')->default(false);
             $table->timestamps();
 
             // Performance indexes
