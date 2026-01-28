@@ -81,16 +81,25 @@ class UserController extends Controller
         // Get weekly workout frequency data for chart (last 12 weeks)
         $weeklyWorkoutData = $this->getWeeklyWorkoutFrequency($user, 12);
 
+        $profile = $user->profile;
+        $completionRate = $totalWorkouts > 0 ? (int) round(($completedWorkouts / $totalWorkouts) * 100) : null;
+        $weeklyWorkouts = $fitnessMetrics['weekly_progress']['current_week_workouts'] ?? null;
+        $weeklyGoal = $profile?->training_days_per_week ?: null;
+
         return view('users.show', compact(
             'partner',
             'user',
+            'profile',
             'totalWorkouts',
             'completedWorkouts',
+            'completionRate',
             'activePlan',
             'lastWorkout',
             'recentWorkouts',
             'fitnessMetrics',
-            'weeklyWorkoutData'
+            'weeklyWorkoutData',
+            'weeklyWorkouts',
+            'weeklyGoal',
         ));
     }
 
