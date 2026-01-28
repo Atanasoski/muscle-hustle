@@ -1048,6 +1048,78 @@ interface StartSessionResponse {
 
 ---
 
+### Generate AI Workout Session
+```
+POST /api/workout-sessions/ai/generate
+```
+*Requires authentication*
+
+**Request Body:**
+```typescript
+interface GenerateAISessionRequest {
+  focus_muscle_groups?: string[];      // optional, e.g., ["Chest", "Triceps", "Shoulders"]
+  duration_minutes?: number;            // optional, min 15, max 180
+  preferred_categories?: string[];      // optional, array of category slugs, e.g., ["machine-plate-loaded", "barbell"]
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';  // optional
+}
+```
+
+**Available Category Slugs:**
+- `bodyweight`
+- `dumbbell`
+- `barbell`
+- `machine-plate-loaded`
+- `machine-cable`
+- `cable`
+- `bands`
+- `trx`
+
+**Response (201 Created):**
+```typescript
+interface GenerateAISessionResponse {
+  data: AIGeneratedSessionResource;
+  message: "AI workout session generated successfully";
+}
+
+interface AIGeneratedSessionResource extends WorkoutSessionResource {
+  is_ai_generated: boolean;
+  ai_generated_at: string | null;  // ISO 8601
+  rationale: string | null;         // AI explanation of the workout
+}
+```
+
+**Error Responses:**
+
+- **422 Unprocessable Entity:** User profile incomplete
+  ```typescript
+  {
+    message: "Please complete your profile before generating AI workouts."
+  }
+  // OR
+  {
+    message: "Please set your fitness goal in your profile."
+  }
+  // OR
+  {
+    message: "Please set your training experience level in your profile."
+  }
+  ```
+
+- **500 Internal Server Error:** AI generation failed
+  ```typescript
+  {
+    message: "Failed to generate workout session. Please try again later."
+  }
+  ```
+
+**Note:** 
+- User must have a complete profile with fitness_goal and training_experience set
+- Generated sessions are ready to use immediately (same as manually created sessions)
+- The rationale field explains why the AI selected these exercises
+- Generated sessions can be edited just like manual sessions
+
+---
+
 ### Get Session Details
 ```
 GET /api/workout-sessions/{session}
@@ -1555,6 +1627,12 @@ interface WorkoutSessionResource {
   set_logs: SetLogResource[];
   created_at: string;
   updated_at: string;
+}
+
+interface AIGeneratedSessionResource extends WorkoutSessionResource {
+  is_ai_generated: boolean;
+  ai_generated_at: string | null;  // ISO 8601
+  rationale: string | null;         // AI explanation of the workout
 }
 
 interface WorkoutSessionCalendarResource {

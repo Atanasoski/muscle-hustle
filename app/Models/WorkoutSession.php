@@ -17,11 +17,15 @@ class WorkoutSession extends Model
         'performed_at',
         'completed_at',
         'notes',
+        'is_ai_generated',
+        'ai_generated_at',
     ];
 
     protected $casts = [
         'performed_at' => 'datetime',
         'completed_at' => 'datetime',
+        'is_ai_generated' => 'boolean',
+        'ai_generated_at' => 'datetime',
     ];
 
     /**
