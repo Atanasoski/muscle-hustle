@@ -16,6 +16,10 @@ class Exercise extends Model
 
     protected $fillable = [
         'category_id',
+        'movement_pattern_id',
+        'target_region_id',
+        'equipment_type_id',
+        'angle_id',
         'name',
         'description',
         'muscle_group_image',
@@ -30,6 +34,38 @@ class Exercise extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Relationship: Exercise belongs to MovementPattern (required)
+     */
+    public function movementPattern(): BelongsTo
+    {
+        return $this->belongsTo(MovementPattern::class);
+    }
+
+    /**
+     * Relationship: Exercise belongs to TargetRegion (required)
+     */
+    public function targetRegion(): BelongsTo
+    {
+        return $this->belongsTo(TargetRegion::class);
+    }
+
+    /**
+     * Relationship: Exercise belongs to EquipmentType (required)
+     */
+    public function equipmentType(): BelongsTo
+    {
+        return $this->belongsTo(EquipmentType::class);
+    }
+
+    /**
+     * Relationship: Exercise belongs to Angle (nullable)
+     */
+    public function angle(): BelongsTo
+    {
+        return $this->belongsTo(Angle::class);
     }
 
     /**
