@@ -103,10 +103,10 @@ class WorkoutTemplateExerciseController extends Controller
             'workout_template_id' => $workoutTemplate->id,
             'exercise_id' => $request->exercise_id,
             'order' => $order,
-            'target_sets' => $request->target_sets,
-            'target_reps' => $request->target_reps,
-            'target_weight' => $request->target_weight,
-            'rest_seconds' => $request->rest_seconds,
+            'target_sets' => $request->target_sets ?? 3,
+            'target_reps' => $request->target_reps ?? 10,
+            'target_weight' => $request->target_weight ?? 0,
+            'rest_seconds' => $request->rest_seconds ?? 120,
         ]);
 
         return redirect()->route('workout-exercises.index', $workoutTemplate)
@@ -150,7 +150,14 @@ class WorkoutTemplateExerciseController extends Controller
             abort(403, 'Unauthorized.');
         }
 
-        $workoutTemplateExercise->update($request->validated());
+        $validated = $request->validated();
+        $workoutTemplateExercise->update([
+            'order' => $validated['order'] ?? $workoutTemplateExercise->order,
+            'target_sets' => $validated['target_sets'] ?? 3,
+            'target_reps' => $validated['target_reps'] ?? 10,
+            'target_weight' => $validated['target_weight'] ?? 0,
+            'rest_seconds' => $validated['rest_seconds'] ?? 120,
+        ]);
 
         return redirect()->route('workout-exercises.index', $workoutTemplate)
             ->with('success', 'Exercise updated successfully!');

@@ -23,11 +23,8 @@
                 @endif
                 <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">
                     Part of <a href="{{ route('plans.show', $workoutTemplate->plan) }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ $workoutTemplate->plan->name }}</a>
-                    @if($workoutTemplate->day_of_week !== null)
-                        @php
-                            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                        @endphp
-                        - {{ $days[$workoutTemplate->day_of_week] }}
+                    @if($dayName)
+                        - {{ $dayName }}
                     @endif
                 </p>
             </div>
@@ -58,7 +55,7 @@
             </a>
         </div>
 
-        @if($workoutTemplate->workoutTemplateExercises->count() > 0)
+        @if($exercises->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
@@ -74,7 +71,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach($workoutTemplate->workoutTemplateExercises->sortBy('order') as $exercise)
+                        @foreach($exercises as $exercise)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                     {{ $exercise->order }}

@@ -24,8 +24,8 @@ class StoreWorkoutTemplateExerciseRequest extends FormRequest
         return [
             'exercise_id' => 'required|exists:workout_exercises,id',
             'order' => 'nullable|integer|min:0',
-            'target_sets' => 'nullable|integer|min:1',
-            'target_reps' => 'nullable|integer|min:1',
+            'target_sets' => 'nullable|integer|min:0',
+            'target_reps' => 'nullable|integer|min:0',
             'target_weight' => 'nullable|numeric|min:0',
             'rest_seconds' => 'nullable|integer|min:0',
         ];

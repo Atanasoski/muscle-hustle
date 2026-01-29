@@ -31,7 +31,7 @@
                         Active
                     </span>
                 @else
-                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-300">
                         Inactive
                     </span>
                 @endif
@@ -62,39 +62,46 @@
         </div>
 
         @if($plan->workoutTemplates->count() > 0)
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 @foreach($plan->workoutTemplates as $workout)
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-3">
-                                    <h4 class="font-medium text-gray-900 dark:text-white">
-                                        <a href="{{ route('workouts.show', $workout) }}" class="hover:text-brand-500 dark:hover:text-brand-400">
+                    <div class="rounded-xl border border-gray-200 p-4 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900/40">
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="truncate text-base font-semibold text-gray-900 dark:text-white">
                                             {{ $workout->name }}
-                                        </a>
-                                    </h4>
-                                    @if($workout->day_of_week !== null)
-                                        @php
-                                            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                                        @endphp
-                                        <span class="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
-                                            {{ $days[$workout->day_of_week] }}
-                                        </span>
-                                    @endif
+                                        </div>
+                                        @if($workout->description)
+                                            <div class="truncate text-sm text-gray-500 dark:text-gray-400">{{ $workout->description }}</div>
+                                        @else
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">Workout</div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @if($workout->description)
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $workout->description }}</p>
+                                @if($workout->day_of_week !== null && isset($dayNames[$workout->day_of_week]))
+                                    <div class="shrink-0">
+                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                            {{ $dayNames[$workout->day_of_week] }}
+                                        </span>
+                                    </div>
                                 @endif
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                    {{ $workout->workout_template_exercises_count ?? 0 }} exercises
-                                </p>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('workouts.show', $workout) }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                                    View
-                                </a>
-                                <a href="{{ route('workouts.edit', $workout) }}" class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                                    Edit
+
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ $workout->workout_template_exercises_count ?? 0 }} exercises
+                                </div>
+                                <a href="{{ route('workouts.show', $workout) }}" class="flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
+                                    Manage
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
                                 </a>
                             </div>
                         </div>

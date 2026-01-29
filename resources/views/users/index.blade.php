@@ -70,7 +70,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-white">
-                                        {{ $user->activePlan?->name ?? 'None' }}
+                                        @if($user->activePlan)
+                                            <a href="{{ route('plans.show', $user->activePlan) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                                {{ $user->activePlan->name }}
+                                            </a>
+                                        @else
+                                            None
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
