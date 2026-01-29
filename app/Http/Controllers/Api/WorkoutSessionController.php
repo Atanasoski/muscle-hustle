@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\WorkoutSessionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddSessionExerciseRequest;
 use App\Http\Requests\LogSetRequest;
@@ -71,11 +72,15 @@ class WorkoutSessionController extends Controller
             ->with(['workoutTemplateExercises.exercise.category'])
             ->first();
 
-        // Check if there's already an active session for today
+        // Check if there's already an active or draft session for today
         $session = WorkoutSession::where('user_id', Auth::id())
-            ->whereDate('performed_at', $today->toDateString())
-            ->whereNull('completed_at')
+            ->whereIn('status', [WorkoutSessionStatus::Draft, WorkoutSessionStatus::Active])
+            ->where(function ($query) use ($today) {
+                $query->whereDate('performed_at', $today->toDateString())
+                    ->orWhereNull('performed_at'); // Draft sessions might not have performed_at
+            })
             ->with(['workoutSessionExercises.exercise.category'])
+            ->orderByDesc('created_at')
             ->first();
 
         return response()->json([
@@ -96,7 +101,7 @@ class WorkoutSessionController extends Controller
         // Check if an active session already exists for today
         $session = WorkoutSession::where('user_id', Auth::id())
             ->whereDate('performed_at', $today->toDateString())
-            ->whereNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Active)
             ->first();
 
         if (! $session) {
@@ -105,6 +110,7 @@ class WorkoutSessionController extends Controller
                     'user_id' => Auth::id(),
                     'workout_template_id' => $request->template_id,
                     'performed_at' => $today,
+                    'status' => WorkoutSessionStatus::Active,
                 ]);
 
                 // Snapshot template exercises if template is provided
@@ -249,6 +255,7 @@ class WorkoutSessionController extends Controller
         $session->update([
             'notes' => $request->notes,
             'completed_at' => Carbon::now(),
+            'status' => WorkoutSessionStatus::Completed,
         ]);
 
         return response()->json([
@@ -264,12 +271,10 @@ class WorkoutSessionController extends Controller
     {
         $this->authorize('delete', $session);
 
-        // Delete all set logs and session exercises
-        $session->setLogs()->delete();
-        $session->workoutSessionExercises()->delete();
-
-        // Delete the session
-        $session->delete();
+        // Set status to cancelled instead of deleting for tracking purposes
+        $session->update([
+            'status' => WorkoutSessionStatus::Cancelled,
+        ]);
 
         return response()->json([
             'message' => 'Workout cancelled successfully',

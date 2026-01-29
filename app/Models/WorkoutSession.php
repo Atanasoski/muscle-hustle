@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\WorkoutSessionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class WorkoutSession extends Model
 {
@@ -18,12 +20,15 @@ class WorkoutSession extends Model
         'completed_at',
         'notes',
         'is_auto_generated',
+        'status',
+        'replaced_session_id',
     ];
 
     protected $casts = [
         'performed_at' => 'datetime',
         'completed_at' => 'datetime',
         'is_auto_generated' => 'boolean',
+        'status' => WorkoutSessionStatus::class,
     ];
 
     /**
@@ -100,5 +105,21 @@ class WorkoutSession extends Model
         }
 
         return $result;
+    }
+
+    /**
+     * Relationship: WorkoutSession was replaced by another session (regeneration tracking)
+     */
+    public function replacedSession(): BelongsTo
+    {
+        return $this->belongsTo(WorkoutSession::class, 'replaced_session_id');
+    }
+
+    /**
+     * Relationship: WorkoutSession replaced by another session
+     */
+    public function replacedBy(): HasOne
+    {
+        return $this->hasOne(WorkoutSession::class, 'replaced_session_id');
     }
 }

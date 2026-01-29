@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\FitnessGoal;
 use App\Enums\TrainingExperience;
+use App\Enums\WorkoutSessionStatus;
 use App\Models\Exercise;
 use App\Models\User;
 use App\Models\UserProfile;
@@ -15,7 +16,7 @@ class WorkoutSessionGenerationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_preview_workout(): void
+    public function test_user_can_generate_draft_workout(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -27,22 +28,33 @@ class WorkoutSessionGenerationTest extends TestCase
         Exercise::factory()->count(5)->create();
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson('/api/workout-sessions/generate', []);
 
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJsonStructure([
                 'data' => [
-                    'exercises',
+                    'id',
+                    'is_auto_generated',
+                    'status',
+                    'replaced_session_id',
                     'rationale',
-                    'estimated_duration_minutes',
+                    'exercises',
                 ],
                 'message',
             ]);
 
         $this->assertNotEmpty($response->json('data.exercises'));
+        $this->assertEquals('draft', $response->json('data.status'));
+        $this->assertTrue($response->json('data.is_auto_generated'));
+
+        // Verify session was created in database
+        $session = WorkoutSession::find($response->json('data.id'));
+        $this->assertNotNull($session);
+        $this->assertEquals(WorkoutSessionStatus::Draft, $session->status);
+        $this->assertNull($session->performed_at); // Draft sessions don't have performed_at
     }
 
-    public function test_user_can_confirm_workout_from_preview(): void
+    public function test_user_can_confirm_draft_workout(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -51,60 +63,51 @@ class WorkoutSessionGenerationTest extends TestCase
             'training_experience' => TrainingExperience::Intermediate,
         ]);
 
-        $exercises = Exercise::factory()->count(3)->create();
+        Exercise::factory()->count(3)->create();
 
-        // First, get a preview
-        $previewResponse = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+        // First, generate a draft workout
+        $generateResponse = $this->actingAs($user, 'sanctum')
+            ->postJson('/api/workout-sessions/generate', []);
 
-        $previewResponse->assertStatus(200);
-        $previewData = $previewResponse->json('data');
+        $generateResponse->assertStatus(201);
+        $sessionId = $generateResponse->json('data.id');
 
-        // Extract exercise data for confirm request
-        $exercisesToConfirm = array_map(function ($exercise) {
-            return [
-                'exercise_id' => $exercise['exercise_id'],
-                'order' => $exercise['order'],
-                'target_sets' => $exercise['target_sets'],
-                'target_reps' => $exercise['target_reps'],
-                'target_weight' => $exercise['target_weight'],
-                'rest_seconds' => $exercise['rest_seconds'],
-            ];
-        }, $previewData['exercises']);
+        // Verify it's in draft status
+        $this->assertEquals('draft', $generateResponse->json('data.status'));
 
         // Now confirm the workout
         $confirmResponse = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/confirm', [
-                'exercises' => $exercisesToConfirm,
-                'rationale' => $previewData['rationale'],
-            ]);
+            ->postJson("/api/workout-sessions/{$sessionId}/confirm");
 
-        $confirmResponse->assertStatus(201)
+        $confirmResponse->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'id',
                     'is_auto_generated',
+                    'status',
                     'rationale',
                     'exercises',
                 ],
                 'message',
             ]);
 
+        $this->assertEquals('active', $confirmResponse->json('data.status'));
         $this->assertTrue($confirmResponse->json('data.is_auto_generated'));
 
-        // Verify session was created in database
-        $session = WorkoutSession::find($confirmResponse->json('data.id'));
+        // Verify session was updated in database
+        $session = WorkoutSession::find($sessionId);
         $this->assertNotNull($session);
-        $this->assertTrue($session->is_auto_generated);
+        $this->assertEquals(WorkoutSessionStatus::Active, $session->status);
+        $this->assertNotNull($session->performed_at); // Active sessions have performed_at set
     }
 
-    public function test_preview_requires_complete_profile(): void
+    public function test_generate_requires_complete_profile(): void
     {
         $user = User::factory()->create();
         // No profile created
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson('/api/workout-sessions/generate', []);
 
         $response->assertStatus(422)
             ->assertJson([
@@ -112,7 +115,7 @@ class WorkoutSessionGenerationTest extends TestCase
             ]);
     }
 
-    public function test_preview_requires_fitness_goal(): void
+    public function test_generate_requires_fitness_goal(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -122,7 +125,7 @@ class WorkoutSessionGenerationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson('/api/workout-sessions/generate', []);
 
         $response->assertStatus(422)
             ->assertJson([
@@ -130,7 +133,7 @@ class WorkoutSessionGenerationTest extends TestCase
             ]);
     }
 
-    public function test_preview_requires_training_experience(): void
+    public function test_generate_requires_training_experience(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -140,7 +143,7 @@ class WorkoutSessionGenerationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson('/api/workout-sessions/generate', []);
 
         $response->assertStatus(422)
             ->assertJson([
@@ -148,7 +151,7 @@ class WorkoutSessionGenerationTest extends TestCase
             ]);
     }
 
-    public function test_preview_with_preferences(): void
+    public function test_generate_with_preferences(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -160,17 +163,18 @@ class WorkoutSessionGenerationTest extends TestCase
         Exercise::factory()->count(5)->create();
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', [
+            ->postJson('/api/workout-sessions/generate', [
                 'focus_muscle_groups' => ['Chest', 'Triceps'],
                 'duration_minutes' => 60,
                 'difficulty' => 'advanced',
             ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         $this->assertNotEmpty($response->json('data.exercises'));
+        $this->assertEquals('draft', $response->json('data.status'));
     }
 
-    public function test_preview_validation(): void
+    public function test_generate_validation(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -180,7 +184,7 @@ class WorkoutSessionGenerationTest extends TestCase
         ]);
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', [
+            ->postJson('/api/workout-sessions/generate', [
                 'duration_minutes' => 5, // Too low
                 'difficulty' => 'invalid',
             ]);
@@ -189,7 +193,7 @@ class WorkoutSessionGenerationTest extends TestCase
             ->assertJsonValidationErrors(['duration_minutes', 'difficulty']);
     }
 
-    public function test_preview_handles_no_exercises_gracefully(): void
+    public function test_generate_handles_no_exercises_gracefully(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -201,7 +205,7 @@ class WorkoutSessionGenerationTest extends TestCase
         // No exercises in database
 
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson('/api/workout-sessions/generate', []);
 
         $response->assertStatus(422)
             ->assertJsonFragment([
@@ -209,41 +213,38 @@ class WorkoutSessionGenerationTest extends TestCase
             ]);
     }
 
-    public function test_confirm_validates_exercise_ids(): void
+    public function test_confirm_requires_draft_status(): void
     {
         $user = User::factory()->create();
+        UserProfile::factory()->create([
+            'user_id' => $user->id,
+            'fitness_goal' => FitnessGoal::MuscleGain,
+            'training_experience' => TrainingExperience::Intermediate,
+        ]);
 
+        Exercise::factory()->count(3)->create();
+
+        // Generate a draft session
+        $generateResponse = $this->actingAs($user, 'sanctum')
+            ->postJson('/api/workout-sessions/generate', []);
+
+        $sessionId = $generateResponse->json('data.id');
+
+        // Confirm it once
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/workout-sessions/{$sessionId}/confirm");
+
+        // Try to confirm again - should fail
         $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/confirm', [
-                'exercises' => [
-                    [
-                        'exercise_id' => 99999, // Invalid ID
-                        'order' => 1,
-                        'target_sets' => 3,
-                        'target_reps' => 10,
-                        'target_weight' => 50,
-                        'rest_seconds' => 90,
-                    ],
-                ],
-            ]);
-
-        $response->assertStatus(422);
-    }
-
-    public function test_confirm_requires_exercises(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/confirm', [
-                'exercises' => [],
-            ]);
+            ->postJson("/api/workout-sessions/{$sessionId}/confirm");
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['exercises']);
+            ->assertJsonFragment([
+                'message' => 'Only draft sessions can be confirmed',
+            ]);
     }
 
-    public function test_regenerate_returns_different_exercises(): void
+    public function test_user_can_regenerate_draft_workout(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->create([
@@ -255,23 +256,60 @@ class WorkoutSessionGenerationTest extends TestCase
         // Create many exercises to allow for shuffling variety
         Exercise::factory()->count(20)->create();
 
-        // Get first preview
+        // Generate first draft session
         $response1 = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson('/api/workout-sessions/generate', []);
 
-        $response1->assertStatus(200);
-        $exercises1 = collect($response1->json('data.exercises'))->pluck('exercise_id')->toArray();
+        $response1->assertStatus(201);
+        $session1Id = $response1->json('data.id');
+        $this->assertEquals('draft', $response1->json('data.status'));
 
-        // Get second preview - should potentially be different due to shuffle
+        // Regenerate - should cancel old session and create new one
         $response2 = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/workout-sessions/preview', []);
+            ->postJson("/api/workout-sessions/{$session1Id}/regenerate", []);
 
-        $response2->assertStatus(200);
-        $exercises2 = collect($response2->json('data.exercises'))->pluck('exercise_id')->toArray();
+        $response2->assertStatus(201);
+        $session2Id = $response2->json('data.id');
+        $this->assertEquals('draft', $response2->json('data.status'));
+        $this->assertEquals($session1Id, $response2->json('data.replaced_session_id'));
 
-        // With enough exercises and shuffling, the order should vary
-        // We can't guarantee they're different every time, but both should be valid
-        $this->assertNotEmpty($exercises1);
-        $this->assertNotEmpty($exercises2);
+        // Verify first session is cancelled
+        $session1 = WorkoutSession::find($session1Id);
+        $this->assertEquals(WorkoutSessionStatus::Cancelled, $session1->status);
+
+        // Verify second session exists and is draft
+        $session2 = WorkoutSession::find($session2Id);
+        $this->assertEquals(WorkoutSessionStatus::Draft, $session2->status);
+        $this->assertEquals($session1Id, $session2->replaced_session_id);
+    }
+
+    public function test_regenerate_requires_draft_status(): void
+    {
+        $user = User::factory()->create();
+        UserProfile::factory()->create([
+            'user_id' => $user->id,
+            'fitness_goal' => FitnessGoal::MuscleGain,
+            'training_experience' => TrainingExperience::Intermediate,
+        ]);
+
+        Exercise::factory()->count(3)->create();
+
+        // Generate and confirm a session
+        $generateResponse = $this->actingAs($user, 'sanctum')
+            ->postJson('/api/workout-sessions/generate', []);
+
+        $sessionId = $generateResponse->json('data.id');
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/workout-sessions/{$sessionId}/confirm");
+
+        // Try to regenerate an active session - should fail
+        $response = $this->actingAs($user, 'sanctum')
+            ->postJson("/api/workout-sessions/{$sessionId}/regenerate", []);
+
+        $response->assertStatus(422)
+            ->assertJsonFragment([
+                'message' => 'Only draft sessions can be regenerated',
+            ]);
     }
 }

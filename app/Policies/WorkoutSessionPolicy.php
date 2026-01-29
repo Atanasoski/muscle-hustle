@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\WorkoutSessionStatus;
 use App\Models\User;
 use App\Models\WorkoutSession;
 
@@ -45,5 +46,23 @@ class WorkoutSessionPolicy
     public function delete(User $user, WorkoutSession $workoutSession): bool
     {
         return $user->id === $workoutSession->user_id;
+    }
+
+    /**
+     * Determine whether the user can confirm a draft session.
+     */
+    public function confirm(User $user, WorkoutSession $workoutSession): bool
+    {
+        return $user->id === $workoutSession->user_id
+            && $workoutSession->status === WorkoutSessionStatus::Draft;
+    }
+
+    /**
+     * Determine whether the user can regenerate a draft session.
+     */
+    public function regenerate(User $user, WorkoutSession $workoutSession): bool
+    {
+        return $user->id === $workoutSession->user_id
+            && $workoutSession->status === WorkoutSessionStatus::Draft;
     }
 }
