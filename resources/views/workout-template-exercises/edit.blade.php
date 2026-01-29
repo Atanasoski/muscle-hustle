@@ -19,106 +19,138 @@
     @endif
 
     <x-common.component-card title="Edit Exercise in Workout Template" :desc="'Update exercise details for ' . $workoutTemplateExercise->exercise->name">
-        <form action="{{ route('workout-exercises.update', [$workoutTemplate, $workoutTemplateExercise]) }}" method="POST">
+        <form action="{{ route('workout-exercises.update', [$workoutTemplate, $workoutTemplateExercise]) }}" method="POST" @keydown.escape.window="window.location.href='{{ route('workout-exercises.index', $workoutTemplate) }}'">
             @csrf
             @method('PUT')
 
-            <div class="mb-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exercise</p>
-                <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $workoutTemplateExercise->exercise->name }}</p>
-                @if($workoutTemplateExercise->exercise->category)
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $workoutTemplateExercise->exercise->category->name }}</p>
-                @endif
-            </div>
+            <div class="space-y-4">
+                <!-- Exercise (read-only) -->
+                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                        Exercise
+                    </label>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $workoutTemplateExercise->exercise->name }}</p>
+                    @if($workoutTemplateExercise->exercise->category)
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $workoutTemplateExercise->exercise->category->name }}</p>
+                    @endif
+                </div>
 
-            <div class="space-y-5">
                 <!-- Order -->
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Order
+                    <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Order <span class="text-xs font-normal text-gray-400 dark:text-gray-500">(optional)</span>
                     </label>
                     <input type="number"
                         name="order"
                         id="order"
                         value="{{ old('order', $workoutTemplateExercise->order) }}"
                         min="0"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('order') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                        placeholder="{{ ($workoutTemplate->workoutTemplateExercises()->max('order') ?? -1) + 1 }}"
+                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('order') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
                     @error('order')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The order in which this exercise appears in the workout (lower numbers appear first).</p>
+                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Automatically set if left empty. The order in which this exercise appears in the workout (lower numbers appear first).</p>
                 </div>
 
-                <!-- Target Sets -->
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Target Sets
-                    </label>
-                    <input type="number"
-                        name="target_sets"
-                        id="target_sets"
-                        value="{{ old('target_sets', $workoutTemplateExercise->target_sets) }}"
-                        min="1"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_sets') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
-                    @error('target_sets')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <!-- Targets Section -->
+                <div class="space-y-3">
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Targets <span class="text-xs font-normal">(optional)</span>
+                    </div>
 
-                <!-- Target Reps -->
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Target Reps
-                    </label>
-                    <input type="number"
-                        name="target_reps"
-                        id="target_reps"
-                        value="{{ old('target_reps', $workoutTemplateExercise->target_reps) }}"
-                        min="1"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_reps') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
-                    @error('target_reps')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <!-- Target Sets -->
+                        <div>
+                            <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                Sets
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                    name="target_sets"
+                                    id="target_sets"
+                                    value="{{ old('target_sets', $workoutTemplateExercise->target_sets) }}"
+                                    min="0"
+                                    step="1"
+                                    placeholder="sets"
+                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_sets') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                                <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">sets</span>
+                            </div>
+                            @error('target_sets')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                <!-- Target Weight -->
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Target Weight (kg)
-                    </label>
-                    <input type="number"
-                        name="target_weight"
-                        id="target_weight"
-                        value="{{ old('target_weight', $workoutTemplateExercise->target_weight) }}"
-                        min="0"
-                        step="0.1"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_weight') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
-                    @error('target_weight')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                        <!-- Target Reps -->
+                        <div>
+                            <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                Reps
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                    name="target_reps"
+                                    id="target_reps"
+                                    value="{{ old('target_reps', $workoutTemplateExercise->target_reps) }}"
+                                    min="0"
+                                    step="1"
+                                    placeholder="reps"
+                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_reps') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                                <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">reps</span>
+                            </div>
+                            @error('target_reps')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                <!-- Rest Seconds -->
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Rest Seconds
-                    </label>
-                    <input type="number"
-                        name="rest_seconds"
-                        id="rest_seconds"
-                        value="{{ old('rest_seconds', $workoutTemplateExercise->rest_seconds) }}"
-                        min="0"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('rest_seconds') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
-                    @error('rest_seconds')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
+                        <!-- Target Weight -->
+                        <div>
+                            <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                Weight
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                    name="target_weight"
+                                    id="target_weight"
+                                    value="{{ old('target_weight', $workoutTemplateExercise->target_weight) }}"
+                                    min="0"
+                                    step="0.1"
+                                    placeholder="kg"
+                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_weight') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                                <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">kg</span>
+                            </div>
+                            @error('target_weight')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Rest Seconds -->
+                    <div>
+                        <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Rest
+                        </label>
+                        <div class="relative">
+                            <input type="number"
+                                name="rest_seconds"
+                                id="rest_seconds"
+                                value="{{ old('rest_seconds', $workoutTemplateExercise->rest_seconds) }}"
+                                min="0"
+                                step="1"
+                                placeholder="sec"
+                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('rest_seconds') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">sec</span>
+                        </div>
+                        @error('rest_seconds')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
             <!-- Form Actions -->
             <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
                 <a href="{{ route('workout-exercises.index', $workoutTemplate) }}">
-                    <x-ui.button variant="outline" size="md">
+                    <x-ui.button variant="outline" size="md" type="button">
                         Cancel
                     </x-ui.button>
                 </a>

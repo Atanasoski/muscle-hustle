@@ -233,21 +233,21 @@
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/30">
             <div class="mb-4 flex items-center justify-between gap-3">
                 <div class="text-lg font-semibold text-gray-900 dark:text-white">Your Plans</div>
-                <a href="{{ route('plans.create', $user) }}" class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
-                    + Create Plan
+                <a href="{{ route('plans.index', $user) }}" class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
+                    View all →
                 </a>
             </div>
 
-            @if($user->plans->count() > 0)
+            @if($latestPlans->count() > 0)
                 <div class="space-y-4">
-                    @foreach($user->plans as $plan)
+                    @foreach($latestPlans as $plan)
                         <div class="rounded-xl border border-gray-200 p-4 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900/40 {{ $plan->is_active ? 'bg-green-50/40 dark:bg-green-900/10 border-green-200 dark:border-green-900/40' : '' }}">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 110 4m0-4a2 2 0 100 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6 2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                        <div class="flex h-9 w-9 items-center justify-center rounded-lg {{ $plan->is_active ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300' }}">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h2m-2 0V8m0 4v4m0-4H1m2 0h2m14-4h-2m2 0v4m0-4V8m0 4h2m-2 0h-2M6 12h12M6 12V8m0 4v4m12-4V8m0 4v4M6 12H4m14 0h2M6 16H4m14 0h2"></path>
                                             </svg>
                                         </div>
                                         <div class="min-w-0">
@@ -266,8 +266,11 @@
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $plan->workout_templates_count ?? 0 }} templates
                                         </div>
-                                        <a href="{{ route('plans.show', $plan) }}" class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
+                                        <a href="{{ route('plans.show', $plan) }}" class="flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
                                             Manage
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
                                         </a>
                                     </div>
                                 </div>
@@ -278,7 +281,7 @@
                                             Active
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                        <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600 dark:bg-red-900/30 dark:text-red-300">
                                             Inactive
                                         </span>
                                     @endif
@@ -298,14 +301,17 @@
     <!-- Recent Sessions -->
     <div class="flex items-center justify-between gap-3 pt-2">
         <div class="text-xl font-semibold text-gray-900 dark:text-white">Recent Sessions</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">View All History →</div>
+        <a href="{{ route('users.workout-sessions.index', $user) }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+            View All History →
+        </a>
     </div>
 
     @if($recentWorkouts->count() > 0)
         <div class="overflow-x-auto">
             <div class="flex min-w-full gap-4 pb-2">
                 @foreach($recentWorkouts as $workout)
-                    <div class="w-[260px] shrink-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900/30">
+                    <a href="{{ route('users.workout-sessions.show', [$user, $workout]) }}" class="block w-[260px] shrink-0">
+                        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/30 dark:hover:border-gray-700">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex h-9 w-9 items-center justify-center rounded-lg {{ $workout->completed_at ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-300' : 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300' }}">
                                 @if($workout->completed_at)
@@ -344,6 +350,7 @@
                             </div>
                         </div>
                     </div>
+                    </a>
                 @endforeach
             </div>
         </div>

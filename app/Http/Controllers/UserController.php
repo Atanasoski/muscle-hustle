@@ -85,6 +85,7 @@ class UserController extends Controller
         $completionRate = $totalWorkouts > 0 ? (int) round(($completedWorkouts / $totalWorkouts) * 100) : null;
         $weeklyWorkouts = $fitnessMetrics['weekly_progress']['current_week_workouts'] ?? null;
         $weeklyGoal = $profile?->training_days_per_week ?: null;
+        $latestPlans = $user->plans()->withCount('workoutTemplates')->latest()->limit(3)->get();
 
         return view('users.show', compact(
             'partner',
@@ -100,6 +101,7 @@ class UserController extends Controller
             'weeklyWorkoutData',
             'weeklyWorkouts',
             'weeklyGoal',
+            'latestPlans',
         ));
     }
 

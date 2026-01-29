@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserWorkoutSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -32,8 +34,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Users Management
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/workout-sessions', [UserWorkoutSessionController::class, 'index'])->name('users.workout-sessions.index');
+    Route::get('/users/{user}/workout-sessions/{workoutSession}', [UserWorkoutSessionController::class, 'show'])->name('users.workout-sessions.show');
 
     // Plans Management
+    Route::get('/users/{user}/plans', [PlanController::class, 'index'])->name('plans.index');
     Route::get('/users/{user}/plans/create', [\App\Http\Controllers\PlanController::class, 'create'])->name('plans.create');
     Route::post('/users/{user}/plans', [\App\Http\Controllers\PlanController::class, 'store'])->name('plans.store');
     Route::get('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'show'])->name('plans.show');

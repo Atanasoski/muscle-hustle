@@ -83,7 +83,13 @@ class WorkoutTemplateController extends Controller
             'workoutTemplateExercises.exercise.muscleGroups',
         ]);
 
-        return view('workout-templates.show', compact('workoutTemplate', 'partner'));
+        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $dayName = $workoutTemplate->day_of_week !== null
+            ? ($dayNames[$workoutTemplate->day_of_week] ?? null)
+            : null;
+        $exercises = $workoutTemplate->workoutTemplateExercises->sortBy('order')->values();
+
+        return view('workout-templates.show', compact('workoutTemplate', 'partner', 'dayName', 'exercises'));
     }
 
     /**

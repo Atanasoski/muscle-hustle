@@ -14,6 +14,32 @@ use Illuminate\View\View;
 class PlanController extends Controller
 {
     /**
+     * Display a listing of the user's plans.
+     */
+    public function index(Request $request, User $user): View
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin')) {
+            abort(403, 'Only partner administrators can view plans.');
+        }
+
+        if ($user->partner_id !== $currentUser->partner_id) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+
+        $plans = Plan::query()
+            ->where('user_id', $user->id)
+            ->withCount('workoutTemplates')
+            ->latest()
+            ->paginate(15);
+
+        return view('plans.index', compact('user', 'partner', 'plans'));
+    }
+
+    /**
      * Show the form for creating a new plan for a user.
      */
     public function create(Request $request, User $user): View
@@ -90,7 +116,9 @@ class PlanController extends Controller
             },
         ]);
 
-        return view('plans.show', compact('plan', 'partner'));
+        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        return view('plans.show', compact('plan', 'partner', 'dayNames'));
     }
 
     /**
