@@ -11,20 +11,6 @@ class UpdateWorkoutTemplateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = auth()->user();
-
-        if (! $user->hasRole('partner_admin')) {
-            return false;
-        }
-
-        // Ensure workout template's plan belongs to the same partner
-        $workoutTemplate = $this->route('workoutTemplate');
-        if ($workoutTemplate) {
-            $workoutTemplate->load('plan.user');
-
-            return $user->partner_id === $workoutTemplate->plan->user->partner_id;
-        }
-
         return true;
     }
 

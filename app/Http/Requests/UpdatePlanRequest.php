@@ -11,18 +11,6 @@ class UpdatePlanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = auth()->user();
-
-        if (! $user->hasRole('partner_admin')) {
-            return false;
-        }
-
-        // Ensure plan belongs to the same partner
-        $plan = $this->route('plan');
-        if ($plan) {
-            return $user->partner_id === $plan->user->partner_id;
-        }
-
         return true;
     }
 

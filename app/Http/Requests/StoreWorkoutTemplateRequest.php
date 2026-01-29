@@ -11,19 +11,6 @@ class StoreWorkoutTemplateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = auth()->user();
-
-        if (! $user->hasRole('partner_admin')) {
-            return false;
-        }
-
-        // If creating for a specific plan, ensure it belongs to the same partner
-        if ($this->route('plan')) {
-            $plan = $this->route('plan');
-
-            return $user->partner_id === $plan->user->partner_id;
-        }
-
         return true;
     }
 
