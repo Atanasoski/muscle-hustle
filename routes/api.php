@@ -73,8 +73,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/workout-sessions/calendar', [WorkoutSessionController::class, 'calendar']);
     Route::get('/workout-sessions/today', [WorkoutSessionController::class, 'today']);
     Route::post('/workout-sessions/start', [WorkoutSessionController::class, 'start']);
-    Route::post('/workout-sessions/preview', [WorkoutGeneratorController::class, 'preview']);
-    Route::post('/workout-sessions/confirm', [WorkoutGeneratorController::class, 'confirm']);
+    Route::post('/workout-sessions/generate', [WorkoutGeneratorController::class, 'generate']);
+    Route::post('/workout-sessions/{session}/confirm', [WorkoutGeneratorController::class, 'confirm']);
+    Route::post('/workout-sessions/{session}/regenerate', [WorkoutGeneratorController::class, 'regenerate']);
     Route::get('/workout-sessions/{session}', [WorkoutSessionController::class, 'show']);
     Route::post('/workout-sessions/{session}/complete', [WorkoutSessionController::class, 'complete']);
     Route::delete('/workout-sessions/{session}/cancel', [WorkoutSessionController::class, 'cancel']);

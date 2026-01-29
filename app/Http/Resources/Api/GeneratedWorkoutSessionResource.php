@@ -21,6 +21,8 @@ class GeneratedWorkoutSessionResource extends JsonResource
         // Add auto-generation specific fields
         return array_merge($baseData, [
             'is_auto_generated' => $this->is_auto_generated ?? false,
+            'status' => $this->status?->value,
+            'replaced_session_id' => $this->replaced_session_id,
             'rationale' => $this->notes,
         ]);
     }

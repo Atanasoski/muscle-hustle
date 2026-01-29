@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ConfirmWorkoutSessionRequest;
 use App\Http\Requests\GenerateWorkoutSessionRequest;
+use App\Http\Requests\RegenerateWorkoutSessionRequest;
 use App\Http\Resources\Api\GeneratedWorkoutSessionResource;
-use App\Http\Resources\Api\WorkoutPreviewResource;
+use App\Models\WorkoutSession;
 use App\Services\WorkoutGenerator\WorkoutGenerationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +19,10 @@ class WorkoutGeneratorController extends Controller
     ) {}
 
     /**
-     * Generate a workout preview without creating a session
-     * User can review and then confirm or regenerate
+     * Generate a new draft workout session
+     * User can modify exercises and then confirm to start the workout
      */
-    public function preview(GenerateWorkoutSessionRequest $request): JsonResponse
+    public function generate(GenerateWorkoutSessionRequest $request): JsonResponse
     {
         try {
             $user = Auth::user();
@@ -40,51 +40,98 @@ class WorkoutGeneratorController extends Controller
             // Remove null values
             $preferences = array_filter($preferences, fn ($value) => $value !== null);
 
-            $previewData = $this->workoutGenerationService->preview($user, $preferences);
+            $session = $this->workoutGenerationService->generate($user, $preferences);
 
             return response()->json([
-                'data' => new WorkoutPreviewResource($previewData),
-                'message' => 'Workout preview generated successfully',
-            ]);
+                'data' => new GeneratedWorkoutSessionResource($session),
+                'message' => 'Draft workout session created successfully',
+            ], 201);
         } catch (\Exception $e) {
             return $this->handleGenerationError($e);
         }
     }
 
     /**
-     * Confirm and create a workout session from preview data
+     * Confirm a draft workout session - sets status to active and starts the workout
      */
-    public function confirm(ConfirmWorkoutSessionRequest $request): JsonResponse
+    public function confirm(WorkoutSession $session): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $this->authorize('confirm', $session);
 
-            $exercises = $request->input('exercises');
-            $rationale = $request->input('rationale');
-
-            $session = $this->workoutGenerationService->createFromPreview($user, $exercises, $rationale);
+            $confirmedSession = $this->workoutGenerationService->confirmSession($session);
 
             return response()->json([
-                'data' => new GeneratedWorkoutSessionResource($session),
-                'message' => 'Workout session created successfully',
-            ], 201);
+                'data' => new GeneratedWorkoutSessionResource($confirmedSession),
+                'message' => 'Workout session confirmed and started successfully',
+            ]);
         } catch (\Exception $e) {
-            Log::error('Workout session creation failed', [
+            Log::error('Workout session confirmation failed', [
                 'user_id' => Auth::id(),
+                'session_id' => $session->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             $message = $e->getMessage();
 
-            if (str_contains($message, 'Invalid exercise IDs')) {
+            if (str_contains($message, 'Only draft sessions')) {
                 return response()->json([
                     'message' => $message,
                 ], 422);
             }
 
             return response()->json([
-                'message' => 'Failed to create workout session. Please try again.',
+                'message' => 'Failed to confirm workout session. Please try again.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Regenerate a draft workout session - cancel current and create new one
+     */
+    public function regenerate(RegenerateWorkoutSessionRequest $request, WorkoutSession $session): JsonResponse
+    {
+        try {
+            $this->authorize('regenerate', $session);
+
+            $preferences = [
+                'focus_muscle_groups' => $request->input('focus_muscle_groups'),
+                'target_regions' => $request->input('target_regions'),
+                'equipment_types' => $request->input('equipment_types'),
+                'movement_patterns' => $request->input('movement_patterns'),
+                'angles' => $request->input('angles'),
+                'duration_minutes' => $request->input('duration_minutes'),
+                'difficulty' => $request->input('difficulty'),
+            ];
+
+            // Remove null values
+            $preferences = array_filter($preferences, fn ($value) => $value !== null);
+
+            $newSession = $this->workoutGenerationService->regenerateSession($session, $preferences);
+
+            return response()->json([
+                'data' => new GeneratedWorkoutSessionResource($newSession),
+                'message' => 'New workout session generated successfully',
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Workout session regeneration failed', [
+                'user_id' => Auth::id(),
+                'session_id' => $session->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $message = $e->getMessage();
+
+            if (str_contains($message, 'Only draft sessions')) {
+                return response()->json([
+                    'message' => $message,
+                ], 422);
+            }
+
+            return response()->json([
+                'message' => 'Failed to regenerate workout session. Please try again.',
             ], 500);
         }
     }

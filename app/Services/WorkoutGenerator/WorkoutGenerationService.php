@@ -2,7 +2,7 @@
 
 namespace App\Services\WorkoutGenerator;
 
-use App\Models\Exercise;
+use App\Enums\WorkoutSessionStatus;
 use App\Models\User;
 use App\Models\WorkoutSession;
 use App\Models\WorkoutSessionExercise;
@@ -17,10 +17,10 @@ class WorkoutGenerationService
     ) {}
 
     /**
-     * Generate a workout preview without creating a session
-     * Returns exercise data and rationale for user review
+     * Generate a new workout session in draft status
+     * Creates session with exercises, ready for user to modify before confirming
      */
-    public function preview(User $user, array $preferences = []): array
+    public function generate(User $user, array $preferences = []): WorkoutSession
     {
         // Validate user profile
         $this->validateUserProfile($user);
@@ -29,7 +29,7 @@ class WorkoutGenerationService
             // Generate workout using deterministic algorithm
             $generatedWorkout = $this->workoutGenerator->generate($user, $preferences);
 
-            Log::info('Workout preview generated', [
+            Log::info('Workout generated', [
                 'user_id' => $user->id,
                 'exercises_count' => count($generatedWorkout['exercises'] ?? []),
                 'exercise_ids' => array_column($generatedWorkout['exercises'] ?? [], 'exercise_id'),
@@ -40,38 +40,57 @@ class WorkoutGenerationService
                 throw new \Exception('No exercises could be selected for this workout. Please try different criteria.');
             }
 
-            // Load full exercise data for preview display
-            $exerciseIds = array_column($generatedWorkout['exercises'], 'exercise_id');
-            $exercisesById = Exercise::with(['category', 'muscleGroups', 'movementPattern', 'targetRegion', 'equipmentType', 'angle'])
-                ->whereIn('id', $exerciseIds)
-                ->get()
-                ->keyBy('id');
+            // Create draft session in database
+            return DB::transaction(function () use ($user, $generatedWorkout) {
+                $session = WorkoutSession::create([
+                    'user_id' => $user->id,
+                    'workout_template_id' => null,
+                    'performed_at' => null, // Draft sessions don't have performed_at
+                    'is_auto_generated' => true,
+                    'status' => WorkoutSessionStatus::Draft,
+                    'notes' => $generatedWorkout['rationale'],
+                ]);
 
-            // Enrich exercises with full exercise data
-            $enrichedExercises = array_map(function ($exerciseData) use ($exercisesById) {
-                $exercise = $exercisesById->get($exerciseData['exercise_id']);
+                // Create workout session exercises
+                $now = now();
+                $exercisesToInsert = [];
 
-                return [
-                    'exercise_id' => $exerciseData['exercise_id'],
-                    'exercise' => $exercise,
-                    'order' => $exerciseData['order'],
-                    'target_sets' => $exerciseData['target_sets'],
-                    'target_reps' => $exerciseData['target_reps'],
-                    'target_weight' => $exerciseData['target_weight'],
-                    'rest_seconds' => $exerciseData['rest_seconds'],
-                ];
-            }, $generatedWorkout['exercises']);
+                foreach ($generatedWorkout['exercises'] as $exerciseData) {
+                    $exercisesToInsert[] = [
+                        'workout_session_id' => $session->id,
+                        'exercise_id' => $exerciseData['exercise_id'],
+                        'order' => $exerciseData['order'] ?? 0,
+                        'target_sets' => $exerciseData['target_sets'] ?? 3,
+                        'target_reps' => $exerciseData['target_reps'] ?? 10,
+                        'target_weight' => $exerciseData['target_weight'] ?? 0,
+                        'rest_seconds' => $exerciseData['rest_seconds'] ?? 90,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
 
-            // Calculate estimated duration
-            $estimatedDuration = $this->calculateEstimatedDuration($generatedWorkout['exercises']);
+                if (! empty($exercisesToInsert)) {
+                    WorkoutSessionExercise::insert($exercisesToInsert);
+                }
 
-            return [
-                'exercises' => $enrichedExercises,
-                'rationale' => $generatedWorkout['rationale'],
-                'estimated_duration_minutes' => $estimatedDuration,
-            ];
+                Log::info('Draft workout session created', [
+                    'user_id' => $user->id,
+                    'session_id' => $session->id,
+                    'exercises_count' => count($exercisesToInsert),
+                ]);
+
+                return $session->fresh([
+                    'workoutSessionExercises.exercise.category',
+                    'workoutSessionExercises.exercise.muscleGroups',
+                    'workoutSessionExercises.exercise.movementPattern',
+                    'workoutSessionExercises.exercise.targetRegion',
+                    'workoutSessionExercises.exercise.equipmentType',
+                    'workoutSessionExercises.exercise.angle',
+                    'setLogs',
+                ]);
+            });
         } catch (\Exception $e) {
-            Log::error('Workout preview generation failed', [
+            Log::error('Workout generation failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
@@ -81,60 +100,66 @@ class WorkoutGenerationService
     }
 
     /**
-     * Create a workout session from preview data
+     * Confirm a draft session - set status to active and set performed_at
      */
-    public function createFromPreview(User $user, array $exercises, ?string $rationale = null): WorkoutSession
+    public function confirmSession(WorkoutSession $session): WorkoutSession
     {
-        // Validate exercise IDs exist
-        $exerciseIds = array_column($exercises, 'exercise_id');
-        $validIds = Exercise::whereIn('id', $exerciseIds)->pluck('id')->toArray();
-
-        $invalidIds = array_diff($exerciseIds, $validIds);
-        if (! empty($invalidIds)) {
-            throw new \Exception('Invalid exercise IDs: '.implode(', ', $invalidIds));
+        if ($session->status !== WorkoutSessionStatus::Draft) {
+            throw new \Exception('Only draft sessions can be confirmed');
         }
 
-        return DB::transaction(function () use ($user, $exercises, $rationale) {
-            $session = WorkoutSession::create([
-                'user_id' => $user->id,
-                'workout_template_id' => null,
-                'performed_at' => Carbon::now(),
-                'is_auto_generated' => true,
-                'notes' => $rationale,
+        $session->update([
+            'status' => WorkoutSessionStatus::Active,
+            'performed_at' => Carbon::now(),
+        ]);
+
+        Log::info('Workout session confirmed', [
+            'user_id' => $session->user_id,
+            'session_id' => $session->id,
+        ]);
+
+        return $session->fresh([
+            'workoutSessionExercises.exercise.category',
+            'workoutSessionExercises.exercise.muscleGroups',
+            'setLogs',
+        ]);
+    }
+
+    /**
+     * Regenerate a workout session - cancel the current draft and create a new one
+     */
+    public function regenerateSession(WorkoutSession $session, array $preferences = []): WorkoutSession
+    {
+        if ($session->status !== WorkoutSessionStatus::Draft) {
+            throw new \Exception('Only draft sessions can be regenerated');
+        }
+
+        return DB::transaction(function () use ($session, $preferences) {
+            // Cancel the old session
+            $session->update([
+                'status' => WorkoutSessionStatus::Cancelled,
             ]);
 
-            // Create workout session exercises
-            $now = now();
-            $exercisesToInsert = [];
-
-            foreach ($exercises as $exerciseData) {
-                $exercisesToInsert[] = [
-                    'workout_session_id' => $session->id,
-                    'exercise_id' => $exerciseData['exercise_id'],
-                    'order' => $exerciseData['order'] ?? 0,
-                    'target_sets' => $exerciseData['target_sets'] ?? 3,
-                    'target_reps' => $exerciseData['target_reps'] ?? 10,
-                    'target_weight' => $exerciseData['target_weight'] ?? 0,
-                    'rest_seconds' => $exerciseData['rest_seconds'] ?? 90,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
-            }
-
-            if (! empty($exercisesToInsert)) {
-                WorkoutSessionExercise::insert($exercisesToInsert);
-            }
-
-            Log::info('Workout session created from preview', [
-                'user_id' => $user->id,
+            Log::info('Workout session cancelled for regeneration', [
+                'user_id' => $session->user_id,
                 'session_id' => $session->id,
-                'exercises_count' => count($exercisesToInsert),
             ]);
 
-            return $session->fresh([
-                'workoutSessionExercises.exercise.category',
-                'setLogs',
+            // Generate new session
+            $newSession = $this->generate($session->user, $preferences);
+
+            // Link the new session to the old one
+            $newSession->update([
+                'replaced_session_id' => $session->id,
             ]);
+
+            Log::info('New workout session generated', [
+                'user_id' => $session->user_id,
+                'new_session_id' => $newSession->id,
+                'replaced_session_id' => $session->id,
+            ]);
+
+            return $newSession;
         });
     }
 

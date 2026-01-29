@@ -47,6 +47,10 @@ class WorkoutSessionResource extends JsonResource
             'workout_template_id' => $this->workout_template_id,
             'performed_at' => $this->performed_at,
             'completed_at' => $this->completed_at,
+            "status" => $this->status,           // ← missing from GET
+            "rationale" => $this->notes,
+            "is_auto_generated" => $this->is_auto_generated,
+            "replaced_session_id" => $this->replaced_session_id,
             'notes' => $this->notes,
             'exercises' => $exercisesData,
             'progress' => [
