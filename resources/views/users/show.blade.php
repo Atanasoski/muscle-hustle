@@ -39,43 +39,44 @@
                 </div>
             </div>
 
-            <!-- Pills -->
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
-                <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center dark:border-gray-800 dark:bg-gray-900">
-                    <div class="text-[11px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">AGE</div>
-                    <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ $profile?->age ?? '—' }}</div>
-                </div>
-                <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center dark:border-gray-800 dark:bg-gray-900">
-                    <div class="text-[11px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">WEIGHT</div>
-                    <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
-                        {{ $profile?->weight ? $profile->weight.'kg' : '—' }}
+            <!-- Pills + Last login (grouped for balanced layout) -->
+            <div class="flex flex-col items-end gap-3">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                    <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center dark:border-gray-800 dark:bg-gray-900">
+                        <div class="text-[11px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">AGE</div>
+                        <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ $profile?->age ?? '—' }}</div>
+                    </div>
+                    <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center dark:border-gray-800 dark:bg-gray-900">
+                        <div class="text-[11px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">WEIGHT</div>
+                        <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                            {{ $profile?->weight ? $profile->weight.'kg' : '—' }}
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center dark:border-gray-800 dark:bg-gray-900">
+                        <div class="text-[11px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">HEIGHT</div>
+                        <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                            {{ $profile?->height ? $profile->height.'cm' : '—' }}
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-center dark:border-blue-900/40 dark:bg-blue-900/10">
+                        <div class="text-[11px] font-semibold tracking-wider text-blue-400">GOAL</div>
+                        <div class="mt-1 text-sm font-semibold text-blue-700 dark:text-blue-300">
+                            {{ $profile?->fitness_goal ? ucfirst(str_replace('_', ' ', $profile->fitness_goal->value)) : '—' }}
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-green-100 bg-green-50 px-5 py-3 text-center dark:border-green-900/40 dark:bg-green-900/10">
+                        <div class="text-[11px] font-semibold tracking-wider text-green-500">LEVEL</div>
+                        <div class="mt-1 text-sm font-semibold text-green-700 dark:text-green-300">
+                            {{ $profile?->training_experience ? ucfirst($profile->training_experience->value) : '—' }}
+                        </div>
                     </div>
                 </div>
-                <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-center dark:border-gray-800 dark:bg-gray-900">
-                    <div class="text-[11px] font-semibold tracking-wider text-gray-400 dark:text-gray-500">HEIGHT</div>
-                    <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
-                        {{ $profile?->height ? $profile->height.'cm' : '—' }}
-                    </div>
+                <div class="flex items-center justify-end gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Last login: {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}</span>
                 </div>
-                <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-center dark:border-blue-900/40 dark:bg-blue-900/10">
-                    <div class="text-[11px] font-semibold tracking-wider text-blue-400">GOAL</div>
-                    <div class="mt-1 text-sm font-semibold text-blue-700 dark:text-blue-300">
-                        {{ $profile?->fitness_goal ? ucfirst(str_replace('_', ' ', $profile->fitness_goal->value)) : '—' }}
-                    </div>
-                </div>
-                <div class="rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-center dark:border-green-900/40 dark:bg-green-900/10">
-                    <div class="text-[11px] font-semibold tracking-wider text-green-500">LEVEL</div>
-                    <div class="mt-1 text-sm font-semibold text-green-700 dark:text-green-300">
-                        {{ $profile?->training_experience ? ucfirst($profile->training_experience->value) : '—' }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-start gap-2 text-sm text-gray-500 dark:text-gray-400 lg:justify-end">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Last login: {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}</span>
             </div>
         </div>
     </div>
