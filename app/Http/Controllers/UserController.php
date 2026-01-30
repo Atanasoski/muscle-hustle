@@ -148,12 +148,13 @@ class UserController extends Controller
             'expires_at' => now()->addDays(config('app.invitation_expiry_days', 7)),
         ]);
 
-        // Generate signup URL with token
+        // Generate signup URLs with token
         $signupUrl = route('register', ['invitation' => $invitation->token]);
+        $appUrl = config('app.webapp_url').'/register?invitation='.$invitation->token;
 
         // Send the invitation email
         Mail::to($invitation->email)
-            ->send(new UserInvitationMail($invitation, $partner, $signupUrl));
+            ->send(new UserInvitationMail($invitation, $partner, $signupUrl, $appUrl));
 
         return redirect()->back()
             ->with('success', "Invitation sent to {$invitation->email}!");
@@ -184,12 +185,13 @@ class UserController extends Controller
 
         $partner = Partner::with('identity')->findOrFail($invitation->partner_id);
 
-        // Generate signup URL with token
+        // Generate signup URLs with token
         $signupUrl = route('register', ['invitation' => $invitation->token]);
+        $appUrl = config('app.webapp_url').'/register?invitation='.$invitation->token;
 
         // Resend the invitation email
         Mail::to($invitation->email)
-            ->send(new UserInvitationMail($invitation, $partner, $signupUrl));
+            ->send(new UserInvitationMail($invitation, $partner, $signupUrl, $appUrl));
 
         return redirect()->back()
             ->with('success', "Invitation resent to {$invitation->email}!");

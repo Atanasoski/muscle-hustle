@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ExerciseClassificationController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\FitnessMetricsController;
+use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MuscleGroupController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
@@ -18,6 +19,9 @@ use Illuminate\Support\Facades\Route;
 // Public authentication endpoints
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Public invitation validation
+Route::get('/invitations/{token}', [InvitationController::class, 'show']);
 
 // Protected endpoints
 Route::middleware('auth:sanctum')->name('api.')->group(function () {

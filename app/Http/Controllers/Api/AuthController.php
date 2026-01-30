@@ -23,15 +23,46 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'partner_id' => ['nullable', 'exists:partners,id'],
+            'invitation_token' => ['required', 'string', 'exists:user_invitations,token'],
         ]);
+
+        // Validate the invitation
+        $invitation = \App\Models\UserInvitation::where('token', $validated['invitation_token'])->first();
+
+        if (! $invitation) {
+            return response()->json([
+                'message' => 'Invalid invitation token',
+            ], 422);
+        }
+
+        if ($invitation->isAccepted()) {
+            return response()->json([
+                'message' => 'This invitation has already been used',
+            ], 422);
+        }
+
+        if ($invitation->isExpired()) {
+            return response()->json([
+                'message' => 'This invitation has expired',
+            ], 422);
+        }
+
+        // Verify the email matches the invitation
+        if ($invitation->email !== $validated['email']) {
+            return response()->json([
+                'message' => 'Email does not match the invitation',
+            ], 422);
+        }
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'partner_id' => $validated['partner_id'] ?? null,
+            'partner_id' => $invitation->partner_id,
         ]);
+
+        // Mark invitation as accepted
+        $invitation->markAsAccepted();
 
         $token = $user->createToken('auth-token')->plainTextToken;
 

@@ -50,7 +50,7 @@
         .cta-button {
             display: inline-block;
             background-color: {{ $partner->identity->primary_color ?? '#fa812d' }};
-            color: {{ $partner->identity->text_on_primary_color ?? '#ffffff' }};
+            color: '#ffffff';
             padding: 16px 32px;
             text-decoration: none;
             border-radius: 8px;
@@ -100,7 +100,7 @@
 
             <div class="message">
                 <p>You've been invited to join <strong>{{ $partner->name }}</strong> and start your fitness journey with us!</p>
-                
+
                 <p>As a user, you'll have access to:</p>
                 <ul>
                     <li>Personalized workout tracking</li>
@@ -112,18 +112,18 @@
 
             <!-- Call to Action -->
             <div style="text-align: center;">
-                <a href="{{ $signupUrl }}" class="cta-button">
-                    Accept Invitation & Sign Up
+                <a href="{{ $appUrl }}" class="cta-button">
+                    Open Mobile App & Sign Up
                 </a>
             </div>
 
-            <!-- Alternative Link -->
-            <div class="secondary-info">
+            <!-- Manual Link Copy -->
+            <div class="secondary-info" style="margin-top: 20px;">
                 <p style="margin: 0; font-size: 14px;">
-                    <strong>Can't click the button?</strong> Copy and paste this link into your browser:
+                    <strong>Can't click the button?</strong> Copy and paste this link:
                 </p>
                 <p style="margin: 8px 0 0 0; word-break: break-all; font-size: 13px;">
-                    {{ $signupUrl }}
+                    {{ $appUrl }}
                 </p>
             </div>
 

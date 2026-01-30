@@ -33,6 +33,18 @@ class ExerciseResource extends JsonResource
             'secondary_muscle_groups' => $this->whenLoaded('secondaryMuscleGroups', function () {
                 return MuscleGroupResource::collection($this->secondaryMuscleGroups);
             }),
+            'angle' => $this->whenLoaded('angle', function () {
+                return new AngleResource($this->angle);
+            }),
+            'movement_pattern' => $this->whenLoaded('movementPattern', function () {
+                return new MovementPatternResource($this->movementPattern);
+            }),
+            'target_region' => $this->whenLoaded('targetRegion', function () {
+                return new TargetRegionResource($this->targetRegion);
+            }),
+            'equipment_type' => $this->whenLoaded('equipmentType', function () {
+                return new EquipmentTypeResource($this->equipmentType);
+            }),
             'name' => $this->name,
             'description' => $description,
             'muscle_group_image' => $this->muscle_group_image ? asset('storage/'.$this->muscle_group_image) : null,
