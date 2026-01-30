@@ -105,6 +105,14 @@ class ProgressionCalculatorService
         // Calculate new weight with progression
         $rawNewWeight = $weight * (1 + $progressionPercent);
 
+        // Get the equipment increment
+        $increment = $exercise ? $this->getWeightIncrement($exercise) : 2.5;
+
+        // Ensure at least one increment increase (if weight > 0)
+        if ($weight > 0 && $increment > 0) {
+            $rawNewWeight = max($rawNewWeight, $weight + $increment);
+        }
+
         // Round to realistic weight increments based on equipment type
         $newWeight = $this->roundToEquipmentIncrement($rawNewWeight, $exercise);
 

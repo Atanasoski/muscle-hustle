@@ -15,6 +15,7 @@ use App\Http\Resources\Api\SetLogResource;
 use App\Http\Resources\Api\WorkoutSessionCalendarResource;
 use App\Http\Resources\Api\WorkoutSessionExerciseResource;
 use App\Http\Resources\Api\WorkoutSessionResource;
+use App\Http\Resources\Api\WorkoutTemplateResource;
 use App\Models\Exercise;
 use App\Models\SetLog;
 use App\Models\WorkoutSession;
@@ -39,6 +40,7 @@ class WorkoutSessionController extends Controller
         $sessions = WorkoutSession::query()
             ->select(['id', 'user_id', 'workout_template_id', 'performed_at', 'completed_at'])
             ->where('user_id', Auth::id())
+            ->where('status', WorkoutSessionStatus::Completed)
             ->with('workoutTemplate:id,name')
             ->whereBetween('performed_at', [$startDate, $endDate])
             ->orderBy('performed_at')
@@ -69,7 +71,7 @@ class WorkoutSessionController extends Controller
             $query->where('is_active', true);
         })
             ->where('day_of_week', $dayOfWeek)
-            ->with(['workoutTemplateExercises.exercise.category'])
+            ->with(['workoutTemplateExercises.exercise.category', 'exercises.category', 'exercises.muscleGroups', 'exercises.partners'])
             ->first();
 
         // Check if there's already an active or draft session for today
@@ -85,7 +87,7 @@ class WorkoutSessionController extends Controller
 
         return response()->json([
             'data' => [
-                'template' => $template,
+                'template' => $template ? new WorkoutTemplateResource($template) : null,
                 'session' => $session ? new WorkoutSessionResource($session) : null,
             ],
         ]);
