@@ -20,7 +20,8 @@ class UserInvitationMail extends Mailable
     public function __construct(
         public UserInvitation $invitation,
         public Partner $partner,
-        public string $signupUrl
+        public string $signupUrl,
+        public string $appUrl
     ) {
         //
     }
