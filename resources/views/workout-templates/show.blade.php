@@ -11,24 +11,27 @@
         </div>
     @endif
 
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+    <!-- Workout Template Header Card -->
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/30 mb-6">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div class="min-w-0">
+                <h2 class="truncate text-2xl font-semibold text-gray-900 dark:text-white">
                     {{ $workoutTemplate->name }}
                 </h2>
                 @if($workoutTemplate->description)
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $workoutTemplate->description }}</p>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $workoutTemplate->description }}</p>
                 @endif
-                <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">
-                    Part of <a href="{{ route('plans.show', $workoutTemplate->plan) }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ $workoutTemplate->plan->name }}</a>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Part of <a href="{{ route('plans.show', $workoutTemplate->plan) }}" class="font-medium text-brand-600 hover:underline dark:text-brand-400">{{ $workoutTemplate->plan->name }}</a>
                     @if($dayName)
-                        - {{ $dayName }}
+                        — {{ $dayName }}
                     @endif
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ route('plans.show', $workoutTemplate->plan) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    Back to Plan
+                </a>
                 <a href="{{ route('workouts.edit', $workoutTemplate) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                     Edit
                 </a>

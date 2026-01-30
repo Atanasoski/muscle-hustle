@@ -9,6 +9,7 @@ use App\Models\Plan;
 use App\Models\WorkoutTemplate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class WorkoutTemplateController extends Controller
@@ -32,7 +33,10 @@ class WorkoutTemplateController extends Controller
 
         $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
 
-        return view('workout-templates.create', compact('plan', 'partner'));
+        $dayOfWeekOptions = $this->dayOfWeekOptions();
+        $dayOfWeekValue = $request->old('day_of_week');
+
+        return view('workout-templates.create', compact('plan', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue'));
     }
 
     /**
@@ -111,7 +115,10 @@ class WorkoutTemplateController extends Controller
 
         $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
 
-        return view('workout-templates.edit', compact('workoutTemplate', 'partner'));
+        $dayOfWeekOptions = $this->dayOfWeekOptions();
+        $dayOfWeekValue = $request->old('day_of_week', $workoutTemplate->day_of_week);
+
+        return view('workout-templates.edit', compact('workoutTemplate', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue'));
     }
 
     /**
@@ -127,7 +134,28 @@ class WorkoutTemplateController extends Controller
             abort(403, 'Unauthorized.');
         }
 
-        $workoutTemplate->update($request->validated());
+        $validated = $request->validated();
+        $newDay = array_key_exists('day_of_week', $validated) ? $validated['day_of_week'] : $workoutTemplate->day_of_week;
+        $oldDay = $workoutTemplate->day_of_week;
+
+        if ($newDay !== null && $newDay !== $oldDay) {
+            $existing = WorkoutTemplate::where('plan_id', $workoutTemplate->plan_id)
+                ->where('day_of_week', $newDay)
+                ->where('id', '!=', $workoutTemplate->id)
+                ->first();
+
+            if ($existing) {
+                DB::transaction(function () use ($existing, $oldDay, $workoutTemplate, $validated): void {
+                    $existing->update(['day_of_week' => $oldDay]);
+                    $workoutTemplate->update($validated);
+                });
+
+                return redirect()->route('workouts.show', $workoutTemplate)
+                    ->with('success', 'Workout template updated successfully!');
+            }
+        }
+
+        $workoutTemplate->update($validated);
 
         return redirect()->route('workouts.show', $workoutTemplate)
             ->with('success', 'Workout template updated successfully!');
@@ -151,5 +179,28 @@ class WorkoutTemplateController extends Controller
 
         return redirect()->route('plans.show', $planId)
             ->with('success', 'Workout template deleted successfully!');
+    }
+
+    /**
+     * Return day-of-week options for the create/edit form (value, letter, title).
+     *
+     * @return array<int, array{value: int|string, letter: string, title: string}>
+     */
+    private function dayOfWeekOptions(): array
+    {
+        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $letters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+        $options = [
+            ['value' => '', 'letter' => '—', 'title' => 'Unassigned'],
+        ];
+        foreach ($dayNames as $index => $name) {
+            $options[] = [
+                'value' => $index,
+                'letter' => $letters[$index],
+                'title' => $name,
+            ];
+        }
+
+        return $options;
     }
 }

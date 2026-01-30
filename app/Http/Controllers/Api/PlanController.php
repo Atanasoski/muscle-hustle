@@ -18,7 +18,7 @@ class PlanController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $plans = Plan::where('user_id', auth()->id())
-            ->with('workoutTemplates.exercises.category')
+            ->with(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -61,7 +61,7 @@ class PlanController extends Controller
             ], 403);
         }
 
-        $plan->load('workoutTemplates.exercises.category');
+        $plan->load(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')]);
 
         return response()->json([
             'data' => new PlanResource($plan),
@@ -89,7 +89,7 @@ class PlanController extends Controller
 
         $plan->update($request->validated());
 
-        $plan->load('workoutTemplates.exercises.category');
+        $plan->load(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')]);
 
         return response()->json([
             'message' => 'Plan updated successfully',

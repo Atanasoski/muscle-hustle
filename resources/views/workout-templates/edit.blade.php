@@ -59,18 +59,26 @@
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                         Day of Week
                     </label>
-                    <select name="day_of_week"
-                        id="day_of_week"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('day_of_week') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror">
-                        <option value="">Select day (optional)</option>
-                        <option value="0" {{ old('day_of_week', $workoutTemplate->day_of_week) == 0 ? 'selected' : '' }}>Monday</option>
-                        <option value="1" {{ old('day_of_week', $workoutTemplate->day_of_week) == 1 ? 'selected' : '' }}>Tuesday</option>
-                        <option value="2" {{ old('day_of_week', $workoutTemplate->day_of_week) == 2 ? 'selected' : '' }}>Wednesday</option>
-                        <option value="3" {{ old('day_of_week', $workoutTemplate->day_of_week) == 3 ? 'selected' : '' }}>Thursday</option>
-                        <option value="4" {{ old('day_of_week', $workoutTemplate->day_of_week) == 4 ? 'selected' : '' }}>Friday</option>
-                        <option value="5" {{ old('day_of_week', $workoutTemplate->day_of_week) == 5 ? 'selected' : '' }}>Saturday</option>
-                        <option value="6" {{ old('day_of_week', $workoutTemplate->day_of_week) == 6 ? 'selected' : '' }}>Sunday</option>
-                    </select>
+                    <div class="flex flex-wrap gap-2" role="group" aria-label="Day of week">
+                        @foreach ($dayOfWeekOptions as $option)
+                            <label class="relative inline-flex h-10 min-w-10 cursor-pointer select-none">
+                                <input type="radio"
+                                    name="day_of_week"
+                                    value="{{ $option['value'] }}"
+                                    {{ (string) $dayOfWeekValue === (string) $option['value'] ? 'checked' : '' }}
+                                    class="peer sr-only"
+                                    @if ($option['value'] === '') aria-label="{{ $option['title'] }}" @endif />
+                                <span class="inline-flex h-10 min-w-10 items-center justify-center rounded-lg border border-gray-300 bg-gray-50 px-3 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-100 peer-checked:border-brand-500 peer-checked:bg-brand-500 peer-checked:text-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700 dark:peer-checked:border-brand-500 dark:peer-checked:bg-brand-500 @error('day_of_week') border-red-300 dark:border-red-700 @enderror peer-checked:hidden"
+                                    title="{{ $option['title'] }}">{{ $option['letter'] }}</span>
+                                <span class="absolute inset-0 hidden h-10 min-w-10 items-center justify-center rounded-lg border border-brand-500 bg-brand-500 text-white peer-checked:inline-flex dark:border-brand-500 dark:bg-brand-500"
+                                    title="{{ $option['title'] }}">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </span>
+                            </label>
+                        @endforeach
+                    </div>
                     @error('day_of_week')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror

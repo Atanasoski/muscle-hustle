@@ -11,30 +11,33 @@
         </div>
     @endif
 
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+    <!-- Plan Header Card -->
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/30 mb-6">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div class="min-w-0">
+                <h2 class="truncate text-2xl font-semibold text-gray-900 dark:text-white">
                     {{ $plan->name }}
                 </h2>
                 @if($plan->description)
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $plan->description }}</p>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $plan->description }}</p>
                 @endif
-                <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">
-                    Plan for <a href="{{ route('users.show', $plan->user) }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ $plan->user->name }}</a>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Plan for <a href="{{ route('users.show', $plan->user) }}" class="font-medium text-brand-600 hover:underline dark:text-brand-400">{{ $plan->user->name }}</a>
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
                 @if($plan->is_active)
-                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                        Active
-                    </span>
+                    <div class="rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-center dark:border-green-900/40 dark:bg-green-900/10">
+                        <div class="mt-1 text-sm font-semibold text-green-700 dark:text-green-300">Active</div>
+                    </div>
                 @else
-                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-300">
-                        Inactive
-                    </span>
+                    <div class="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-center dark:border-red-900/40 dark:bg-red-900/10">
+                        <div class="mt-1 text-sm font-semibold text-red-700 dark:text-red-300">Inactive</div>
+                    </div>
                 @endif
+                <a href="{{ route('plans.index', $plan->user) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    Back to Plans
+                </a>
                 <a href="{{ route('plans.edit', $plan) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                     Edit
                 </a>

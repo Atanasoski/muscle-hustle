@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,14 @@ class WorkoutTemplate extends Model
     protected $casts = [
         'day_of_week' => 'integer',
     ];
+
+    /**
+     * Scope: order by day_of_week ascending, nulls last, then name.
+     */
+    public function scopeOrderedByDayOfWeek(Builder $query): Builder
+    {
+        return $query->orderByRaw('day_of_week IS NULL')->orderBy('day_of_week')->orderBy('name');
+    }
 
     /**
      * Relationship: WorkoutTemplate belongs to Plan

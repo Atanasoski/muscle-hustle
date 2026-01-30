@@ -111,8 +111,7 @@ class PlanController extends Controller
         $plan->load([
             'workoutTemplates' => function ($query) {
                 $query->withCount('workoutTemplateExercises')
-                    ->orderBy('day_of_week')
-                    ->orderBy('name');
+                    ->orderedByDayOfWeek();
             },
         ]);
 
