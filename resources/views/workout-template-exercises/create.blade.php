@@ -22,69 +22,51 @@
         <form action="{{ route('workout-exercises.store', $workoutTemplate) }}" method="POST" @keydown.escape.window="window.location.href='{{ route('workout-exercises.index', $workoutTemplate) }}'">
             @csrf
 
-            <div class="space-y-4">
+            <div class="space-y-6">
                 <!-- Exercise Selection -->
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">
                         Exercise <span class="text-red-500">*</span>
                     </label>
-                    <select name="exercise_id"
-                        id="exercise_id"
-                        required
-                        autofocus
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('exercise_id') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror">
-                        <option value="">Select an exercise</option>
-                        @foreach($categories as $category)
-                            @if($category->exercises->count() > 0)
-                                <optgroup label="{{ $category->name }}">
-                                    @foreach($category->exercises as $exercise)
-                                        @if(!in_array($exercise->id, $currentExerciseIds))
-                                            <option value="{{ $exercise->id }}" {{ old('exercise_id') == $exercise->id ? 'selected' : '' }}>
-                                                {{ $exercise->name }}
-                                                @if($exercise->muscleGroups->count() > 0)
-                                                    ({{ $exercise->muscleGroups->pluck('name')->implode(', ') }})
-                                                @endif
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </optgroup>
-                            @endif
-                        @endforeach
-                    </select>
+                    <x-exercise-selector 
+                        :exercises="$exercises" 
+                        :equipment-types="$equipmentTypes" 
+                        :muscle-groups="$muscleGroups"
+                        :selected-exercise-id="old('exercise_id')"
+                    />
                     @error('exercise_id')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Only exercises linked to your partner are shown. Exercises already in this workout are hidden.</p>
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Only exercises linked to your partner are shown. Exercises already in this workout are hidden.</p>
                 </div>
 
-                <!-- Order -->
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Order <span class="text-xs font-normal text-gray-400 dark:text-gray-500">(optional)</span>
-                    </label>
-                    <input type="number"
-                        name="order"
-                        id="order"
-                        value="{{ old('order') }}"
-                        min="0"
-                        placeholder="{{ $maxOrder + 1 }}"
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('order') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
-                    @error('order')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Automatically set if left empty. The order in which this exercise appears in the workout (lower numbers appear first).</p>
-                </div>
-
-                <!-- Targets Section -->
+                <!-- Targets Section (Order, Sets, Reps, Weight, Rest in one row) -->
                 <div class="space-y-3">
-                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Targets <span class="text-xs font-normal">(optional)</span>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <!-- Target Sets -->
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">
+                        Targets <span class="font-normal text-gray-400 dark:text-gray-500">(optional)</span>
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-4 md:grid-cols-5">
+                        <!-- Order -->
                         <div>
-                            <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                            <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Order
+                            </label>
+                            <input type="number"
+                                name="order"
+                                id="order"
+                                value="{{ old('order') }}"
+                                min="0"
+                                placeholder="{{ $maxOrder + 1 }}"
+                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('order') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                            @error('order')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Sets -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
                                 Sets
                             </label>
                             <div class="relative">
@@ -94,7 +76,7 @@
                                     value="{{ old('target_sets') }}"
                                     min="0"
                                     step="1"
-                                    placeholder="sets"
+                                    placeholder=""
                                     class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_sets') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
                                 <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">sets</span>
                             </div>
@@ -103,9 +85,9 @@
                             @enderror
                         </div>
 
-                        <!-- Target Reps -->
+                        <!-- Reps -->
                         <div>
-                            <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                            <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
                                 Reps
                             </label>
                             <div class="relative">
@@ -115,7 +97,7 @@
                                     value="{{ old('target_reps') }}"
                                     min="0"
                                     step="1"
-                                    placeholder="reps"
+                                    placeholder=""
                                     class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_reps') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
                                 <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">reps</span>
                             </div>
@@ -124,9 +106,9 @@
                             @enderror
                         </div>
 
-                        <!-- Target Weight -->
+                        <!-- Weight -->
                         <div>
-                            <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                            <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
                                 Weight
                             </label>
                             <div class="relative">
@@ -136,7 +118,7 @@
                                     value="{{ old('target_weight') }}"
                                     min="0"
                                     step="0.1"
-                                    placeholder="kg"
+                                    placeholder=""
                                     class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('target_weight') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
                                 <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">kg</span>
                             </div>
@@ -144,28 +126,32 @@
                                 <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <!-- Rest -->
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Rest
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                    name="rest_seconds"
+                                    id="rest_seconds"
+                                    value="{{ old('rest_seconds') }}"
+                                    min="0"
+                                    step="1"
+                                    placeholder=""
+                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('rest_seconds') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
+                                <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">sec</span>
+                            </div>
+                            @error('rest_seconds')
+                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
-                    <!-- Rest Seconds -->
-                    <div>
-                        <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
-                            Rest
-                        </label>
-                        <div class="relative">
-                            <input type="number"
-                                name="rest_seconds"
-                                id="rest_seconds"
-                                value="{{ old('rest_seconds') }}"
-                                min="0"
-                                step="1"
-                                placeholder="sec"
-                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-9 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('rest_seconds') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror" />
-                            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">sec</span>
-                        </div>
-                        @error('rest_seconds')
-                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Order is automatically set if left empty.
+                    </p>
                 </div>
             </div>
 

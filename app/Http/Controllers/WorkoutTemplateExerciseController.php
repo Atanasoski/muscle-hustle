@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CategoryType;
 use App\Http\Requests\StoreWorkoutTemplateExerciseRequest;
 use App\Http\Requests\UpdateWorkoutTemplateExerciseRequest;
-use App\Models\Category;
+use App\Models\EquipmentType;
 use App\Models\Exercise;
+use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\WorkoutTemplate;
 use App\Models\WorkoutTemplateExercise;
@@ -62,25 +62,55 @@ class WorkoutTemplateExerciseController extends Controller
 
         $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
 
-        // Get exercises available for this partner
-        $categories = Category::where('type', CategoryType::Workout)
-            ->with(['exercises' => function ($query) use ($partner) {
-                $query->whereHas('partners', function ($q) use ($partner) {
-                    $q->where('partners.id', $partner->id);
-                })
-                    ->with('muscleGroups')
-                    ->orderBy('name');
-            }])
-            ->orderBy('display_order')
-            ->get();
-
         // Get current exercise IDs in this workout template
         $currentExerciseIds = $workoutTemplate->workoutTemplateExercises->pluck('exercise_id')->toArray();
+
+        // Get exercises available for this partner (excluding already added ones)
+        $exercises = Exercise::whereHas('partners', function ($q) use ($partner) {
+            $q->where('partners.id', $partner->id);
+        })
+            ->whereNotIn('id', $currentExerciseIds)
+            ->with(['muscleGroups', 'primaryMuscleGroups', 'equipmentType'])
+            ->orderBy('name')
+            ->get()
+            ->map(function ($exercise) {
+                return [
+                    'id' => $exercise->id,
+                    'name' => $exercise->name,
+                    'equipment_type_id' => $exercise->equipment_type_id,
+                    'equipment_type_name' => $exercise->equipmentType?->name ?? 'Unknown',
+                    'muscle_groups' => $exercise->muscleGroups->map(fn ($mg) => [
+                        'id' => $mg->id,
+                        'name' => $mg->name,
+                    ])->values()->toArray(),
+                    'primary_muscle_group_ids' => $exercise->primaryMuscleGroups->pluck('id')->values()->toArray(),
+                ];
+            })
+            ->values();
+
+        // Get all equipment types for filter chips (as plain arrays for JS)
+        $equipmentTypes = EquipmentType::orderBy('display_order')
+            ->get(['id', 'name'])
+            ->map(fn ($et) => ['id' => $et->id, 'name' => $et->name])
+            ->values();
+
+        // Get all muscle groups for filter chips (as plain arrays for JS)
+        $muscleGroups = MuscleGroup::orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
+            ->values();
 
         // Get max order for auto-increment
         $maxOrder = $workoutTemplate->workoutTemplateExercises()->max('order') ?? -1;
 
-        return view('workout-template-exercises.create', compact('workoutTemplate', 'partner', 'categories', 'currentExerciseIds', 'maxOrder'));
+        return view('workout-template-exercises.create', compact(
+            'workoutTemplate',
+            'partner',
+            'exercises',
+            'equipmentTypes',
+            'muscleGroups',
+            'maxOrder'
+        ));
     }
 
     /**
