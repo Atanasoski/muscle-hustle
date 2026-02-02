@@ -3,6 +3,7 @@
 namespace App\Services\WorkoutGenerator;
 
 use App\Enums\TrainingExperience;
+use App\Enums\WorkoutSessionStatus;
 use App\Models\Exercise;
 use App\Models\User;
 
@@ -37,7 +38,7 @@ class ProgressionCalculatorService
     public function getLastPerformance(Exercise $exercise, User $user): ?array
     {
         $lastSetLog = $user->workoutSessions()
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->whereHas('setLogs', function ($q) use ($exercise) {
                 $q->where('exercise_id', $exercise->id);
             })

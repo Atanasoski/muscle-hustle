@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\WorkoutSessionStatus;
 use App\Models\User;
 use App\Models\WorkoutSession;
 use Carbon\Carbon;
@@ -154,14 +155,14 @@ class FitnessMetricsService
 
         // Get current week sessions with set logs
         $currentWeekSessions = WorkoutSession::where('user_id', $this->user->id)
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->whereBetween('performed_at', [$currentWeekStart, $currentWeekEnd])
             ->with('setLogs')
             ->get();
 
         // Get previous week sessions with set logs
         $previousWeekSessions = WorkoutSession::where('user_id', $this->user->id)
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->whereBetween('performed_at', [$previousWeekStart, $previousWeekEnd])
             ->with('setLogs')
             ->get();
@@ -495,7 +496,7 @@ class FitnessMetricsService
 
         foreach ($comparableUsers as $user) {
             $workoutCount = WorkoutSession::where('user_id', $user->id)
-                ->whereNotNull('completed_at')
+                ->where('status', WorkoutSessionStatus::Completed)
                 ->where('performed_at', '>=', $recent30Days)
                 ->count();
 
@@ -651,7 +652,7 @@ class FitnessMetricsService
             ->join('exercise_muscle_group', 'workout_exercises.id', '=', 'exercise_muscle_group.exercise_id')
             ->join('muscle_groups', 'exercise_muscle_group.muscle_group_id', '=', 'muscle_groups.id')
             ->where('workout_sessions.user_id', $userId)
-            ->whereNotNull('workout_sessions.completed_at')
+            ->where('workout_sessions.status', WorkoutSessionStatus::Completed)
             ->where('workout_sessions.performed_at', '>=', $fromDate)
             ->whereNotNull('workout_session_set_logs.weight')
             ->where('workout_session_set_logs.weight', '>', 0)
@@ -709,7 +710,7 @@ class FitnessMetricsService
 
         foreach ($comparableUsers as $user) {
             $workoutCount = WorkoutSession::where('user_id', $user->id)
-                ->whereNotNull('completed_at')
+                ->where('status', WorkoutSessionStatus::Completed)
                 ->where('performed_at', '>=', $recent30Days)
                 ->count();
 
@@ -838,7 +839,7 @@ class FitnessMetricsService
 
         // Get all completed workouts in the date range
         $workouts = WorkoutSession::where('user_id', $this->user->id)
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->whereBetween('performed_at', [$startDate, $endDate])
             ->get(['performed_at']);
 

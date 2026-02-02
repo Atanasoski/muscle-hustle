@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkoutSessionStatus;
 use App\Http\Requests\InviteUserRequest;
 use App\Mail\UserInvitationMail;
 use App\Models\Partner;
@@ -64,7 +65,7 @@ class UserController extends Controller
 
         // Get additional stats
         $totalWorkouts = $user->workoutSessions()->count();
-        $completedWorkouts = $user->workoutSessions()->whereNotNull('completed_at')->count();
+        $completedWorkouts = $user->workoutSessions()->where('status', WorkoutSessionStatus::Completed)->count();
         $activePlan = $user->plans()->where('is_active', true)->first();
         $lastWorkout = $user->workoutSessions()->latest('performed_at')->first();
 
@@ -226,7 +227,7 @@ class UserController extends Controller
 
         // Get all completed workouts in the date range
         $workouts = WorkoutSession::where('user_id', $user->id)
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->whereBetween('performed_at', [$startDate, $endDate])
             ->get(['performed_at']);
 

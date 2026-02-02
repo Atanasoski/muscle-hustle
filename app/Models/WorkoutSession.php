@@ -77,7 +77,7 @@ class WorkoutSession extends Model
         $previousSessions = WorkoutSession::query()
             ->where('user_id', $this->user_id)
             ->where('id', '!=', $this->id)
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->whereHas('setLogs', fn ($q) => $q->whereIn('exercise_id', $exerciseIds))
             ->with(['setLogs' => fn ($q) => $q->whereIn('exercise_id', $exerciseIds)->orderBy('set_number')])
             ->orderByDesc('completed_at')
