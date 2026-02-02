@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\WorkoutSessionStatus;
 use App\Models\Exercise;
 use App\Models\SetLog;
 use App\Models\User;
@@ -55,13 +56,13 @@ class WorkoutSessionDataSeeder extends Seeder
         $this->createSessionsWithSetLogs($user, $templates, $exercises);
 
         $sessionCount = WorkoutSession::where('user_id', $user->id)
-            ->whereNotNull('completed_at')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->where('performed_at', '>=', Carbon::now()->subDays(60))
             ->count();
 
         $setLogCount = SetLog::whereHas('workoutSession', function ($query) use ($user) {
             $query->where('user_id', $user->id)
-                ->whereNotNull('completed_at')
+                ->where('status', WorkoutSessionStatus::Completed)
                 ->where('performed_at', '>=', Carbon::now()->subDays(60));
         })->count();
 

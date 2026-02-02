@@ -67,11 +67,12 @@ class UserController extends Controller
         $totalWorkouts = $user->workoutSessions()->count();
         $completedWorkouts = $user->workoutSessions()->where('status', WorkoutSessionStatus::Completed)->count();
         $activePlan = $user->plans()->where('is_active', true)->first();
-        $lastWorkout = $user->workoutSessions()->latest('performed_at')->first();
+        $lastWorkout = $user->workoutSessions()->where('status', WorkoutSessionStatus::Completed)->latest('performed_at')->first();
 
         // Get recent workout sessions for pagination
         $recentWorkouts = $user->workoutSessions()
             ->with('workoutTemplate')
+            ->where('status', WorkoutSessionStatus::Completed)
             ->latest('performed_at')
             ->paginate(7);
 
