@@ -108,6 +108,7 @@ class ExerciseController extends Controller
                 'ws.id as session_id',
                 'ws.completed_at',
                 DB::raw('MAX(sl.weight) as weight'),
+                DB::raw('MAX(sl.reps) as best_set_reps'),
                 DB::raw('SUM(sl.reps) as reps'),
                 DB::raw('SUM(sl.weight * sl.reps) as volume'),
                 DB::raw('COUNT(sl.id) as sets'),
@@ -141,6 +142,7 @@ class ExerciseController extends Controller
                 'date' => Carbon::parse($session->completed_at)->format('Y-m-d'),
                 'session_id' => $session->session_id,
                 'weight' => (float) $session->weight,
+                'best_set_reps' => (int) $session->best_set_reps,
                 'reps' => (int) $session->reps,
                 'volume' => (float) $session->volume,
                 'sets' => (int) $session->sets,
@@ -175,6 +177,8 @@ class ExerciseController extends Controller
             return [
                 'current_weight' => 0,
                 'best_weight' => 0,
+                'current_best_set_reps' => 0,
+                'best_set_reps' => 0,
                 'progress_percentage' => 0,
                 'total_sessions' => 0,
                 'first_session_date' => null,
@@ -190,6 +194,10 @@ class ExerciseController extends Controller
         $firstWeight = (float) $firstSession['weight'];
         $bestWeight = max(array_column($performanceData, 'weight'));
 
+        // Best reps stats (useful for bodyweight exercises)
+        $currentBestSetReps = (int) $lastSession['best_set_reps'];
+        $bestSetReps = max(array_column($performanceData, 'best_set_reps'));
+
         // Calculate progress percentage
         $progressPercentage = 0;
         if ($firstWeight > 0) {
@@ -199,6 +207,8 @@ class ExerciseController extends Controller
         return [
             'current_weight' => $currentWeight,
             'best_weight' => (float) $bestWeight,
+            'current_best_set_reps' => $currentBestSetReps,
+            'best_set_reps' => $bestSetReps,
             'progress_percentage' => $progressPercentage,
             'total_sessions' => $totalSessions,
             'first_session_date' => $firstSession['date'],
