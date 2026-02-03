@@ -55,7 +55,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/workouts/{workoutTemplate}', [\App\Http\Controllers\WorkoutTemplateController::class, 'destroy'])->name('workouts.destroy');
 
     // Workout Template Exercises Management
-    Route::get('/workouts/{workoutTemplate}/exercises', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'index'])->name('workout-exercises.index');
     Route::get('/workouts/{workoutTemplate}/exercises/create', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'create'])->name('workout-exercises.create');
     Route::post('/workouts/{workoutTemplate}/exercises', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'store'])->name('workout-exercises.store');
     Route::get('/workouts/{workoutTemplate}/exercises/{workoutTemplateExercise}/edit', [\App\Http\Controllers\WorkoutTemplateExerciseController::class, 'edit'])->name('workout-exercises.edit');

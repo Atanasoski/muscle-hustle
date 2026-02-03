@@ -59,7 +59,7 @@
         },
         closeAddExerciseModal() {
             this.addExerciseModalOpen = false;
-            setTimeout(() => { 
+            setTimeout(() => {
                 this.selectedWorkout = null;
                 this.selectedExerciseId = null;
             }, 300);
@@ -121,7 +121,7 @@
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $plan->description }}</p>
                 @endif
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Plan for <a href="{{ route('users.show', $plan->user) }}" class="font-medium text-gray-900 hover:underline dark:text-white">{{ $plan->user->name }}</a>
+                    Plan for <a href="{{ route('users.show', $plan->user) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">{{ $plan->user->name }}</a>
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
@@ -444,10 +444,10 @@
                                 <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">
                                     Exercise <span class="text-red-500">*</span>
                                 </label>
-                                
+
                                 <!-- Hidden input for form submission -->
                                 <input type="hidden" name="exercise_id" :value="selectedExerciseId">
-                                
+
                                 <!-- Selected Exercise Display -->
                                 <template x-if="selectedExercise">
                                     <div class="flex items-center justify-between rounded-lg border border-gray-300 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
@@ -471,7 +471,7 @@
                                         </button>
                                     </div>
                                 </template>
-                                
+
                                 <!-- Exercise Selector Panel -->
                                 <template x-if="!selectedExercise">
                                     <div class="space-y-4 rounded-lg border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
@@ -485,7 +485,7 @@
                                                 placeholder="Search exercises..."
                                                 class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm outline-none transition-shadow focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-white dark:focus:ring-white/10" />
                                         </div>
-                                        
+
                                         <!-- Equipment Type Filters -->
                                         <div>
                                             <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -495,8 +495,8 @@
                                                 <template x-for="equipment in equipmentTypes" :key="equipment.id">
                                                     <button type="button"
                                                         @click="toggleEquipment(equipment.id)"
-                                                        :class="selectedEquipment.includes(equipment.id) 
-                                                            ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-gray-900' 
+                                                        :class="selectedEquipment.includes(equipment.id)
+                                                            ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-gray-900'
                                                             : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'"
                                                         class="inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200">
                                                         <span x-text="equipment.name"></span>
@@ -504,7 +504,7 @@
                                                 </template>
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Muscle Group Filters -->
                                         <div>
                                             <div class="mb-2 flex items-center justify-between">
@@ -523,8 +523,8 @@
                                                 <template x-for="muscle in muscleGroups" :key="muscle.id">
                                                     <button type="button"
                                                         @click="toggleMuscle(muscle.id)"
-                                                        :class="selectedMuscles.includes(muscle.id) 
-                                                            ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-gray-900' 
+                                                        :class="selectedMuscles.includes(muscle.id)
+                                                            ? 'bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-white dark:text-gray-900'
                                                             : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'"
                                                         class="inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200">
                                                         <span x-text="muscle.name"></span>
@@ -532,7 +532,7 @@
                                                 </template>
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Results List -->
                                         <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
                                             <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">

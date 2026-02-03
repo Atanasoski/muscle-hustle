@@ -40,7 +40,7 @@
                             <tr class="group transition-colors hover:bg-gray-50/80 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
-                                        <a href="{{ route('plans.show', $plan) }}" class="cursor-pointer font-semibold text-gray-900 transition-colors group-hover:text-gray-700 dark:text-white dark:group-hover:text-gray-300">
+                                        <a href="{{ route('plans.show', $plan) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                             {{ $plan->name }}
                                         </a>
                                         <span class="mt-1 line-clamp-1 max-w-[250px] text-xs text-gray-500 dark:text-gray-400">
@@ -61,11 +61,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center text-gray-600 dark:text-gray-300">
-                                        <svg class="mr-2 h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h2m-2 0V8m0 4v4m0-4H1m2 0h2m14-4h-2m2 0v4m0-4V8m0 4h2m-2 0h-2M6 12h12M6 12V8m0 4v4m12-4V8m0 4v4M6 12H4m14 0h2M6 16H4m14 0h2"></path>
-                                        </svg>
                                         <span class="font-medium">{{ $plan->workout_templates_count ?? 0 }}</span>
-                                        <span class="ml-1 text-xs text-gray-400 dark:text-gray-500">workouts</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">

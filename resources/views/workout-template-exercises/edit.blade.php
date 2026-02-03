@@ -3,7 +3,7 @@
 @section('title', 'Edit Exercise - ' . $workoutTemplateExercise->exercise->name)
 
 @section('content')
-    <x-common.page-breadcrumb :pageTitle="'Edit Exercise'" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $workoutTemplate->plan->user->name, 'url' => route('users.show', $workoutTemplate->plan->user)], ['label' => $workoutTemplate->plan->name, 'url' => route('plans.show', $workoutTemplate->plan)], ['label' => $workoutTemplate->name, 'url' => route('workouts.show', $workoutTemplate)], ['label' => 'Exercises', 'url' => route('workout-exercises.index', $workoutTemplate)]]" />
+    <x-common.page-breadcrumb :pageTitle="'Edit Exercise'" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $workoutTemplate->plan->user->name, 'url' => route('users.show', $workoutTemplate->plan->user)], ['label' => $workoutTemplate->plan->name, 'url' => route('plans.show', $workoutTemplate->plan)], ['label' => $workoutTemplate->name, 'url' => route('workouts.show', $workoutTemplate)]]" />
 
     @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
@@ -19,7 +19,7 @@
     @endif
 
     <x-common.component-card title="Edit Exercise in Workout Template" :desc="'Update exercise details for ' . $workoutTemplateExercise->exercise->name">
-        <form action="{{ route('workout-exercises.update', [$workoutTemplate, $workoutTemplateExercise]) }}" method="POST" @keydown.escape.window="window.location.href='{{ route('workout-exercises.index', $workoutTemplate) }}'">
+        <form action="{{ route('workout-exercises.update', [$workoutTemplate, $workoutTemplateExercise]) }}" method="POST" @keydown.escape.window="window.location.href='{{ route('workouts.show', $workoutTemplate) }}'">
             @csrf
             @method('PUT')
 
@@ -149,7 +149,7 @@
 
             <!-- Form Actions -->
             <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
-                <a href="{{ route('workout-exercises.index', $workoutTemplate) }}">
+                <a href="{{ route('workouts.show', $workoutTemplate) }}">
                     <x-ui.button variant="outline" size="md" type="button">
                         Cancel
                     </x-ui.button>

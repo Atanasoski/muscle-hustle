@@ -50,7 +50,10 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                <a href="{{ route('users.show', $user) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                                {{ $user->name }}</a>
+                                                </div>
                                         </div>
                                     </div>
                                 </td>
@@ -80,8 +83,8 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('users.show', $user) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                                        View Details
+                                    <a href="{{ route('plans.index', $user) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                        Manage Plans
                                     </a>
                                 </td>
                             </tr>
