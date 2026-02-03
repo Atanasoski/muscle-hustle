@@ -23,6 +23,8 @@ class WorkoutTemplateResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'day_of_week' => $this->day_of_week,
+            'week_number' => $this->week_number,
+            'order_index' => $this->order_index,
             'plan' => $this->whenLoaded('plan', function () {
                 return new PlanResource($this->plan);
             }),

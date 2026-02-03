@@ -5,7 +5,7 @@ namespace App\Http\Resources\Api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PlanResource extends JsonResource
+class RoutineResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,18 +16,10 @@ class PlanResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
-            'partner_id' => $this->partner_id,
             'name' => $this->name,
             'description' => $this->description,
             'is_active' => $this->is_active,
-            'type' => $this->type?->value,
-            'duration_weeks' => $this->duration_weeks,
-            'workout_templates' => $this->whenLoaded('workoutTemplates', function () {
-                return $this->workoutTemplates->map(function ($template) {
-                    return new WorkoutTemplateResource($template);
-                });
-            }),
+            'workout_templates' => WorkoutTemplateResource::collection($this->whenLoaded('workoutTemplates')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

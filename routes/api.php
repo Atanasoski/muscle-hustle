@@ -56,8 +56,25 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/equipment-types', [ExerciseClassificationController::class, 'equipmentTypes']);
     Route::get('/angles', [ExerciseClassificationController::class, 'angles']);
 
-    // Plans CRUD
-    Route::apiResource('plans', PlanController::class);
+    // Routines API - User can create/manage their own
+    Route::prefix('routines')->group(function () {
+        Route::get('/', [PlanController::class, 'routinesIndex']);
+        Route::post('/', [PlanController::class, 'routinesStore']);
+        Route::get('/{routine}', [PlanController::class, 'routinesShow']);
+        Route::put('/{routine}', [PlanController::class, 'routinesUpdate']);
+        Route::delete('/{routine}', [PlanController::class, 'routinesDestroy']);
+    });
+
+    // Programs API - User clones from partner library
+    Route::prefix('programs')->group(function () {
+        Route::get('/', [PlanController::class, 'programsIndex']);
+        Route::get('/library', [PlanController::class, 'programsLibrary']);
+        Route::get('/{program}', [PlanController::class, 'programsShow']);
+        Route::patch('/{program}', [PlanController::class, 'programsUpdate']);
+        Route::delete('/{program}', [PlanController::class, 'programsDestroy']);
+        Route::post('/{program}/clone', [PlanController::class, 'programsClone']);
+        Route::get('/{program}/next-workout', [PlanController::class, 'programsNextWorkout']);
+    });
 
     // Workout Templates CRUD
     Route::apiResource('workout-templates', WorkoutTemplateController::class);
