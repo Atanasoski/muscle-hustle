@@ -51,6 +51,14 @@ class Partner extends Model
     }
 
     /**
+     * Get the plans for the partner (library plans).
+     */
+    public function plans(): HasMany
+    {
+        return $this->hasMany(Plan::class);
+    }
+
+    /**
      * Relationship: Partner belongs to many Exercises (many-to-many)
      */
     public function exercises(): BelongsToMany

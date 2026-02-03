@@ -21,6 +21,8 @@ class WorkoutTemplateFactory extends Factory
             'name' => fake()->words(3, true).' Workout',
             'description' => fake()->sentence(),
             'day_of_week' => fake()->numberBetween(0, 6),
+            'week_number' => 1,
+            'order_index' => 0,
         ];
     }
 }

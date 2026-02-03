@@ -18,6 +18,8 @@ class WorkoutTemplate extends Model
         'name',
         'description',
         'day_of_week',
+        'week_number',
+        'order_index',
     ];
 
     protected $casts = [
@@ -30,6 +32,14 @@ class WorkoutTemplate extends Model
     public function scopeOrderedByDayOfWeek(Builder $query): Builder
     {
         return $query->orderByRaw('day_of_week IS NULL')->orderBy('day_of_week')->orderBy('name');
+    }
+
+    /**
+     * Scope: order by program sequence (order_index)
+     */
+    public function scopeOrderedByProgram(Builder $query): Builder
+    {
+        return $query->orderBy('order_index');
     }
 
     /**

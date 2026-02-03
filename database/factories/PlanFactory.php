@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\PlanType;
+use App\Models\Partner;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,9 +20,34 @@ class PlanFactory extends Factory
     {
         return [
             'user_id' => \App\Models\User::factory(),
+            'partner_id' => null,
             'name' => fake()->words(2, true).' Plan',
             'description' => fake()->sentence(),
             'is_active' => fake()->boolean(),
+            'type' => PlanType::Routine,
+            'duration_weeks' => null,
         ];
+    }
+
+    /**
+     * Indicate that the plan is a program.
+     */
+    public function program(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => PlanType::Program,
+            'duration_weeks' => fake()->numberBetween(4, 12),
+        ]);
+    }
+
+    /**
+     * Indicate that the plan is a partner library plan.
+     */
+    public function partnerLibrary(Partner $partner): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'partner_id' => $partner->id,
+            'user_id' => null,
+        ]);
     }
 }
