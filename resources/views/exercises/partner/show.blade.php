@@ -26,8 +26,8 @@
                         Edit
                     </x-ui.button>
                 </a>
-                <form action="{{ route('exercises.unlink', $exercise) }}" 
-                      method="POST" 
+                <form action="{{ route('exercises.unlink', $exercise) }}"
+                      method="POST"
                       class="inline"
                       onsubmit="return confirm('Unlink this exercise? This will remove all customizations.')">
                     @csrf
@@ -37,12 +37,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
                             </svg>
                         </x-slot:startIcon>
-                        Remove from inventory
+                        Unlink
                     </x-ui.button>
                 </form>
             @else
-                <form action="{{ route('exercises.link', $exercise) }}" 
-                      method="POST" 
+                <form action="{{ route('exercises.link', $exercise) }}"
+                      method="POST"
                       class="inline">
                     @csrf
                     <x-ui.button type="submit" variant="primary" size="md">
@@ -196,8 +196,8 @@
                         <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
                             Exercise Name
                         </label>
-                        <input type="text" 
-                               value="{{ $exercise->name }}" 
+                        <input type="text"
+                               value="{{ $exercise->name }}"
                                disabled
                                class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 outline-none dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400">
                     </div>
@@ -240,7 +240,7 @@
                                 @endif
                                 <span>Custom Description</span>
                             </div>
-                            
+
                             <!-- Custom Image -->
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                                 @if($pivot && $pivot->image)
@@ -254,7 +254,7 @@
                                 @endif
                                 <span>Custom Image</span>
                             </div>
-                            
+
                             <!-- Custom Video -->
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                                 @if($pivot && $pivot->video)
