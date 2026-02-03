@@ -22,6 +22,22 @@
                 @if($plan->description)
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $plan->description }}</p>
                 @endif
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    @if($plan->isProgram())
+                        <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                            Program
+                        </span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                            Routine
+                        </span>
+                    @endif
+                    @if($plan->isProgram() && $plan->duration_weeks)
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                            • {{ $plan->duration_weeks }} {{ Str::plural('week', $plan->duration_weeks) }}
+                        </span>
+                    @endif
+                </div>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     Plan for <a href="{{ route('users.show', $plan->user) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">{{ $plan->user->name }}</a>
                 </p>
@@ -100,6 +116,18 @@
                                 </span>
                             @endif
                         </div>
+
+                        <!-- Program Info (Week & Order) -->
+                        @if($plan->isProgram())
+                            <div class="mb-3 flex items-center gap-2">
+                                <span class="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                                    Week {{ $workout->week_number }}
+                                </span>
+                                <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                                    Order {{ $workout->order_index + 1 }}
+                                </span>
+                            </div>
+                        @endif
 
                         <!-- Footer Row -->
                         <div class="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">

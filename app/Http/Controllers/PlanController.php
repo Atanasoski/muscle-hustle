@@ -86,6 +86,8 @@ class PlanController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'is_active' => $request->is_active ?? false,
+            'type' => $request->type,
+            'duration_weeks' => $request->duration_weeks,
         ]);
 
         return redirect()->route('plans.show', $plan)

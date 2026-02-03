@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PlanType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePlanRequest extends FormRequest
 {
@@ -25,6 +27,8 @@ class StorePlanRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'type' => ['required', Rule::enum(PlanType::class)],
+            'duration_weeks' => 'nullable|integer|min:1|max:52',
         ];
     }
 }
