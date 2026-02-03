@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
+use App\Models\EquipmentType;
+use App\Models\Exercise;
+use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\Plan;
 use App\Models\User;
@@ -117,7 +120,50 @@ class PlanController extends Controller
 
         $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-        return view('plans.show', compact('plan', 'partner', 'dayNames'));
+        // Prepare exercise data for add exercise modal
+        $workoutExerciseData = [];
+        foreach ($plan->workoutTemplates as $workout) {
+            // Get current exercise IDs in this workout template
+            $currentExerciseIds = $workout->workoutTemplateExercises()->pluck('exercise_id')->toArray();
+
+            // Get exercises available for this partner (excluding already added ones)
+            $exercises = Exercise::whereHas('partners', function ($q) use ($partner) {
+                $q->where('partners.id', $partner->id);
+            })
+                ->whereNotIn('id', $currentExerciseIds)
+                ->with(['muscleGroups', 'primaryMuscleGroups', 'equipmentType'])
+                ->orderBy('name')
+                ->get()
+                ->map(function ($exercise) {
+                    return [
+                        'id' => $exercise->id,
+                        'name' => $exercise->name,
+                        'equipment_type_id' => $exercise->equipment_type_id,
+                        'equipment_type_name' => $exercise->equipmentType?->name ?? 'Unknown',
+                        'muscle_groups' => $exercise->muscleGroups->map(fn ($mg) => [
+                            'id' => $mg->id,
+                            'name' => $mg->name,
+                        ])->values()->toArray(),
+                        'primary_muscle_group_ids' => $exercise->primaryMuscleGroups->pluck('id')->values()->toArray(),
+                    ];
+                })
+                ->values();
+
+            $workoutExerciseData[$workout->id] = $exercises;
+        }
+
+        // Get all equipment types and muscle groups for filters
+        $equipmentTypes = EquipmentType::orderBy('display_order')
+            ->get(['id', 'name'])
+            ->map(fn ($et) => ['id' => $et->id, 'name' => $et->name])
+            ->values();
+
+        $muscleGroups = MuscleGroup::orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
+            ->values();
+
+        return view('plans.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups'));
     }
 
     /**

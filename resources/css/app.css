@@ -874,3 +874,8 @@ pre[class*='language-'] {
         fill: none !important;
     }
 }
+
+/* Alpine.js x-cloak */
+[x-cloak] {
+  display: none !important;
+}
