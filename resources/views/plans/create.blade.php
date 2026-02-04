@@ -122,7 +122,7 @@
 
             <!-- Form Actions -->
             <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
-                <a href="{{ route('users.show', $user) }}">
+                <a href="{{ route('plans.index', $user) }}">
                     <x-ui.button variant="outline" size="md">
                         Cancel
                     </x-ui.button>

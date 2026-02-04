@@ -212,7 +212,7 @@ class PlanController extends Controller
 
         $plan->update($request->validated());
 
-        return redirect()->route('plans.show', $plan)
+        return redirect()->route('plans.index', $plan->user)
             ->with('success', 'Plan updated successfully!');
     }
 
@@ -232,7 +232,7 @@ class PlanController extends Controller
         $userId = $plan->user_id;
         $plan->delete();
 
-        return redirect()->route('users.show', $userId)
+        return redirect()->route('plans.index', $userId)
             ->with('success', 'Plan deleted successfully!');
     }
 }

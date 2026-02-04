@@ -56,21 +56,7 @@
 
                 <!-- Plan Type -->
                 <div x-data="{ planType: '{{ old('type', $plan->type->value) }}' }">
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Plan Type <span class="text-red-500">*</span>
-                    </label>
-                    <select name="type"
-                        id="type"
-                        x-model="planType"
-                        required
-                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('type') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror">
-                        <option value="routine" {{ old('type', $plan->type->value) === 'routine' ? 'selected' : '' }}>Routine</option>
-                        <option value="program" {{ old('type', $plan->type->value) === 'program' ? 'selected' : '' }}>Program</option>
-                    </select>
-                    @error('type')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-
+                    <input type="hidden" value="{{ $plan->type->value }}" name="type">
                     <!-- Duration (weeks) - Only shown for Programs -->
                     <div x-show="planType === 'program'" x-transition class="mt-5">
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -123,7 +109,7 @@
 
             <!-- Form Actions -->
             <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
-                <a href="{{ route('plans.show', $plan) }}">
+                <a href="{{ route('plans.index', $plan->user) }}">
                     <x-ui.button variant="outline" size="md">
                         Cancel
                     </x-ui.button>
