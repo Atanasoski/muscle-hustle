@@ -37,25 +37,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/{user}/workout-sessions', [UserWorkoutSessionController::class, 'index'])->name('users.workout-sessions.index');
     Route::get('/users/{user}/workout-sessions/{workoutSession}', [UserWorkoutSessionController::class, 'show'])->name('users.workout-sessions.show');
 
-    // Partner Programs Management (Library)
+    // Partner Programs Management (Library) – CRUD methods
     Route::prefix('partner')->group(function () {
-        Route::get('/programs', [PlanController::class, 'programsIndex'])->name('partner.programs.index');
-        Route::get('/programs/create', [PlanController::class, 'programsCreate'])->name('partner.programs.create');
-        Route::post('/programs', [PlanController::class, 'programsStore'])->name('partner.programs.store');
-        Route::get('/programs/{plan}', [PlanController::class, 'programsShow'])->name('partner.programs.show');
-        Route::get('/programs/{plan}/edit', [PlanController::class, 'programsEdit'])->name('partner.programs.edit');
-        Route::put('/programs/{plan}', [PlanController::class, 'programsUpdate'])->name('partner.programs.update');
-        Route::delete('/programs/{plan}', [PlanController::class, 'programsDestroy'])->name('partner.programs.destroy');
+        Route::get('/programs', [PlanController::class, 'index'])->name('partner.programs.index');
+        Route::get('/programs/create', [PlanController::class, 'create'])->name('partner.programs.create');
+        Route::post('/programs', [PlanController::class, 'store'])->name('partner.programs.store');
+        Route::get('/programs/{plan}', [PlanController::class, 'show'])->name('partner.programs.show');
+        Route::get('/programs/{plan}/edit', [PlanController::class, 'edit'])->name('partner.programs.edit');
+        Route::put('/programs/{plan}', [PlanController::class, 'update'])->name('partner.programs.update');
+        Route::delete('/programs/{plan}', [PlanController::class, 'destroy'])->name('partner.programs.destroy');
     });
 
-    // Plans Management
-    Route::get('/users/{user}/plans', [PlanController::class, 'index'])->name('plans.index');
-    Route::get('/users/{user}/plans/create', [\App\Http\Controllers\PlanController::class, 'create'])->name('plans.create');
-    Route::post('/users/{user}/plans', [\App\Http\Controllers\PlanController::class, 'store'])->name('plans.store');
-    Route::get('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'show'])->name('plans.show');
-    Route::get('/plans/{plan}/edit', [\App\Http\Controllers\PlanController::class, 'edit'])->name('plans.edit');
-    Route::put('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'update'])->name('plans.update');
-    Route::delete('/plans/{plan}', [\App\Http\Controllers\PlanController::class, 'destroy'])->name('plans.destroy');
+    // Plans Management (user flow: plan for a specific user) – userPlan* methods
+    Route::get('/users/{user}/plans', [PlanController::class, 'userPlanIndex'])->name('plans.index');
+    Route::get('/users/{user}/plans/create', [PlanController::class, 'userPlanCreate'])->name('plans.create');
+    Route::post('/users/{user}/plans', [PlanController::class, 'userPlanStore'])->name('plans.store');
+    Route::get('/plans/{plan}', [PlanController::class, 'userPlanShow'])->name('plans.show');
+    Route::get('/plans/{plan}/edit', [PlanController::class, 'userPlanEdit'])->name('plans.edit');
+    Route::put('/plans/{plan}', [PlanController::class, 'userPlanUpdate'])->name('plans.update');
+    Route::delete('/plans/{plan}', [PlanController::class, 'userPlanDestroy'])->name('plans.destroy');
 
     // Workout Templates Management
     Route::get('/plans/{plan}/workouts/create', [\App\Http\Controllers\WorkoutTemplateController::class, 'create'])->name('workouts.create');

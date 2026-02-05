@@ -17,9 +17,9 @@ use Illuminate\View\View;
 class PlanController extends Controller
 {
     /**
-     * Display a listing of the user's plans.
+     * Display a listing of the user's plans (user flow: plan for a specific user).
      */
-    public function index(Request $request, User $user): View
+    public function userPlanIndex(Request $request, User $user): View
     {
         $currentUser = $request->user();
 
@@ -43,9 +43,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Show the form for creating a new plan for a user.
+     * Show the form for creating a new plan for a user (user flow).
      */
-    public function create(Request $request, User $user): View
+    public function userPlanCreate(Request $request, User $user): View
     {
         $currentUser = $request->user();
 
@@ -64,9 +64,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Store a newly created plan in storage.
+     * Store a newly created plan in storage (user flow).
      */
-    public function store(StorePlanRequest $request, User $user): RedirectResponse
+    public function userPlanStore(StorePlanRequest $request, User $user): RedirectResponse
     {
         $currentUser = $request->user();
 
@@ -95,9 +95,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Display the specified plan.
+     * Display the specified plan (user flow: plan for a specific user).
      */
-    public function show(Request $request, Plan $plan): View
+    public function userPlanShow(Request $request, Plan $plan): View
     {
         $currentUser = $request->user();
 
@@ -169,9 +169,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Show the form for editing the specified plan.
+     * Show the form for editing the specified plan (user flow).
      */
-    public function edit(Request $request, Plan $plan): View
+    public function userPlanEdit(Request $request, Plan $plan): View
     {
         $currentUser = $request->user();
 
@@ -191,9 +191,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Update the specified plan in storage.
+     * Update the specified plan in storage (user flow).
      */
-    public function update(UpdatePlanRequest $request, Plan $plan): RedirectResponse
+    public function userPlanUpdate(UpdatePlanRequest $request, Plan $plan): RedirectResponse
     {
         $currentUser = $request->user();
 
@@ -217,9 +217,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Remove the specified plan from storage.
+     * Remove the specified plan from storage (user flow).
      */
-    public function destroy(Request $request, Plan $plan): RedirectResponse
+    public function userPlanDestroy(Request $request, Plan $plan): RedirectResponse
     {
         $currentUser = $request->user();
 
@@ -229,21 +229,21 @@ class PlanController extends Controller
             abort(403, 'Unauthorized.');
         }
 
-        $userId = $plan->user_id;
+        $user = $plan->user;
         $plan->delete();
 
-        return redirect()->route('plans.index', $userId)
+        return redirect()->route('plans.index', $user)
             ->with('success', 'Plan deleted successfully!');
     }
 
     // ===============================================
-    // PARTNER LIBRARY PROGRAMS
+    // PARTNER LIBRARY PROGRAMS (CRUD)
     // ===============================================
 
     /**
-     * Display partner's library programs.
+     * Display a listing of partner library programs.
      */
-    public function programsIndex(Request $request): View
+    public function index(Request $request): View
     {
         $currentUser = $request->user();
 
@@ -264,9 +264,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Show form for creating partner library program.
+     * Show the form for creating a new program (partner library).
      */
-    public function programsCreate(Request $request): View
+    public function create(Request $request): View
     {
         $currentUser = $request->user();
 
@@ -280,9 +280,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Store new partner library program.
+     * Store a newly created program in storage (partner library).
      */
-    public function programsStore(StorePlanRequest $request): RedirectResponse
+    public function store(StorePlanRequest $request): RedirectResponse
     {
         $currentUser = $request->user();
 
@@ -306,9 +306,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Show partner library program.
+     * Display the specified program (partner library).
      */
-    public function programsShow(Request $request, Plan $plan): View
+    public function show(Request $request, Plan $plan): View
     {
         $currentUser = $request->user();
 
@@ -375,9 +375,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Show edit form for partner library program.
+     * Show the form for editing the specified program (partner library).
      */
-    public function programsEdit(Request $request, Plan $plan): View
+    public function edit(Request $request, Plan $plan): View
     {
         $currentUser = $request->user();
 
@@ -392,9 +392,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Update partner library program.
+     * Update the specified program in storage (partner library).
      */
-    public function programsUpdate(UpdatePlanRequest $request, Plan $plan): RedirectResponse
+    public function update(UpdatePlanRequest $request, Plan $plan): RedirectResponse
     {
         $currentUser = $request->user();
 
@@ -411,9 +411,9 @@ class PlanController extends Controller
     }
 
     /**
-     * Delete partner library program.
+     * Remove the specified program from storage (partner library).
      */
-    public function programsDestroy(Request $request, Plan $plan): RedirectResponse
+    public function destroy(Request $request, Plan $plan): RedirectResponse
     {
         $currentUser = $request->user();
 
