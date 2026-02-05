@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('plans', function (Blueprint $table) {
-            $table->string('type')->default('routine')->after('user_id');
+            $table->string('type')->default('custom')->after('user_id');
             $table->unsignedInteger('duration_weeks')->nullable()->after('description');
             $table->foreignId('partner_id')->nullable()->after('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('user_id')->nullable()->change();

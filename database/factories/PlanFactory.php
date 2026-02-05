@@ -24,7 +24,7 @@ class PlanFactory extends Factory
             'name' => fake()->words(2, true).' Plan',
             'description' => fake()->sentence(),
             'is_active' => fake()->boolean(),
-            'type' => PlanType::Routine,
+            'type' => PlanType::Custom,
             'duration_weeks' => null,
         ];
     }
@@ -48,6 +48,8 @@ class PlanFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'partner_id' => $partner->id,
             'user_id' => null,
+            'type' => PlanType::Library,
+            'duration_weeks' => fake()->numberBetween(4, 12),
         ]);
     }
 }

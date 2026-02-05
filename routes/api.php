@@ -56,13 +56,21 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/equipment-types', [ExerciseClassificationController::class, 'equipmentTypes']);
     Route::get('/angles', [ExerciseClassificationController::class, 'angles']);
 
-    // Routines API - User can create/manage their own
-    Route::prefix('routines')->group(function () {
-        Route::get('/', [PlanController::class, 'routinesIndex']);
-        Route::post('/', [PlanController::class, 'routinesStore']);
-        Route::get('/{routine}', [PlanController::class, 'routinesShow']);
-        Route::put('/{routine}', [PlanController::class, 'routinesUpdate']);
-        Route::delete('/{routine}', [PlanController::class, 'routinesDestroy']);
+    Route::prefix('plans')->group(function () {
+        Route::get('/', [PlanController::class, 'index']);
+        Route::post('/', [PlanController::class, 'store']);
+        Route::get('/{plan}', [PlanController::class, 'show']);
+        Route::put('/{plan}', [PlanController::class, 'update']);
+        Route::delete('/{plan}', [PlanController::class, 'destroy']);
+    });
+
+    // Custom Plans API - User can create/manage their own
+    Route::prefix('custom-plans')->group(function () {
+        Route::get('/', [PlanController::class, 'customPlansIndex']);
+        Route::post('/', [PlanController::class, 'customPlansStore']);
+        Route::get('/{customPlan}', [PlanController::class, 'customPlansShow']);
+        Route::put('/{customPlan}', [PlanController::class, 'customPlansUpdate']);
+        Route::delete('/{customPlan}', [PlanController::class, 'customPlansDestroy']);
     });
 
     // Programs API - User clones from partner library

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PlanType;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,7 @@ class PlanCloningService
             $newPlan->user_id = $targetUser->id;
             $newPlan->partner_id = null; // User now owns their copy
             $newPlan->is_active = false;
+            $newPlan->type = PlanType::Program; // Library plans become Programs when cloned
             $newPlan->save();
 
             // 2. Clone workout templates

@@ -22,7 +22,6 @@ class PlanCloningTest extends TestCase
         $user = User::factory()->create(['partner_id' => $partner->id]);
 
         $libraryPlan = Plan::factory()->partnerLibrary($partner)->create([
-            'type' => PlanType::Program,
             'name' => 'Library Program',
         ]);
 
@@ -40,9 +39,7 @@ class PlanCloningTest extends TestCase
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
 
-        $libraryPlan = Plan::factory()->partnerLibrary($partner)->create([
-            'type' => PlanType::Program,
-        ]);
+        $libraryPlan = Plan::factory()->partnerLibrary($partner)->create();
 
         $template1 = WorkoutTemplate::factory()->create([
             'plan_id' => $libraryPlan->id,
@@ -103,9 +100,7 @@ class PlanCloningTest extends TestCase
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
 
-        $libraryPlan = Plan::factory()->partnerLibrary($partner)->create([
-            'type' => PlanType::Program,
-        ]);
+        $libraryPlan = Plan::factory()->partnerLibrary($partner)->create();
 
         $this->assertEquals($partner->id, $libraryPlan->partner_id);
 
@@ -121,9 +116,7 @@ class PlanCloningTest extends TestCase
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
 
-        $libraryPlan = Plan::factory()->partnerLibrary($partner)->create([
-            'type' => PlanType::Program,
-        ]);
+        $libraryPlan = Plan::factory()->partnerLibrary($partner)->create();
 
         $this->assertNull($libraryPlan->user_id);
 
@@ -139,7 +132,6 @@ class PlanCloningTest extends TestCase
         $user = User::factory()->create(['partner_id' => $partner->id]);
 
         $libraryPlan = Plan::factory()->partnerLibrary($partner)->create([
-            'type' => PlanType::Program,
             'is_active' => true, // Library plan is active
         ]);
 

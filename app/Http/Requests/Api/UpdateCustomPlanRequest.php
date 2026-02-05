@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRoutineRequest extends FormRequest
+class UpdateCustomPlanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

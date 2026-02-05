@@ -45,7 +45,7 @@
 
         @if($context === 'user')
             <!-- User context: Show type selector with conditional duration -->
-            <div x-data="{ planType: '{{ old('type', $plan?->type?->value ?? 'routine') }}' }">
+            <div x-data="{ planType: '{{ old('type', $plan?->type?->value ?? 'custom') }}' }">
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     Plan Type <span class="text-red-500">*</span>
                 </label>
@@ -54,7 +54,7 @@
                     x-model="planType"
                     required
                     class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('type') border-red-300 focus:border-red-300 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-800 @enderror">
-                    <option value="routine">Routine</option>
+                    <option value="custom">Custom Plan</option>
                     <option value="program">Program</option>
                 </select>
                 @error('type')
@@ -112,7 +112,7 @@
         @else
             <!-- Library context: Always type=program, always show duration -->
             <input type="hidden" name="type" value="program">
-            
+
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     Duration (weeks)

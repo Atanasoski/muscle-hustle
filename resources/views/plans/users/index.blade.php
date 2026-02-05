@@ -56,7 +56,7 @@
                                         </span>
                                     @else
                                         <span class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/40 dark:bg-blue-900/30 dark:text-blue-300">
-                                            Routine
+                                            Custom Plan
                                         </span>
                                     @endif
                                 </td>

@@ -29,7 +29,7 @@
                         </span>
                     @else
                         <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                            Routine
+                            Custom Plan
                         </span>
                     @endif
                     @if($plan->isProgram() && $plan->duration_weeks)

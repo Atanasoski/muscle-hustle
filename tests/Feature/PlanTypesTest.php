@@ -15,17 +15,17 @@ class PlanTypesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_create_routine_plan(): void
+    public function test_can_create_custom_plan(): void
     {
         $user = User::factory()->create();
 
         $plan = Plan::factory()->create([
             'user_id' => $user->id,
-            'type' => PlanType::Routine,
-            'name' => 'My Routine',
+            'type' => PlanType::Custom,
+            'name' => 'My Custom Plan',
         ]);
 
-        $this->assertTrue($plan->isRoutine());
+        $this->assertTrue($plan->isCustom());
         $this->assertFalse($plan->isProgram());
         $this->assertNull($plan->duration_weeks);
     }
@@ -40,7 +40,7 @@ class PlanTypesTest extends TestCase
         ]);
 
         $this->assertTrue($plan->isProgram());
-        $this->assertFalse($plan->isRoutine());
+        $this->assertFalse($plan->isCustom());
         $this->assertEquals(8, $plan->duration_weeks);
     }
 
@@ -50,7 +50,7 @@ class PlanTypesTest extends TestCase
 
         $plan = Plan::factory()->create([
             'user_id' => $user->id,
-            'type' => PlanType::Routine,
+            'type' => PlanType::Custom,
         ]);
 
         $plan->update([

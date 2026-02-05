@@ -66,9 +66,9 @@ class Plan extends Model
     /**
      * Check if this plan is a routine
      */
-    public function isRoutine(): bool
+    public function isCustom(): bool
     {
-        return $this->type === PlanType::Routine;
+        return $this->type === PlanType::Custom;
     }
 
     /**
@@ -76,7 +76,7 @@ class Plan extends Model
      */
     public function isPartnerLibraryPlan(): bool
     {
-        return $this->partner_id !== null && $this->user_id === null;
+        return $this->type === PlanType::Library;
     }
 
     /**
@@ -107,6 +107,7 @@ class Plan extends Model
         // Get all workout templates ordered by program sequence
         $templates = $this->workoutTemplates()
             ->orderedByProgram()
+            ->with('exercises')
             ->get();
 
         // Find the first template that hasn't been completed by this user

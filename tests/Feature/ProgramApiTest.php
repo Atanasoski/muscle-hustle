@@ -28,7 +28,7 @@ class ProgramApiTest extends TestCase
         // Create a routine (should not appear)
         Plan::factory()->create([
             'user_id' => $user->id,
-            'type' => PlanType::Routine,
+            'type' => PlanType::Custom,
         ]);
 
         // Create another user's program (should not appear)
@@ -50,15 +50,11 @@ class ProgramApiTest extends TestCase
         Sanctum::actingAs($user);
 
         // Create library programs for this partner
-        Plan::factory()->partnerLibrary($partner)->count(3)->create([
-            'type' => PlanType::Program,
-        ]);
+        Plan::factory()->partnerLibrary($partner)->count(3)->create();
 
         // Create library program for another partner (should not appear)
         $otherPartner = Partner::factory()->create();
-        Plan::factory()->partnerLibrary($otherPartner)->create([
-            'type' => PlanType::Program,
-        ]);
+        Plan::factory()->partnerLibrary($otherPartner)->create();
 
         $response = $this->getJson('/api/programs/library');
 
@@ -73,7 +69,6 @@ class ProgramApiTest extends TestCase
         Sanctum::actingAs($user);
 
         $libraryProgram = Plan::factory()->partnerLibrary($partner)->create([
-            'type' => PlanType::Program,
             'name' => 'Library Program',
             'duration_weeks' => 8,
         ]);
@@ -111,7 +106,7 @@ class ProgramApiTest extends TestCase
         Sanctum::actingAs($user);
 
         // The routines endpoint only creates routines
-        $response = $this->postJson('/api/routines', [
+        $response = $this->postJson('/api/custom-plans', [
             'name' => 'Program',
             'type' => 'program', // This field is not accepted
             'duration_weeks' => 8,
@@ -121,7 +116,7 @@ class ProgramApiTest extends TestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('plans', [
             'name' => 'Program',
-            'type' => PlanType::Routine->value,
+            'type' => PlanType::Custom->value,
         ]);
     }
 
@@ -174,9 +169,7 @@ class ProgramApiTest extends TestCase
         $user = User::factory()->create(['partner_id' => $partner1->id]);
         Sanctum::actingAs($user);
 
-        $libraryProgram = Plan::factory()->partnerLibrary($partner2)->create([
-            'type' => PlanType::Program,
-        ]);
+        $libraryProgram = Plan::factory()->partnerLibrary($partner2)->create();
 
         $response = $this->postJson("/api/programs/{$libraryProgram->id}/clone");
 
@@ -197,17 +190,17 @@ class ProgramApiTest extends TestCase
             ->assertJsonCount(0, 'data');
     }
 
-    public function test_cannot_access_routine_as_program(): void
+    public function test_cannot_access_custom_plan_as_program(): void
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $routine = Plan::factory()->create([
+        $customPlan = Plan::factory()->create([
             'user_id' => $user->id,
-            'type' => PlanType::Routine,
+            'type' => PlanType::Custom,
         ]);
 
-        $response = $this->getJson("/api/programs/{$routine->id}");
+        $response = $this->getJson("/api/programs/{$customPlan->id}");
 
         $response->assertStatus(400)
             ->assertJson([

@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\PlanType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\StoreRoutineRequest;
-use App\Http\Requests\Api\UpdateRoutineRequest;
+use App\Http\Requests\Api\StoreCustomPlanRequest;
+use App\Http\Requests\Api\UpdateCustomPlanRequest;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
+use App\Http\Resources\Api\CustomPlanResource;
 use App\Http\Resources\Api\PlanResource;
 use App\Http\Resources\Api\ProgramResource;
-use App\Http\Resources\Api\RoutineResource;
 use App\Http\Resources\Api\WorkoutTemplateResource;
 use App\Models\Plan;
 use App\Services\PlanCloningService;
@@ -125,27 +125,27 @@ class PlanController extends Controller
     }
 
     // ===============================================
-    // ROUTINES API - User-created flexible workouts
+    // CUSTOM PLANS API - User-created flexible workouts
     // ===============================================
 
     /**
-     * Display a listing of the user's routines.
+     * Display a listing of the user's custom plans.
      */
-    public function routinesIndex(): AnonymousResourceCollection
+    public function customPlansIndex(): AnonymousResourceCollection
     {
-        $routines = Plan::where('user_id', auth()->id())
-            ->where('type', PlanType::Routine)
+        $customPlans = Plan::where('user_id', auth()->id())
+            ->where('type', PlanType::Custom)
             ->with(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')])
             ->latest()
             ->get();
 
-        return RoutineResource::collection($routines);
+        return CustomPlanResource::collection($customPlans);
     }
 
     /**
-     * Store a newly created routine in storage.
+     * Store a newly created custom plan in storage.
      */
-    public function routinesStore(StoreRoutineRequest $request): JsonResponse
+    public function customPlansStore(StoreCustomPlanRequest $request): JsonResponse
     {
         // Deactivate all other plans if this one is being set as active
         if ($request->is_active) {
@@ -153,105 +153,105 @@ class PlanController extends Controller
                 ->update(['is_active' => false]);
         }
 
-        $routine = Plan::create([
+        $customPlan = Plan::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
             'description' => $request->description,
             'is_active' => $request->is_active ?? false,
-            'type' => PlanType::Routine,
+            'type' => PlanType::Custom,
         ]);
 
         return response()->json([
-            'message' => 'Routine created successfully',
-            'data' => new RoutineResource($routine),
+            'message' => 'Custom plan created successfully',
+            'data' => new CustomPlanResource($customPlan),
         ], 201);
     }
 
     /**
-     * Display the specified routine.
+     * Display the custom plan.
      */
-    public function routinesShow(Plan $routine): JsonResponse
+    public function customPlansShow(Plan $customPlan): JsonResponse
     {
         // Authorization check
-        if ($routine->user_id !== auth()->id()) {
+        if ($customPlan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
         }
 
-        // Verify it's a routine
-        if (! $routine->isRoutine()) {
+        // Verify it's a custom plan
+        if (! $customPlan->isCustom()) {
             return response()->json([
-                'message' => 'Not a routine',
+                'message' => 'Not a custom plan',
             ], 400);
         }
 
-        $routine->load(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')]);
+        $customPlan->load(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')]);
 
         return response()->json([
-            'data' => new RoutineResource($routine),
+            'data' => new CustomPlanResource($customPlan),
         ]);
     }
 
     /**
-     * Update the specified routine in storage.
+     * Update the specified custom plan in storage.
      */
-    public function routinesUpdate(UpdateRoutineRequest $request, Plan $routine): JsonResponse
+    public function customPlansUpdate(UpdateCustomPlanRequest $request, Plan $customPlan): JsonResponse
     {
         // Authorization check
-        if ($routine->user_id !== auth()->id()) {
+        if ($customPlan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
         }
 
-        // Verify it's a routine
-        if (! $routine->isRoutine()) {
+        // Verify it's a custom plan
+        if (! $customPlan->isCustom()) {
             return response()->json([
-                'message' => 'Not a routine',
+                'message' => 'Not a custom plan',
             ], 400);
         }
 
         // Deactivate all other plans if this one is being set as active
         if ($request->is_active) {
             Plan::where('user_id', auth()->id())
-                ->where('id', '!=', $routine->id)
+                ->where('id', '!=', $customPlan->id)
                 ->update(['is_active' => false]);
         }
 
-        $routine->update($request->validated());
+        $customPlan->update($request->validated());
 
-        $routine->load(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')]);
+        $customPlan->load(['workoutTemplates' => fn ($query) => $query->orderedByDayOfWeek()->with('exercises.category')]);
 
         return response()->json([
-            'message' => 'Routine updated successfully',
-            'data' => new RoutineResource($routine),
+            'message' => 'Custom plan updated successfully',
+            'data' => new CustomPlanResource($customPlan),
         ]);
     }
 
     /**
-     * Remove the specified routine from storage.
+     * Remove the specified custom plan from storage.
      */
-    public function routinesDestroy(Plan $routine): JsonResponse
+    public function customPlansDestroy(Plan $customPlan): JsonResponse
     {
         // Authorization check
-        if ($routine->user_id !== auth()->id()) {
+        if ($customPlan->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
         }
 
-        // Verify it's a routine
-        if (! $routine->isRoutine()) {
+        // Verify it's a custom plan
+        if (! $customPlan->isCustom()) {
             return response()->json([
-                'message' => 'Not a routine',
+                'message' => 'Not a custom plan',
             ], 400);
         }
 
-        $routine->delete();
+        $customPlan->delete();
 
         return response()->json([
-            'message' => 'Routine deleted successfully',
+            'message' => 'Custom plan deleted successfully',
         ]);
     }
 
@@ -285,7 +285,7 @@ class PlanController extends Controller
         }
 
         $libraryPrograms = Plan::forPartner($partner->id)
-            ->where('type', PlanType::Program)
+            ->where('type', PlanType::Library)
             ->with(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with('exercises.category')])
             ->latest()
             ->get();
@@ -299,22 +299,12 @@ class PlanController extends Controller
     public function programsShow(Plan $program): JsonResponse
     {
         // Authorization check - user's own program or partner library program
-        if ($program->user_id !== auth()->id() && ! $program->isPartnerLibraryPlan()) {
+        if ($program->user_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
         }
 
-        // If it's a library plan, verify user belongs to the partner
-        if ($program->isPartnerLibraryPlan()) {
-            if (auth()->user()->partner_id !== $program->partner_id) {
-                return response()->json([
-                    'message' => 'Unauthorized',
-                ], 403);
-            }
-        }
-
-        // Verify it's a program
         if (! $program->isProgram()) {
             return response()->json([
                 'message' => 'Not a program',
@@ -412,13 +402,6 @@ class PlanController extends Controller
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
-        }
-
-        // Verify it's a program
-        if (! $program->isProgram()) {
-            return response()->json([
-                'message' => 'Not a program',
-            ], 400);
         }
 
         $clonedPlan = $service->clone($program, auth()->user());
