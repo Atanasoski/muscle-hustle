@@ -34,6 +34,15 @@ class MenuHelper
             ];
         }
 
+        // Programs - Partner library for partner admins
+        if ($user && $user->hasRole('partner_admin')) {
+            $items[] = [
+                'icon' => 'task',
+                'name' => 'Programs',
+                'path' => '/partner/programs',
+            ];
+        }
+
         // Exercises - Route based on user type
         if ($user && $user->hasRole('admin')) {
             // System admin - manage global exercises

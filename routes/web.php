@@ -37,6 +37,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/{user}/workout-sessions', [UserWorkoutSessionController::class, 'index'])->name('users.workout-sessions.index');
     Route::get('/users/{user}/workout-sessions/{workoutSession}', [UserWorkoutSessionController::class, 'show'])->name('users.workout-sessions.show');
 
+    // Partner Programs Management (Library)
+    Route::prefix('partner')->group(function () {
+        Route::get('/programs', [PlanController::class, 'programsIndex'])->name('partner.programs.index');
+        Route::get('/programs/create', [PlanController::class, 'programsCreate'])->name('partner.programs.create');
+        Route::post('/programs', [PlanController::class, 'programsStore'])->name('partner.programs.store');
+        Route::get('/programs/{plan}', [PlanController::class, 'programsShow'])->name('partner.programs.show');
+        Route::get('/programs/{plan}/edit', [PlanController::class, 'programsEdit'])->name('partner.programs.edit');
+        Route::put('/programs/{plan}', [PlanController::class, 'programsUpdate'])->name('partner.programs.update');
+        Route::delete('/programs/{plan}', [PlanController::class, 'programsDestroy'])->name('partner.programs.destroy');
+    });
+
     // Plans Management
     Route::get('/users/{user}/plans', [PlanController::class, 'index'])->name('plans.index');
     Route::get('/users/{user}/plans/create', [\App\Http\Controllers\PlanController::class, 'create'])->name('plans.create');

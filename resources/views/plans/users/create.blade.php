@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Create Program')
+@section('title', 'Create Plan for ' . $user->name)
 
 @section('content')
-    <x-common.page-breadcrumb :pageTitle="'Create Program'" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')]]" />
+    <x-common.page-breadcrumb :pageTitle="'Create Plan for ' . $user->name" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $user->name, 'url' => route('users.show', $user)]]" />
 
     @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
@@ -18,11 +18,12 @@
         </div>
     @endif
 
-    <x-common.component-card title="Program Information" desc="Create a new program available to all gym members">
+    <x-common.component-card title="Plan Information" :desc="'Create a new workout plan for ' . $user->name">
         @include('plans._form', [
-            'action' => route('partner.programs.store'),
+            'action' => route('plans.store', $user),
             'method' => 'POST',
-            'context' => 'library'
+            'context' => 'user',
+            'user' => $user
         ])
     </x-common.component-card>
 @endsection

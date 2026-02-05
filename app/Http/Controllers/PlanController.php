@@ -39,7 +39,7 @@ class PlanController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('plans.index', compact('user', 'partner', 'plans'));
+        return view('plans.users.index', compact('user', 'partner', 'plans'));
     }
 
     /**
@@ -60,7 +60,7 @@ class PlanController extends Controller
 
         $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
 
-        return view('plans.create', compact('user', 'partner'));
+        return view('plans.users.create', compact('user', 'partner'));
     }
 
     /**
@@ -165,7 +165,7 @@ class PlanController extends Controller
             ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
             ->values();
 
-        return view('plans.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups'));
+        return view('plans.users.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups'));
     }
 
     /**
@@ -187,7 +187,7 @@ class PlanController extends Controller
 
         $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
 
-        return view('plans.edit', compact('plan', 'partner'));
+        return view('plans.users.edit', compact('plan', 'partner'));
     }
 
     /**
@@ -234,5 +234,198 @@ class PlanController extends Controller
 
         return redirect()->route('plans.index', $userId)
             ->with('success', 'Plan deleted successfully!');
+    }
+
+    // ===============================================
+    // PARTNER LIBRARY PROGRAMS
+    // ===============================================
+
+    /**
+     * Display partner's library programs.
+     */
+    public function programsIndex(Request $request): View
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin')) {
+            abort(403, 'Only partner administrators can manage programs.');
+        }
+
+        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+
+        $plans = Plan::query()
+            ->where('partner_id', $partner->id)
+            ->whereNull('user_id')
+            ->withCount('workoutTemplates')
+            ->latest()
+            ->paginate(15);
+
+        return view('plans.index', compact('partner', 'plans'));
+    }
+
+    /**
+     * Show form for creating partner library program.
+     */
+    public function programsCreate(Request $request): View
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin')) {
+            abort(403);
+        }
+
+        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+
+        return view('plans.create', compact('partner'));
+    }
+
+    /**
+     * Store new partner library program.
+     */
+    public function programsStore(StorePlanRequest $request): RedirectResponse
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin')) {
+            abort(403);
+        }
+
+        $plan = Plan::create([
+            'partner_id' => $currentUser->partner_id,
+            'user_id' => null,
+            'name' => $request->name,
+            'description' => $request->description,
+            'type' => $request->type,
+            'duration_weeks' => $request->duration_weeks,
+            'is_active' => true,
+        ]);
+
+        return redirect()
+            ->route('partner.programs.show', $plan)
+            ->with('success', 'Program created successfully.');
+    }
+
+    /**
+     * Show partner library program.
+     */
+    public function programsShow(Request $request, Plan $plan): View
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin') ||
+            $plan->partner_id !== $currentUser->partner_id) {
+            abort(403);
+        }
+
+        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+
+        $plan->load([
+            'workoutTemplates' => function ($query) {
+                $query->withCount('workoutTemplateExercises')
+                    ->orderedByProgram();
+            },
+        ]);
+
+        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Prepare exercise data for add exercise modal
+        $workoutExerciseData = [];
+        foreach ($plan->workoutTemplates as $workout) {
+            // Get current exercise IDs in this workout template
+            $currentExerciseIds = $workout->workoutTemplateExercises()->pluck('exercise_id')->toArray();
+
+            // Get exercises available for this partner (excluding already added ones)
+            $exercises = Exercise::whereHas('partners', function ($q) use ($partner) {
+                $q->where('partners.id', $partner->id);
+            })
+                ->whereNotIn('id', $currentExerciseIds)
+                ->with(['muscleGroups', 'primaryMuscleGroups', 'equipmentType'])
+                ->orderBy('name')
+                ->get()
+                ->map(function ($exercise) {
+                    return [
+                        'id' => $exercise->id,
+                        'name' => $exercise->name,
+                        'equipment_type_id' => $exercise->equipment_type_id,
+                        'equipment_type_name' => $exercise->equipmentType?->name ?? 'Unknown',
+                        'muscle_groups' => $exercise->muscleGroups->map(fn ($mg) => [
+                            'id' => $mg->id,
+                            'name' => $mg->name,
+                        ])->values()->toArray(),
+                        'primary_muscle_group_ids' => $exercise->primaryMuscleGroups->pluck('id')->values()->toArray(),
+                    ];
+                })
+                ->values();
+
+            $workoutExerciseData[$workout->id] = $exercises;
+        }
+
+        // Get all equipment types and muscle groups for filters
+        $equipmentTypes = EquipmentType::orderBy('display_order')
+            ->get(['id', 'name'])
+            ->map(fn ($et) => ['id' => $et->id, 'name' => $et->name])
+            ->values();
+
+        $muscleGroups = MuscleGroup::orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
+            ->values();
+
+        return view('plans.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups'));
+    }
+
+    /**
+     * Show edit form for partner library program.
+     */
+    public function programsEdit(Request $request, Plan $plan): View
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin') ||
+            $plan->partner_id !== $currentUser->partner_id) {
+            abort(403);
+        }
+
+        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+
+        return view('plans.edit', compact('plan', 'partner'));
+    }
+
+    /**
+     * Update partner library program.
+     */
+    public function programsUpdate(UpdatePlanRequest $request, Plan $plan): RedirectResponse
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin') ||
+            $plan->partner_id !== $currentUser->partner_id) {
+            abort(403);
+        }
+
+        $plan->update($request->validated());
+
+        return redirect()
+            ->route('partner.programs.show', $plan)
+            ->with('success', 'Program updated successfully.');
+    }
+
+    /**
+     * Delete partner library program.
+     */
+    public function programsDestroy(Request $request, Plan $plan): RedirectResponse
+    {
+        $currentUser = $request->user();
+
+        if (! $currentUser->hasRole('partner_admin') ||
+            $plan->partner_id !== $currentUser->partner_id) {
+            abort(403);
+        }
+
+        $plan->delete();
+
+        return redirect()
+            ->route('partner.programs.index')
+            ->with('success', 'Program deleted successfully.');
     }
 }
