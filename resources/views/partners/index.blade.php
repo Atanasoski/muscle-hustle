@@ -14,7 +14,7 @@
         </p>
     </div>
     <div>
-        <a href="{{ route('partners.create') }}" class="inline-flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600">
+        <a href="{{ route('partners.create') }}" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
             CREATE PARTNER
         </a>
     </div>

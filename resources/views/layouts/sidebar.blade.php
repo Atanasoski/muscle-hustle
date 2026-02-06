@@ -64,7 +64,7 @@
         'xl:justify-center' :
         'justify-start'">
         <a href="/" class="flex items-center gap-2 min-w-0">
-            <img src="/images/logo/logo-icon.svg" alt="{{ config('app.name') }}" width="32" height="32" class="shrink-0" />
+            <img src="/images/logo/fit-nation-logo.png" alt="{{ config('app.name') }}" width="32" height="32" class="shrink-0" />
             <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
                 x-transition
                 class="truncate text-lg font-bold text-gray-900 dark:text-white">

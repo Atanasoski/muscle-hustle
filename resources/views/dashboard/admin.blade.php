@@ -58,7 +58,7 @@
                         </svg>
                         Partner Performance
                     </h5>
-                    <a href="{{ route('partners.index') }}" class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors">
+                    <a href="{{ route('partners.index') }}" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                         Manage Partners
                     </a>
                 </div>
@@ -130,7 +130,7 @@
                         </svg>
                         <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No partners yet</h3>
                         <div class="mt-6">
-                            <a href="{{ route('partners.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="{{ route('partners.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                                 Create First Partner
                             </a>
                         </div>
