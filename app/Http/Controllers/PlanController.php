@@ -36,7 +36,8 @@ class PlanController extends Controller
         $plans = Plan::query()
             ->where('user_id', $user->id)
             ->withCount('workoutTemplates')
-            ->latest()
+            ->orderByDesc('is_active')
+            ->orderByDesc('updated_at')
             ->paginate(15);
 
         return view('plans.users.index', compact('user', 'partner', 'plans'));

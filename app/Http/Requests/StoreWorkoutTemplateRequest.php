@@ -38,8 +38,14 @@ class StoreWorkoutTemplateRequest extends FormRequest
                 'exists:plans,id',
                 function ($attribute, $value, $fail) {
                     $plan = \App\Models\Plan::with('user')->find($value);
-                    $user = auth()->user();
-                    if ($plan && $plan->user->partner_id !== $user->partner_id) {
+                    $currentUser = auth()->user();
+                    if (! $plan || ! $currentUser) {
+                        return;
+                    }
+                    $planPartnerId = $plan->user_id === null
+                        ? $plan->partner_id
+                        : $plan->user?->partner_id;
+                    if ($planPartnerId === null || $planPartnerId !== $currentUser->partner_id) {
                         $fail('The selected plan does not belong to your partner.');
                     }
                 },

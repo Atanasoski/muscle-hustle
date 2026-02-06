@@ -3,7 +3,7 @@
 @section('title', 'Edit Exercise - ' . $workoutTemplateExercise->exercise->name)
 
 @section('content')
-    <x-common.page-breadcrumb :pageTitle="'Edit Exercise'" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')], ['label' => $workoutTemplate->plan->name, 'url' => route('partner.programs.show', $workoutTemplate->plan)], ['label' => $workoutTemplate->name, 'url' => route('workouts.show', $workoutTemplate)]]" />
+    <x-common.page-breadcrumb :pageTitle="'Edit Exercise'" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $user->name, 'url' => route('users.show', $user)], ['label' => $workoutTemplate->plan->name, 'url' => route('plans.show', $workoutTemplate->plan)], ['label' => $workoutTemplate->name, 'url' => route('workouts.show', $workoutTemplate)]]" />
 
     @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">

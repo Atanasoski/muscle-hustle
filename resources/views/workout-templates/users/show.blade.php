@@ -71,7 +71,7 @@
             this.selectedMuscles = [];
         }
     }">
-    <x-common.page-breadcrumb :pageTitle="$workoutTemplate->name" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')], ['label' => $workoutTemplate->plan->name, 'url' => route('partner.programs.show', $workoutTemplate->plan)]]" />
+    <x-common.page-breadcrumb :pageTitle="$workoutTemplate->name" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $user->name, 'url' => route('users.show', $user)], ['label' => $workoutTemplate->plan->name, 'url' => route('plans.show', $workoutTemplate->plan)]]" />
 
     @if (session('success'))
         <div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
@@ -90,15 +90,15 @@
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $workoutTemplate->description }}</p>
                 @endif
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Part of <a href="{{ route('partner.programs.show', $workoutTemplate->plan) }}" class="font-medium text-brand-600 hover:underline dark:text-brand-400">{{ $workoutTemplate->plan->name }}</a>
+                    Part of <a href="{{ route('plans.show', $workoutTemplate->plan) }}" class="font-medium text-brand-600 hover:underline dark:text-brand-400">{{ $workoutTemplate->plan->name }}</a>
                     @if($dayName)
                         — {{ $dayName }}
                     @endif
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <a href="{{ route('partner.programs.show', $workoutTemplate->plan) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                    Back to Program
+                <a href="{{ route('plans.show', $workoutTemplate->plan) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    Back to Plan
                 </a>
                 <a href="{{ route('workouts.edit', $workoutTemplate) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                     Edit

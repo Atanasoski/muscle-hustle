@@ -22,24 +22,17 @@ class WorkoutTemplateController extends Controller
      */
     public function create(Request $request, Plan $plan): View
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        if (! $currentUser->hasRole('partner_admin')) {
-            abort(403, 'Only partner administrators can create workout templates.');
-        }
-
         $plan->load('user');
-        if ($plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+        $partner = Partner::with('identity')->findOrFail($request->user()->partner_id);
+        $isLibrary = $plan->user_id === null;
+        $user = $isLibrary ? null : $plan->user;
 
         $dayOfWeekOptions = $this->dayOfWeekOptions();
         $dayOfWeekValue = $request->old('day_of_week');
 
-        return view('workout-templates.create', compact('plan', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue'));
+        $view = $isLibrary ? 'workout-templates.create' : 'workout-templates.users.create';
+
+        return view($view, compact('plan', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue', 'isLibrary', 'user'));
     }
 
     /**
@@ -47,14 +40,6 @@ class WorkoutTemplateController extends Controller
      */
     public function store(StoreWorkoutTemplateRequest $request, Plan $plan): RedirectResponse
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        $plan->load('user');
-        if ($plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
         $workoutTemplate = WorkoutTemplate::create([
             'plan_id' => $plan->id,
             'name' => $request->name,
@@ -71,19 +56,10 @@ class WorkoutTemplateController extends Controller
      */
     public function show(Request $request, WorkoutTemplate $workoutTemplate): View
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        if (! $currentUser->hasRole('partner_admin')) {
-            abort(403, 'Only partner administrators can view workout templates.');
-        }
-
         $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+        $partner = Partner::with('identity')->findOrFail($request->user()->partner_id);
+        $isLibrary = $workoutTemplate->plan->user_id === null;
+        $user = $isLibrary ? null : $workoutTemplate->plan->user;
 
         $workoutTemplate->load([
             'workoutTemplateExercises.exercise.category',
@@ -131,7 +107,9 @@ class WorkoutTemplateController extends Controller
             ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
             ->values();
 
-        return view('workout-templates.show', compact('workoutTemplate', 'partner', 'dayName', 'exercises', 'availableExercises', 'equipmentTypes', 'muscleGroups'));
+        $view = $isLibrary ? 'workout-templates.show' : 'workout-templates.users.show';
+
+        return view($view, compact('workoutTemplate', 'partner', 'dayName', 'exercises', 'availableExercises', 'equipmentTypes', 'muscleGroups', 'isLibrary', 'user'));
     }
 
     /**
@@ -139,24 +117,17 @@ class WorkoutTemplateController extends Controller
      */
     public function edit(Request $request, WorkoutTemplate $workoutTemplate): View
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        if (! $currentUser->hasRole('partner_admin')) {
-            abort(403, 'Only partner administrators can edit workout templates.');
-        }
-
         $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+        $partner = Partner::with('identity')->findOrFail($request->user()->partner_id);
+        $isLibrary = $workoutTemplate->plan->user_id === null;
+        $user = $isLibrary ? null : $workoutTemplate->plan->user;
 
         $dayOfWeekOptions = $this->dayOfWeekOptions();
         $dayOfWeekValue = $request->old('day_of_week', $workoutTemplate->day_of_week);
 
-        return view('workout-templates.edit', compact('workoutTemplate', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue'));
+        $view = $isLibrary ? 'workout-templates.edit' : 'workout-templates.users.edit';
+
+        return view($view, compact('workoutTemplate', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue', 'isLibrary', 'user'));
     }
 
     /**
@@ -164,14 +135,6 @@ class WorkoutTemplateController extends Controller
      */
     public function update(UpdateWorkoutTemplateRequest $request, WorkoutTemplate $workoutTemplate): RedirectResponse
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
         $validated = $request->validated();
         $newDay = array_key_exists('day_of_week', $validated) ? $validated['day_of_week'] : $workoutTemplate->day_of_week;
         $oldDay = $workoutTemplate->day_of_week;
@@ -195,7 +158,7 @@ class WorkoutTemplateController extends Controller
 
         $workoutTemplate->update($validated);
 
-        return redirect()->route('workouts.show', $workoutTemplate)
+        return redirect()->route('plans.show', $workoutTemplate->plan)
             ->with('success', 'Workout template updated successfully!');
     }
 
@@ -204,18 +167,14 @@ class WorkoutTemplateController extends Controller
      */
     public function destroy(Request $request, WorkoutTemplate $workoutTemplate): RedirectResponse
     {
-        $currentUser = $request->user();
-
-        // Authorization check
         $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $planId = $workoutTemplate->plan_id;
+        $plan = $workoutTemplate->plan;
+        $isLibrary = $plan->user_id === null;
         $workoutTemplate->delete();
 
-        return redirect()->route('plans.show', $planId)
+        $redirectRoute = $isLibrary ? 'partner.programs.show' : 'plans.show';
+
+        return redirect()->route($redirectRoute, $plan)
             ->with('success', 'Workout template deleted successfully!');
     }
 

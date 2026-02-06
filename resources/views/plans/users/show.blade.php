@@ -3,7 +3,36 @@
 @section('title', $plan->name . ' - Plan Details')
 
 @section('content')
-
+    <div x-data="{
+        editModalOpen: false,
+        editingWorkout: null,
+        addWorkoutModalOpen: false,
+        dayOfWeekOptions: [
+            { value: '', letter: '—', title: 'Unassigned' },
+            { value: 0, letter: 'M', title: 'Monday' },
+            { value: 1, letter: 'T', title: 'Tuesday' },
+            { value: 2, letter: 'W', title: 'Wednesday' },
+            { value: 3, letter: 'T', title: 'Thursday' },
+            { value: 4, letter: 'F', title: 'Friday' },
+            { value: 5, letter: 'S', title: 'Saturday' },
+            { value: 6, letter: 'S', title: 'Sunday' }
+        ],
+        openEditModal(workout) {
+            this.editingWorkout = workout;
+            this.editModalOpen = true;
+        },
+        closeEditModal() {
+            this.editModalOpen = false;
+            this.editingWorkout = null;
+        },
+        addWorkoutDayOld: @js(old('day_of_week')),
+        openAddWorkoutModal() {
+            this.addWorkoutModalOpen = true;
+        },
+        closeAddWorkoutModal() {
+            this.addWorkoutModalOpen = false;
+        }
+    }" x-init="if ({{ Js::encode($errors->hasAny(['name','description','day_of_week']) && old('plan_id') == $plan->id) }}) { addWorkoutModalOpen = true }">
     <x-common.page-breadcrumb :pageTitle="$plan->name" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $plan->user->name, 'url' => route('users.show', $plan->user)]]" />
 
     @if (session('success'))
@@ -63,12 +92,12 @@
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800">
         <div class="mb-6 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Workout Templates</h3>
-            <a href="{{ route('workouts.create', $plan) }}" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+            <button type="button" @click="openAddWorkoutModal()" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 Add Workout Template
-            </a>
+            </button>
         </div>
 
         @if($plan->workoutTemplates->count() > 0)
@@ -158,6 +187,17 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
                                     </svg>
                                 </a>
+
+                                <form action="{{ route('workouts.destroy', $workout) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this workout template? This will also delete all associated exercises.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300">
+                                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -169,9 +209,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No workout templates yet</p>
-                <a href="{{ route('workouts.create', $plan) }}" class="mt-4 inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+                <button type="button" @click="openAddWorkoutModal()" class="mt-4 inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                     Create First Workout Template
-                </a>
+                </button>
             </div>
         @endif
     </div>
@@ -190,13 +230,14 @@
             class="fixed inset-0 bg-gray-100 opacity-80 transition-opacity dark:bg-gray-900 dark:opacity-100"
             @click="closeEditModal"></div>
 
-        <!-- Modal Panel -->
+        <!-- Modal Panel (only render form when editingWorkout is set to avoid null reference on load) -->
         <div class="flex min-h-full items-center justify-center p-4">
-            <div x-show="editModalOpen"
-                class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
-                @click.away="closeEditModal">
+            <template x-if="editingWorkout">
+                <div x-show="editModalOpen"
+                    class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
+                    @click.away="closeEditModal">
 
-                <form :action="editingWorkout?.updateUrl" method="POST">
+                    <form :action="editingWorkout?.updateUrl" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -290,8 +331,118 @@
                             </button>
                         </div>
                     </div>
+                    </form>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Add Workout Template Modal -->
+    <div x-show="addWorkoutModalOpen"
+        x-cloak
+        @keydown.escape.window="closeAddWorkoutModal()"
+        class="modal fixed inset-0 flex items-center justify-center overflow-y-auto p-5"
+        style="z-index: 999999 !important;"
+        aria-labelledby="add-workout-modal-title"
+        role="dialog"
+        aria-modal="true">
+        <div x-show="addWorkoutModalOpen"
+            class="fixed inset-0 bg-gray-100 opacity-80 transition-opacity dark:bg-gray-900 dark:opacity-100"
+            @click="closeAddWorkoutModal()"></div>
+
+        <div class="flex min-h-full w-full items-center justify-center p-4">
+            <div x-show="addWorkoutModalOpen"
+                class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
+                @click.away="closeAddWorkoutModal()">
+
+                <form action="{{ route('workouts.store', $plan) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+
+                    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white" id="add-workout-modal-title">
+                                    Add Workout Template
+                                </h2>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create a new workout template for this plan.</p>
+                            </div>
+                            <button type="button"
+                                @click="closeAddWorkoutModal()"
+                                class="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="max-h-[70vh] overflow-y-auto px-6 py-4">
+                        <div class="space-y-5">
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">Workout Name <span class="text-red-500">*</span></label>
+                                <input type="text"
+                                    name="name"
+                                    id="add-workout-name"
+                                    required
+                                    value="{{ old('name') }}"
+                                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 outline-none transition-shadow focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-white dark:focus:ring-white/10"
+                                    placeholder="e.g. Day 1 - Push" />
+                                @error('name')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">Description</label>
+                                <textarea name="description"
+                                    id="add-workout-description"
+                                    rows="4"
+                                    class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 outline-none transition-shadow focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-white dark:focus:ring-white/10"
+                                    placeholder="Optional description">{{ old('description') }}</textarea>
+                                @error('description')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">Day of Week</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <template x-for="option in dayOfWeekOptions" :key="option.value">
+                                        <label class="relative inline-flex h-10 min-w-10 cursor-pointer select-none">
+                                            <input type="radio"
+                                                name="day_of_week"
+                                                :value="option.value === '' ? '' : option.value"
+                                                :checked="(option.value === '' && (addWorkoutDayOld === null || addWorkoutDayOld === '')) || (option.value !== '' && addWorkoutDayOld == option.value)"
+                                                class="peer sr-only" />
+                                            <span class="inline-flex h-10 min-w-10 items-center justify-center rounded-lg border border-gray-300 bg-gray-50 px-3 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-100 peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700 dark:peer-checked:border-gray-900 dark:peer-checked:bg-gray-900 peer-checked:hidden"
+                                                :title="option.title"
+                                                x-text="option.letter"></span>
+                                            <span class="absolute inset-0 hidden h-10 min-w-10 items-center justify-center rounded-lg border border-gray-900 bg-gray-900 text-white peer-checked:inline-flex dark:border-gray-900 dark:bg-gray-900"
+                                                :title="option.title">
+                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </span>
+                                        </label>
+                                    </template>
+                                </div>
+                                @error('day_of_week')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 px-6 py-4 dark:border-gray-800">
+                        <div class="flex justify-end gap-3">
+                            <button type="button" @click="closeAddWorkoutModal()" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
+                            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">Create Workout Template</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
+    </div>
     </div>
 @endsection

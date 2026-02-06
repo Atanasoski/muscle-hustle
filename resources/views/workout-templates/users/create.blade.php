@@ -3,7 +3,7 @@
 @section('title', 'Create Workout Template for ' . $plan->name)
 
 @section('content')
-    <x-common.page-breadcrumb :pageTitle="'Create Workout Template'" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')], ['label' => $plan->name, 'url' => route('partner.programs.show', $plan)]]" />
+    <x-common.page-breadcrumb :pageTitle="'Create Workout Template'" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $user->name, 'url' => route('users.show', $user)], ['label' => $plan->name, 'url' => route('plans.show', $plan)]]" />
 
     @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
@@ -23,7 +23,7 @@
             'plan' => $plan,
             'action' => route('workouts.store', $plan),
             'method' => 'POST',
-            'context' => 'library',
+            'context' => 'user',
             'dayOfWeekOptions' => $dayOfWeekOptions,
             'dayOfWeekValue' => $dayOfWeekValue,
         ])

@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkoutTemplateExerciseRequest;
 use App\Http\Requests\UpdateWorkoutTemplateExerciseRequest;
-use App\Models\EquipmentType;
-use App\Models\Exercise;
-use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\WorkoutTemplate;
 use App\Models\WorkoutTemplateExercise;
@@ -16,20 +13,11 @@ use Illuminate\View\View;
 
 class WorkoutTemplateExerciseController extends Controller
 {
-
     /**
      * Store a newly created exercise in the workout template.
      */
     public function store(StoreWorkoutTemplateExerciseRequest $request, WorkoutTemplate $workoutTemplate): RedirectResponse
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id) {
-            abort(403, 'Unauthorized.');
-        }
-
         // Get the highest order value and increment
         $order = $request->order ?? ($workoutTemplate->workoutTemplateExercises()->max('order') ?? -1) + 1;
 
@@ -52,23 +40,20 @@ class WorkoutTemplateExerciseController extends Controller
      */
     public function edit(Request $request, WorkoutTemplate $workoutTemplate, WorkoutTemplateExercise $workoutTemplateExercise): View
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        if (! $currentUser->hasRole('partner_admin')) {
-            abort(403, 'Only partner administrators can edit exercises.');
-        }
-
         $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id || $workoutTemplateExercise->workout_template_id !== $workoutTemplate->id) {
+        if ($workoutTemplateExercise->workout_template_id !== $workoutTemplate->id) {
             abort(403, 'Unauthorized.');
         }
 
-        $partner = Partner::with('identity')->findOrFail($currentUser->partner_id);
+        $partner = Partner::with('identity')->findOrFail($request->user()->partner_id);
+        $isLibrary = $workoutTemplate->plan->user_id === null;
+        $user = $isLibrary ? null : $workoutTemplate->plan->user;
 
         $workoutTemplateExercise->load('exercise');
 
-        return view('workout-template-exercises.edit', compact('workoutTemplate', 'workoutTemplateExercise', 'partner'));
+        $view = $isLibrary ? 'workout-template-exercises.edit' : 'workout-template-exercises.users.edit';
+
+        return view($view, compact('workoutTemplate', 'workoutTemplateExercise', 'partner', 'user'));
     }
 
     /**
@@ -76,11 +61,7 @@ class WorkoutTemplateExerciseController extends Controller
      */
     public function update(UpdateWorkoutTemplateExerciseRequest $request, WorkoutTemplate $workoutTemplate, WorkoutTemplateExercise $workoutTemplateExercise): RedirectResponse
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id || $workoutTemplateExercise->workout_template_id !== $workoutTemplate->id) {
+        if ($workoutTemplateExercise->workout_template_id !== $workoutTemplate->id) {
             abort(403, 'Unauthorized.');
         }
 
@@ -102,11 +83,7 @@ class WorkoutTemplateExerciseController extends Controller
      */
     public function destroy(Request $request, WorkoutTemplate $workoutTemplate, WorkoutTemplateExercise $workoutTemplateExercise): RedirectResponse
     {
-        $currentUser = $request->user();
-
-        // Authorization check
-        $workoutTemplate->load('plan.user');
-        if ($workoutTemplate->plan->user->partner_id !== $currentUser->partner_id || $workoutTemplateExercise->workout_template_id !== $workoutTemplate->id) {
+        if ($workoutTemplateExercise->workout_template_id !== $workoutTemplate->id) {
             abort(403, 'Unauthorized.');
         }
 

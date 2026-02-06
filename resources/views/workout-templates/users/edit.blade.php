@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Create Workout Template for ' . $plan->name)
+@section('title', 'Edit Workout Template - ' . $workoutTemplate->name)
 
 @section('content')
-    <x-common.page-breadcrumb :pageTitle="'Create Workout Template'" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')], ['label' => $plan->name, 'url' => route('partner.programs.show', $plan)]]" />
+    <x-common.page-breadcrumb :pageTitle="'Edit Workout Template'" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $user->name, 'url' => route('users.show', $user)], ['label' => $workoutTemplate->plan->name, 'url' => route('plans.show', $workoutTemplate->plan)], ['label' => $workoutTemplate->name, 'url' => route('workouts.show', $workoutTemplate)]]" />
 
     @if ($errors->any())
         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
@@ -18,12 +18,13 @@
         </div>
     @endif
 
-    <x-common.component-card title="Workout Template Information" :desc="'Create a new workout template for ' . $plan->name">
+    <x-common.component-card title="Edit Workout Template Information" :desc="'Update workout template details'">
         @include('workout-templates._form', [
-            'plan' => $plan,
-            'action' => route('workouts.store', $plan),
-            'method' => 'POST',
-            'context' => 'library',
+            'plan' => $workoutTemplate->plan,
+            'workoutTemplate' => $workoutTemplate,
+            'action' => route('workouts.update', $workoutTemplate),
+            'method' => 'PUT',
+            'context' => 'user',
             'dayOfWeekOptions' => $dayOfWeekOptions,
             'dayOfWeekValue' => $dayOfWeekValue,
         ])
