@@ -16,12 +16,13 @@ class UpdateWorkoutTemplateRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
+     * day_of_week commented out.
      */
     protected function prepareForValidation(): void
     {
-        if ($this->has('day_of_week') && $this->day_of_week === '') {
-            $this->merge(['day_of_week' => null]);
-        }
+        // if ($this->has('day_of_week') && $this->day_of_week === '') {
+        //     $this->merge(['day_of_week' => null]);
+        // }
     }
 
     /**
@@ -46,7 +47,7 @@ class UpdateWorkoutTemplateRequest extends FormRequest
             ],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'day_of_week' => 'nullable|integer|min:0|max:6',
+            // 'day_of_week' => 'nullable|integer|min:0|max:6',
         ];
     }
 }

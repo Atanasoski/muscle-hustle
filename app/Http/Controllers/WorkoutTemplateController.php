@@ -12,7 +12,6 @@ use App\Models\Plan;
 use App\Models\WorkoutTemplate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class WorkoutTemplateController extends Controller
@@ -27,12 +26,12 @@ class WorkoutTemplateController extends Controller
         $isLibrary = $plan->user_id === null;
         $user = $isLibrary ? null : $plan->user;
 
-        $dayOfWeekOptions = $this->dayOfWeekOptions();
-        $dayOfWeekValue = $request->old('day_of_week');
+        // day_of_week (commented out): $dayOfWeekOptions = $this->dayOfWeekOptions();
+        // $dayOfWeekValue = $request->old('day_of_week');
 
         $view = $isLibrary ? 'workout-templates.create' : 'workout-templates.users.create';
 
-        return view($view, compact('plan', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue', 'isLibrary', 'user'));
+        return view($view, compact('plan', 'partner', 'isLibrary', 'user'));
     }
 
     /**
@@ -44,7 +43,7 @@ class WorkoutTemplateController extends Controller
             'plan_id' => $plan->id,
             'name' => $request->name,
             'description' => $request->description,
-            'day_of_week' => $request->day_of_week,
+            // 'day_of_week' => $request->day_of_week,
         ]);
 
         return redirect()->route('workouts.show', $workoutTemplate)
@@ -66,10 +65,8 @@ class WorkoutTemplateController extends Controller
             'workoutTemplateExercises.exercise.muscleGroups',
         ]);
 
-        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        $dayName = $workoutTemplate->day_of_week !== null
-            ? ($dayNames[$workoutTemplate->day_of_week] ?? null)
-            : null;
+        // day_of_week (commented out): $dayNames / $dayName
+        $dayName = null;
         $exercises = $workoutTemplate->workoutTemplateExercises->sortBy('order')->values();
 
         // Prepare exercise data for add exercise modal
@@ -122,12 +119,12 @@ class WorkoutTemplateController extends Controller
         $isLibrary = $workoutTemplate->plan->user_id === null;
         $user = $isLibrary ? null : $workoutTemplate->plan->user;
 
-        $dayOfWeekOptions = $this->dayOfWeekOptions();
-        $dayOfWeekValue = $request->old('day_of_week', $workoutTemplate->day_of_week);
+        // day_of_week (commented out): $dayOfWeekOptions = $this->dayOfWeekOptions();
+        // $dayOfWeekValue = $request->old('day_of_week', $workoutTemplate->day_of_week);
 
         $view = $isLibrary ? 'workout-templates.edit' : 'workout-templates.users.edit';
 
-        return view($view, compact('workoutTemplate', 'partner', 'dayOfWeekOptions', 'dayOfWeekValue', 'isLibrary', 'user'));
+        return view($view, compact('workoutTemplate', 'partner', 'isLibrary', 'user'));
     }
 
     /**
@@ -136,26 +133,7 @@ class WorkoutTemplateController extends Controller
     public function update(UpdateWorkoutTemplateRequest $request, WorkoutTemplate $workoutTemplate): RedirectResponse
     {
         $validated = $request->validated();
-        $newDay = array_key_exists('day_of_week', $validated) ? $validated['day_of_week'] : $workoutTemplate->day_of_week;
-        $oldDay = $workoutTemplate->day_of_week;
-
-        if ($newDay !== null && $newDay !== $oldDay) {
-            $existing = WorkoutTemplate::where('plan_id', $workoutTemplate->plan_id)
-                ->where('day_of_week', $newDay)
-                ->where('id', '!=', $workoutTemplate->id)
-                ->first();
-
-            if ($existing) {
-                DB::transaction(function () use ($existing, $oldDay, $workoutTemplate, $validated): void {
-                    $existing->update(['day_of_week' => $oldDay]);
-                    $workoutTemplate->update($validated);
-                });
-
-                return redirect()->route('workouts.show', $workoutTemplate)
-                    ->with('success', 'Workout template updated successfully!');
-            }
-        }
-
+        // day_of_week (commented out): day-uniqueness swap logic removed
         $workoutTemplate->update($validated);
 
         return redirect()->route('plans.show', $workoutTemplate->plan)
@@ -180,24 +158,25 @@ class WorkoutTemplateController extends Controller
 
     /**
      * Return day-of-week options for the create/edit form (value, letter, title).
+     * day_of_week commented out.
      *
      * @return array<int, array{value: int|string, letter: string, title: string}>
      */
-    private function dayOfWeekOptions(): array
-    {
-        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        $letters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-        $options = [
-            ['value' => '', 'letter' => '—', 'title' => 'Unassigned'],
-        ];
-        foreach ($dayNames as $index => $name) {
-            $options[] = [
-                'value' => $index,
-                'letter' => $letters[$index],
-                'title' => $name,
-            ];
-        }
-
-        return $options;
-    }
+    // private function dayOfWeekOptions(): array
+    // {
+    //     $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    //     $letters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    //     $options = [
+    //         ['value' => '', 'letter' => '—', 'title' => 'Unassigned'],
+    //     ];
+    //     foreach ($dayNames as $index => $name) {
+    //         $options[] = [
+    //             'value' => $index,
+    //             'letter' => $letters[$index],
+    //             'title' => $name,
+    //         ];
+    //     }
+    //
+    //     return $options;
+    // }
 }

@@ -46,6 +46,7 @@
                     class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-white dark:focus:ring-white/10"></textarea>
             </div>
 
+            {{-- Day of Week (commented out)
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Day of Week</label>
                 <div class="flex flex-wrap gap-2">
@@ -69,6 +70,7 @@
                     </template>
                 </div>
             </div>
+            --}}
         </div>
     </div>
 

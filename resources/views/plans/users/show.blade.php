@@ -7,6 +7,7 @@
         editModalOpen: false,
         editingWorkout: null,
         addWorkoutModalOpen: false,
+        {{-- day_of_week (commented out)
         dayOfWeekOptions: [
             { value: '', letter: '—', title: 'Unassigned' },
             { value: 0, letter: 'M', title: 'Monday' },
@@ -17,6 +18,8 @@
             { value: 5, letter: 'S', title: 'Saturday' },
             { value: 6, letter: 'S', title: 'Sunday' }
         ],
+        addWorkoutDayOld: @js(old('day_of_week')),
+        --}}
         openEditModal(workout) {
             this.editingWorkout = workout;
             this.editModalOpen = true;
@@ -25,14 +28,13 @@
             this.editModalOpen = false;
             this.editingWorkout = null;
         },
-        addWorkoutDayOld: @js(old('day_of_week')),
         openAddWorkoutModal() {
             this.addWorkoutModalOpen = true;
         },
         closeAddWorkoutModal() {
             this.addWorkoutModalOpen = false;
         }
-    }" x-init="if ({{ Js::encode($errors->hasAny(['name','description','day_of_week']) && old('plan_id') == $plan->id) }}) { addWorkoutModalOpen = true }">
+    }" x-init="if ({{ Js::encode($errors->hasAny(['name','description']) && old('plan_id') == $plan->id) }}) { addWorkoutModalOpen = true }">
     <x-common.page-breadcrumb :pageTitle="$plan->name" :items="[['label' => 'Users', 'url' => route('users.index')], ['label' => $plan->user->name, 'url' => route('users.show', $plan->user)]]" />
 
     @if (session('success'))
@@ -134,7 +136,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <!-- Day Badge -->
+                            {{-- Day Badge (day_of_week commented out)
                             @if($workout->day_of_week !== null && isset($dayNames[$workout->day_of_week]))
                                 @php
                                     $dayName = $dayNames[$workout->day_of_week];
@@ -144,6 +146,7 @@
                                     {{ $dayName }}
                                 </span>
                             @endif
+                            --}}
                         </div>
 
                         <!-- Program Info (Week & Order) -->
@@ -172,7 +175,6 @@
                                     id: {{ $workout->id }},
                                     name: '{{ addslashes($workout->name) }}',
                                     description: '{{ addslashes($workout->description ?? '') }}',
-                                    day_of_week: {{ $workout->day_of_week ?? 'null' }},
                                     updateUrl: '{{ route('workouts.update', $workout) }}'
                                 })" type="button" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">
                                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">

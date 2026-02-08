@@ -8,6 +8,7 @@
         editingWorkout: null,
         addWorkoutModalOpen: false,
         editProgramModalOpen: false,
+        {{-- day_of_week (commented out)
         dayOfWeekOptions: [
             { value: '', letter: '—', title: 'Unassigned' },
             { value: 0, letter: 'M', title: 'Monday' },
@@ -18,6 +19,7 @@
             { value: 5, letter: 'S', title: 'Saturday' },
             { value: 6, letter: 'S', title: 'Sunday' }
         ],
+        --}}
         openEditModal(workout) {
             this.editingWorkout = workout;
             this.editModalOpen = true;
@@ -26,7 +28,7 @@
             this.editModalOpen = false;
             this.editingWorkout = null;
         },
-        addWorkoutDayOld: @js(old('day_of_week')),
+        {{-- addWorkoutDayOld: @js(old('day_of_week')), --}}
         openAddWorkoutModal() {
             this.addWorkoutModalOpen = true;
         },
@@ -40,7 +42,7 @@
             this.editProgramModalOpen = false;
         }
     }" x-init="
-        if ({{ Js::encode($errors->hasAny(['name','description','day_of_week']) && old('plan_id') == $plan->id) }}) { addWorkoutModalOpen = true; }
+        if ({{ Js::encode($errors->hasAny(['name','description']) && old('plan_id') == $plan->id) }}) { addWorkoutModalOpen = true; }
         if ({{ Js::encode($errors->hasAny(['name','description','duration_weeks']) && session('edit_plan_id') == $plan->id) }}) { editProgramModalOpen = true; }
     ">
     <x-common.page-breadcrumb :pageTitle="$plan->name" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')]]" />
@@ -125,11 +127,13 @@
                                     Order: {{ $template->order_index + 1 }}
                                 </span>
                             @endif
+                            {{-- day_of_week badge (commented out)
                             @if($template->day_of_week !== null)
                                 <span class="inline-flex items-center rounded-full bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
                                     {{ $dayNames[$template->day_of_week] }}
                                 </span>
                             @endif
+                            --}}
                         </div>
 
                         <div class="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
@@ -146,7 +150,7 @@
                                     </svg>
                                 </a>
                                 <button type="button"
-                                    @click="openEditModal({{ Js::from(['id' => $template->id, 'name' => $template->name, 'description' => $template->description ?? '', 'day_of_week' => $template->day_of_week, 'updateUrl' => route('workouts.update', $template)]) }})"
+                                    @click="openEditModal({{ Js::from(['id' => $template->id, 'name' => $template->name, 'description' => $template->description ?? '', 'updateUrl' => route('workouts.update', $template)]) }})"
                                     class="rounded-lg p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                     title="Edit">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

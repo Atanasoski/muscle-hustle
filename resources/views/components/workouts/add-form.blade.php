@@ -55,6 +55,7 @@
                 @enderror
             </div>
 
+            {{-- Day of Week (commented out)
             <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">Day of Week</label>
                 <div class="flex flex-wrap gap-2">
@@ -81,6 +82,7 @@
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
             </div>
+            --}}
         </div>
     </div>
 

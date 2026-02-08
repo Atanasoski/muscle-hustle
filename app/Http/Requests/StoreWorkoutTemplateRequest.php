@@ -17,12 +17,13 @@ class StoreWorkoutTemplateRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
+     * day_of_week commented out.
      */
     protected function prepareForValidation(): void
     {
-        if ($this->has('day_of_week') && $this->day_of_week === '') {
-            $this->merge(['day_of_week' => null]);
-        }
+        // if ($this->has('day_of_week') && $this->day_of_week === '') {
+        //     $this->merge(['day_of_week' => null]);
+        // }
     }
 
     /**
@@ -52,29 +53,30 @@ class StoreWorkoutTemplateRequest extends FormRequest
             ],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'day_of_week' => [
-                'nullable',
-                'integer',
-                'min:0',
-                'max:6',
-                function (string $attribute, mixed $value, \Closure $fail): void {
-                    if ($value === null) {
-                        return;
-                    }
-                    $plan = $this->route('plan');
-                    if (! $plan) {
-                        return;
-                    }
-                    $existing = WorkoutTemplate::where('plan_id', $plan->id)
-                        ->where('day_of_week', (int) $value)
-                        ->first();
-                    if ($existing) {
-                        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                        $dayName = $dayNames[(int) $value] ?? 'Day '.$value;
-                        $fail($dayName.' is already assigned to \''.$existing->name.'\'.');
-                    }
-                },
-            ],
+            // day_of_week (commented out)
+            // 'day_of_week' => [
+            //     'nullable',
+            //     'integer',
+            //     'min:0',
+            //     'max:6',
+            //     function (string $attribute, mixed $value, \Closure $fail): void {
+            //         if ($value === null) {
+            //             return;
+            //         }
+            //         $plan = $this->route('plan');
+            //         if (! $plan) {
+            //             return;
+            //         }
+            //         $existing = WorkoutTemplate::where('plan_id', $plan->id)
+            //             ->where('day_of_week', (int) $value)
+            //             ->first();
+            //         if ($existing) {
+            //             $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            //             $dayName = $dayNames[(int) $value] ?? 'Day '.$value;
+            //             $fail($dayName.' is already assigned to \''.$existing->name.'\'.');
+            //         }
+            //     },
+            // ],
         ];
     }
 }
