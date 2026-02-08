@@ -302,7 +302,7 @@ class PlanController extends Controller
         ]);
 
         return redirect()
-            ->route('partner.programs.show', $plan)
+            ->route('partner.programs.index')
             ->with('success', 'Program created successfully.');
     }
 

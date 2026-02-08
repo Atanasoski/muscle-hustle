@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use App\Enums\PlanType;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UpdatePlanRequest extends FormRequest
 {
@@ -30,5 +32,22 @@ class UpdatePlanRequest extends FormRequest
             'type' => ['required', Rule::enum(PlanType::class)],
             'duration_weeks' => 'nullable|integer|min:1|max:52',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt (partner library: redirect to index with edit_plan_id).
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        if ($this->routeIs('partner.programs.update')) {
+            $plan = $this->route('plan');
+            $redirect = redirect()->route('partner.programs.show', $plan)
+                ->withInput()
+                ->with('edit_plan_id', $plan->id);
+
+            throw (new ValidationException($validator))->redirectTo($redirect);
+        }
+
+        parent::failedValidation($validator);
     }
 }

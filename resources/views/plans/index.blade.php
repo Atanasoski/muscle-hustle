@@ -3,20 +3,30 @@
 @section('title', 'Programs Library')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{
+    createModalOpen: false,
+    openCreateModal() { this.createModalOpen = true; },
+    closeCreateModal() { this.createModalOpen = false; }
+}" x-init="if ({{ Js::encode($errors->any()) }}) { createModalOpen = true; }">
     <x-common.page-breadcrumb
         pageTitle="Programs Library"
         :items="[]"
     />
+
+    @if (session('success'))
+        <div class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+            <p class="text-sm text-green-800 dark:text-green-400">{{ session('success') }}</p>
+        </div>
+    @endif
 
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <div class="text-xl font-semibold text-gray-900 dark:text-white">Programs Library</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Manage programs available to all gym members.</div>
         </div>
-        <a href="{{ route('partner.programs.create') }}" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+        <button type="button" @click="openCreateModal()" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
             Create Program
-        </a>
+        </button>
     </div>
 
     <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/30">
@@ -61,16 +71,11 @@
                                 <td class="px-6 py-4">
                                     <div class="flex justify-end gap-2">
                                         <a href="{{ route('partner.programs.show', $plan) }}"
-                                            class="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">
+                                            class="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                            title="View">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                            </svg>
-                                        </a>
-                                        <a href="{{ route('partner.programs.edit', $plan) }}"
-                                            class="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </a>
                                     </div>
@@ -94,16 +99,43 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No programs</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new program.</p>
                 <div class="mt-6">
-                    <a href="{{ route('partner.programs.create') }}"
+                    <button type="button" @click="openCreateModal()"
                         class="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
                         Create Program
-                    </a>
+                    </button>
                 </div>
             </div>
         @endif
+    </div>
+
+    <!-- Create Program Modal -->
+    <div x-show="createModalOpen"
+        x-cloak
+        @keydown.escape.window="closeCreateModal()"
+        class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5"
+        aria-modal="true"
+        role="dialog">
+        <div x-show="createModalOpen"
+            class="fixed inset-0 bg-gray-400/50 backdrop-blur-[32px]"
+            @click="closeCreateModal()"
+            x-transition></div>
+        <div x-show="createModalOpen"
+            @click.stop
+            class="relative w-full max-w-lg rounded-3xl bg-white p-6 dark:bg-gray-900"
+            x-transition>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Create Program</h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new program to the library.</p>
+            <div class="mt-6">
+                <x-plans.library-form
+                    :action="route('partner.programs.store')"
+                    method="POST"
+                    :plan="null"
+                />
+            </div>
+        </div>
     </div>
 </div>
 @endsection

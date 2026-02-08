@@ -3,7 +3,46 @@
 @section('title', $plan->name . ' - Program Details')
 
 @section('content')
-
+    <div x-data="{
+        editModalOpen: false,
+        editingWorkout: null,
+        addWorkoutModalOpen: false,
+        editProgramModalOpen: false,
+        dayOfWeekOptions: [
+            { value: '', letter: '—', title: 'Unassigned' },
+            { value: 0, letter: 'M', title: 'Monday' },
+            { value: 1, letter: 'T', title: 'Tuesday' },
+            { value: 2, letter: 'W', title: 'Wednesday' },
+            { value: 3, letter: 'T', title: 'Thursday' },
+            { value: 4, letter: 'F', title: 'Friday' },
+            { value: 5, letter: 'S', title: 'Saturday' },
+            { value: 6, letter: 'S', title: 'Sunday' }
+        ],
+        openEditModal(workout) {
+            this.editingWorkout = workout;
+            this.editModalOpen = true;
+        },
+        closeEditModal() {
+            this.editModalOpen = false;
+            this.editingWorkout = null;
+        },
+        addWorkoutDayOld: @js(old('day_of_week')),
+        openAddWorkoutModal() {
+            this.addWorkoutModalOpen = true;
+        },
+        closeAddWorkoutModal() {
+            this.addWorkoutModalOpen = false;
+        },
+        openEditProgramModal() {
+            this.editProgramModalOpen = true;
+        },
+        closeEditProgramModal() {
+            this.editProgramModalOpen = false;
+        }
+    }" x-init="
+        if ({{ Js::encode($errors->hasAny(['name','description','day_of_week']) && old('plan_id') == $plan->id) }}) { addWorkoutModalOpen = true; }
+        if ({{ Js::encode($errors->hasAny(['name','description','duration_weeks']) && session('edit_plan_id') == $plan->id) }}) { editProgramModalOpen = true; }
+    ">
     <x-common.page-breadcrumb :pageTitle="$plan->name" :items="[['label' => 'Programs', 'url' => route('partner.programs.index')]]" />
 
     @if (session('success'))
@@ -37,12 +76,12 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <a href="{{ route('partner.programs.edit', $plan) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                <button type="button" @click="openEditProgramModal()" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                     <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                     Edit Program
-                </a>
+                </button>
                 <a href="{{ route('partner.programs.index') }}" class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                     Back to Programs
                 </a>
@@ -54,12 +93,12 @@
     <div class="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800">
         <div class="mb-6 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Workout Templates</h3>
-            <a href="{{ route('workouts.create', $plan) }}" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+            <button type="button" @click="openAddWorkoutModal()" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 Add Workout Template
-            </a>
+            </button>
         </div>
 
         @if($plan->workoutTemplates->count() > 0)
@@ -106,13 +145,14 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                 </a>
-                                <a href="{{ route('workouts.edit', $template) }}"
+                                <button type="button"
+                                    @click="openEditModal({{ Js::from(['id' => $template->id, 'name' => $template->name, 'description' => $template->description ?? '', 'day_of_week' => $template->day_of_week, 'updateUrl' => route('workouts.update', $template)]) }})"
                                     class="rounded-lg p-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                     title="Edit">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
-                                </a>
+                                </button>
                                 <form action="{{ route('workouts.destroy', $template) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this workout template? This will also delete all associated exercises.');">
                                     @csrf
                                     @method('DELETE')
@@ -137,13 +177,13 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No workout templates</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by adding workout templates to this program.</p>
                 <div class="mt-6">
-                    <a href="{{ route('workouts.create', $plan) }}"
+                    <button type="button" @click="openAddWorkoutModal()"
                         class="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
                         Add Workout Template
-                    </a>
+                    </button>
                 </div>
             </div>
         @endif
@@ -168,4 +208,79 @@
         </div>
     </div>
 
+    <!-- Edit Program Modal -->
+    <div x-show="editProgramModalOpen"
+        x-cloak
+        @keydown.escape.window="closeEditProgramModal()"
+        class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5"
+        aria-modal="true"
+        role="dialog">
+        <div x-show="editProgramModalOpen"
+            class="fixed inset-0 bg-gray-400/50 backdrop-blur-[32px]"
+            @click="closeEditProgramModal()"
+            x-transition></div>
+        <div x-show="editProgramModalOpen"
+            @click.stop
+            class="relative w-full max-w-lg rounded-3xl bg-white p-6 dark:bg-gray-900"
+            x-transition>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Edit Program</h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update program details.</p>
+            <div class="mt-6">
+                <x-plans.library-form
+                    :action="route('partner.programs.update', $plan)"
+                    method="PUT"
+                    :plan="$plan"
+                    :cancelUrl="route('partner.programs.show', $plan)"
+                />
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Workout Template Modal -->
+    <div x-show="editModalOpen"
+        x-cloak
+        @keydown.escape.window="closeEditModal()"
+        class="fixed inset-0 z-99999 overflow-y-auto"
+        aria-labelledby="modal-title"
+        role="dialog"
+        aria-modal="true">
+        <div x-show="editModalOpen"
+            class="fixed inset-0 bg-gray-100 opacity-80 transition-opacity dark:bg-gray-900 dark:opacity-100"
+            @click="closeEditModal()"></div>
+        <div class="flex min-h-full items-center justify-center p-4">
+            <template x-if="editingWorkout">
+                <div x-show="editModalOpen"
+                    class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
+                    @click.away="closeEditModal()">
+                    <x-workouts.edit-form />
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Add Workout Template Modal -->
+    <div x-show="addWorkoutModalOpen"
+        x-cloak
+        @keydown.escape.window="closeAddWorkoutModal()"
+        class="modal fixed inset-0 flex items-center justify-center overflow-y-auto p-5"
+        style="z-index: 999999 !important;"
+        aria-labelledby="add-workout-modal-title"
+        role="dialog"
+        aria-modal="true">
+        <div x-show="addWorkoutModalOpen"
+            class="fixed inset-0 bg-gray-100 opacity-80 transition-opacity dark:bg-gray-900 dark:opacity-100"
+            @click="closeAddWorkoutModal()"></div>
+        <div class="flex min-h-full w-full items-center justify-center p-4">
+            <div x-show="addWorkoutModalOpen"
+                class="relative w-full max-w-2xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
+                @click.away="closeAddWorkoutModal()">
+                <x-workouts.add-form
+                    :storeUrl="route('workouts.store', $plan)"
+                    :planId="$plan->id"
+                    subtitle="Create a new workout template for this program."
+                />
+            </div>
+        </div>
+    </div>
+    </div>
 @endsection

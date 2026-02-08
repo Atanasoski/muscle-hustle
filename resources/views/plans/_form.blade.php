@@ -4,6 +4,7 @@
     'method' => 'POST',
     'context' => 'library', // 'library' or 'user'
     'user' => null,
+    'cancelUrl' => null,
 ])
 
 <form action="{{ $action }}" method="POST">
@@ -134,7 +135,7 @@
 
     <!-- Form Actions -->
     <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
-        <a href="{{ $context === 'library' ? route('partner.programs.index') : route('plans.index', $user) }}">
+        <a href="{{ $context === 'library' ? ($cancelUrl ?? route('partner.programs.index')) : route('plans.index', $user) }}">
             <x-ui.button variant="outline" size="md">
                 Cancel
             </x-ui.button>
