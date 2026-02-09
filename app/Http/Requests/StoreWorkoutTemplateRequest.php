@@ -53,6 +53,7 @@ class StoreWorkoutTemplateRequest extends FormRequest
             ],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'week_number' => 'nullable|integer|min:1|max:52',
             // day_of_week (commented out)
             // 'day_of_week' => [
             //     'nullable',

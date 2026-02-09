@@ -2,12 +2,18 @@
     'storeUrl',
     'planId',
     'subtitle' => 'Create a new workout template for this plan.',
+    'weekNumber' => null,
 ])
 
-{{-- Rendered inside a parent with x-data containing dayOfWeekOptions, addWorkoutDayOld, closeAddWorkoutModal. --}}
+{{-- Rendered inside a parent with x-data containing closeAddWorkoutModal; optional addWorkoutWeekNumber when opening modal for a specific week. --}}
 <form action="{{ $storeUrl }}" method="POST">
     @csrf
     <input type="hidden" name="plan_id" value="{{ $planId }}">
+    @if($weekNumber !== null)
+        <input type="hidden" name="week_number" value="{{ $weekNumber }}">
+    @else
+        <input type="hidden" name="week_number" :value="typeof addWorkoutWeekNumber !== 'undefined' ? (addWorkoutWeekNumber || 1) : 1">
+    @endif
 
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <div class="flex items-start justify-between">

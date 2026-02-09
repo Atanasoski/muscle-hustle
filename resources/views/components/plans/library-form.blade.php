@@ -11,7 +11,7 @@
     <form :action="editingPlan?.updateUrl" method="POST">
         @csrf
         @method('PUT')
-        <input type="hidden" name="type" value="program">
+        <input type="hidden" name="type" value="library">
 
         <div class="space-y-5">
             <div>

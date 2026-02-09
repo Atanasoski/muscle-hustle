@@ -111,8 +111,8 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Only one plan can be active at a time. Activating this plan will deactivate all other plans for this user.</p>
             </div>
         @else
-            <!-- Library context: Always type=program, always show duration -->
-            <input type="hidden" name="type" value="program">
+            <!-- Library context: Always type=library, always show duration -->
+            <input type="hidden" name="type" value="library">
 
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

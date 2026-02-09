@@ -39,14 +39,22 @@ class WorkoutTemplateController extends Controller
      */
     public function store(StoreWorkoutTemplateRequest $request, Plan $plan): RedirectResponse
     {
+        $week = (int) ($request->validated('week_number') ?? 1);
+        $orderIndex = WorkoutTemplate::where('plan_id', $plan->id)
+            ->where('week_number', $week)
+            ->count();
+
         $workoutTemplate = WorkoutTemplate::create([
             'plan_id' => $plan->id,
             'name' => $request->name,
             'description' => $request->description,
-            // 'day_of_week' => $request->day_of_week,
+            'week_number' => $week,
+            'order_index' => $orderIndex,
         ]);
 
-        return redirect()->route('workouts.show', $workoutTemplate)
+        $planShowRoute = $plan->user_id ? 'plans.show' : 'partner.programs.show';
+
+        return redirect()->route($planShowRoute, $plan)
             ->with('success', 'Workout template created successfully!');
     }
 

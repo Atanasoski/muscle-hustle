@@ -10,12 +10,17 @@ use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\Plan;
 use App\Models\User;
+use App\Services\PlanService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PlanController extends Controller
 {
+    public function __construct(
+        private PlanService $planService
+    ) {}
+
     /**
      * Display a listing of the user's plans (user flow: plan for a specific user).
      */
@@ -82,14 +87,8 @@ class PlanController extends Controller
                 ->update(['is_active' => false]);
         }
 
-        $plan = Plan::create([
-            'user_id' => $user->id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'is_active' => $request->is_active ?? false,
-            'type' => $request->type,
-            'duration_weeks' => $request->duration_weeks,
-        ]);
+        $attributes = $this->planService->createAttributes($request->validated(), 'user', $user);
+        $plan = Plan::create($attributes);
 
         return redirect()->route('plans.show', $plan)
             ->with('success', 'Plan created successfully!');
@@ -98,13 +97,21 @@ class PlanController extends Controller
     /**
      * Display the specified plan (user flow: plan for a specific user).
      */
-    public function userPlanShow(Request $request, Plan $plan): View
+    public function userPlanShow(Request $request, Plan $plan): View|RedirectResponse
     {
         $currentUser = $request->user();
 
         // Authorization check
         if (! $currentUser->hasRole('partner_admin')) {
             abort(403, 'Only partner administrators can view plans.');
+        }
+
+        // User plan show is only for plans assigned to a user; library plans use partner.programs.show
+        if ($plan->user_id === null) {
+            if ($plan->partner_id === $currentUser->partner_id) {
+                return redirect()->route('partner.programs.show', $plan);
+            }
+            abort(404, 'Plan not found.');
         }
 
         $plan->load('user');
@@ -117,7 +124,8 @@ class PlanController extends Controller
         $plan->load([
             'workoutTemplates' => function ($query) {
                 $query->withCount('workoutTemplateExercises')
-                    ->orderedByDayOfWeek();
+                    ->orderBy('week_number')
+                    ->orderBy('order_index');
             },
         ]);
 
@@ -166,7 +174,16 @@ class PlanController extends Controller
             ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
             ->values();
 
-        return view('plans.users.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups'));
+        $weeks = max(1, (int) ($plan->duration_weeks ?? 1));
+        $workoutsByWeek = [];
+        for ($w = 1; $w <= $weeks; $w++) {
+            $workoutsByWeek[$w] = $plan->workoutTemplates
+                ->where('week_number', $w)
+                ->sortBy('order_index')
+                ->values();
+        }
+
+        return view('plans.users.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups', 'weeks', 'workoutsByWeek'));
     }
 
     /**
@@ -291,15 +308,8 @@ class PlanController extends Controller
             abort(403);
         }
 
-        $plan = Plan::create([
-            'partner_id' => $currentUser->partner_id,
-            'user_id' => null,
-            'name' => $request->name,
-            'description' => $request->description,
-            'type' => $request->type,
-            'duration_weeks' => $request->duration_weeks,
-            'is_active' => true,
-        ]);
+        $attributes = $this->planService->createAttributes($request->validated(), 'library');
+        $plan = Plan::create($attributes);
 
         return redirect()
             ->route('partner.programs.index')
@@ -323,7 +333,8 @@ class PlanController extends Controller
         $plan->load([
             'workoutTemplates' => function ($query) {
                 $query->withCount('workoutTemplateExercises')
-                    ->orderedByProgram();
+                    ->orderBy('week_number')
+                    ->orderBy('order_index');
             },
         ]);
 
@@ -372,7 +383,16 @@ class PlanController extends Controller
             ->map(fn ($mg) => ['id' => $mg->id, 'name' => $mg->name])
             ->values();
 
-        return view('plans.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups'));
+        $weeks = max(1, (int) ($plan->duration_weeks ?? 1));
+        $workoutsByWeek = [];
+        for ($w = 1; $w <= $weeks; $w++) {
+            $workoutsByWeek[$w] = $plan->workoutTemplates
+                ->where('week_number', $w)
+                ->sortBy('order_index')
+                ->values();
+        }
+
+        return view('plans.show', compact('plan', 'partner', 'dayNames', 'workoutExerciseData', 'equipmentTypes', 'muscleGroups', 'weeks', 'workoutsByWeek'));
     }
 
     /**
