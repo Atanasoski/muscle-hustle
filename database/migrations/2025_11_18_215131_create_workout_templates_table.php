@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->tinyInteger('day_of_week')->nullable(); // 0-6 (Mon-Sun)
+            $table->unsignedInteger('week_number')->default(1);
+            $table->unsignedInteger('order_index')->default(0);
             $table->timestamps();
         });
     }

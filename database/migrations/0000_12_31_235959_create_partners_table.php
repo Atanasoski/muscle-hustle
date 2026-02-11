@@ -29,6 +29,38 @@ return new class extends Migration
             $table->string('secondary_color')->default('#4ecdc4');
             $table->string('logo')->nullable();
             $table->string('font_family')->nullable();
+
+            // Essential colors
+            $table->string('background_color')->nullable();
+            $table->string('card_background_color')->nullable();
+            $table->string('text_primary_color')->nullable();
+            $table->string('text_secondary_color')->nullable();
+            $table->string('text_on_primary_color')->nullable();
+
+            // Semantic colors
+            $table->string('success_color')->nullable();
+            $table->string('warning_color')->nullable();
+            $table->string('danger_color')->nullable();
+
+            // Optional styling
+            $table->string('accent_color')->nullable();
+            $table->string('border_color')->nullable();
+            $table->string('background_pattern')->nullable();
+
+            // Dark mode colors
+            $table->string('primary_color_dark')->nullable();
+            $table->string('secondary_color_dark')->nullable();
+            $table->string('background_color_dark')->nullable();
+            $table->string('card_background_color_dark')->nullable();
+            $table->string('text_primary_color_dark')->nullable();
+            $table->string('text_secondary_color_dark')->nullable();
+            $table->string('text_on_primary_color_dark')->nullable();
+            $table->string('success_color_dark')->nullable();
+            $table->string('warning_color_dark')->nullable();
+            $table->string('danger_color_dark')->nullable();
+            $table->string('accent_color_dark')->nullable();
+            $table->string('border_color_dark')->nullable();
+
             $table->timestamps();
         });
     }

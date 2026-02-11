@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('partner_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('type')->default('custom');
             $table->string('name');
             $table->text('description')->nullable();
+            $table->unsignedInteger('duration_weeks')->nullable();
             $table->boolean('is_active')->default(false)->index();
             $table->timestamps();
         });
