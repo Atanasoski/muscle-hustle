@@ -114,7 +114,7 @@
         @endif
     </div>
 
-    <x-workout-exercises.add-modal
+    <x-modals.add-exercise
         :storeUrl="route('workout-exercises.store', $workoutTemplate)"
         :workoutName="$workoutTemplate->name"
         :exercises="$availableExercises"
