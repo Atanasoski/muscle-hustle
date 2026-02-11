@@ -29,6 +29,10 @@ class ProgramResource extends JsonResource
                 $this->user_id,
                 fn () => new WorkoutTemplateResource($this->nextWorkout(auth()->user()))
             ),
+            'current_active_week' => $this->when(
+                $this->user_id,
+                fn () => $this->getCurrentActiveWeek(auth()->user())
+            ),
             'workout_templates' => WorkoutTemplateResource::collection($this->whenLoaded('workoutTemplates')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

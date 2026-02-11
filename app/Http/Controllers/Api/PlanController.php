@@ -215,6 +215,7 @@ class PlanController extends Controller
         // Deactivate all other plans if this one is being set as active
         if ($request->is_active) {
             Plan::where('user_id', auth()->id())
+                ->where('type', PlanType::Custom)
                 ->where('id', '!=', $customPlan->id)
                 ->update(['is_active' => false]);
         }
@@ -266,7 +267,7 @@ class PlanController extends Controller
     {
         $programs = Plan::where('user_id', auth()->id())
             ->where('type', PlanType::Program)
-            ->with(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with('exercises.category')])
+            ->with(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with(['exercises.category', 'exercises.partners'])])
             ->latest()
             ->get();
 
@@ -286,7 +287,7 @@ class PlanController extends Controller
 
         $libraryPrograms = Plan::forPartner($partner->id)
             ->where('type', PlanType::Library)
-            ->with(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with('exercises.category')])
+            ->with(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with(['exercises.category', 'exercises.partners'])])
             ->latest()
             ->get();
 
@@ -311,7 +312,7 @@ class PlanController extends Controller
             ], 400);
         }
 
-        $program->load(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with('exercises.category')]);
+        $program->load(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with(['exercises.category', 'exercises.partners'])]);
 
         return response()->json([
             'data' => new ProgramResource($program),
@@ -345,13 +346,14 @@ class PlanController extends Controller
         // Deactivate all other plans if this one is being set as active
         if ($request->is_active) {
             Plan::where('user_id', auth()->id())
+                ->where('type', PlanType::Program)
                 ->where('id', '!=', $program->id)
                 ->update(['is_active' => false]);
         }
 
         $program->update(['is_active' => $request->is_active]);
 
-        $program->load(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with('exercises.category')]);
+        $program->load(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with(['exercises.category', 'exercises.partners'])]);
 
         return response()->json([
             'message' => 'Program updated successfully',
@@ -408,7 +410,7 @@ class PlanController extends Controller
 
         return response()->json([
             'message' => 'Program cloned successfully',
-            'data' => new ProgramResource($clonedPlan->load('workoutTemplates')),
+            'data' => new ProgramResource($clonedPlan->load(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with(['exercises.category', 'exercises.partners'])])),
         ], 201);
     }
 

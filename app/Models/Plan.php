@@ -107,7 +107,7 @@ class Plan extends Model
         // Get all workout templates ordered by program sequence
         $templates = $this->workoutTemplates()
             ->orderedByProgram()
-            ->with('exercises')
+            ->with(['exercises.category', 'exercises.partners'])
             ->get();
 
         // Find the first template that hasn't been completed by this user
@@ -155,5 +155,33 @@ class Plan extends Model
         }
 
         return round(($completedCount / $totalTemplates) * 100, 2);
+    }
+
+    /**
+     * Get the current active week for this program
+     */
+    public function getCurrentActiveWeek(User $user): ?int
+    {
+        if (! $this->isProgram()) {
+            return null;
+        }
+
+        // Get the next incomplete workout
+        $nextWorkout = $this->nextWorkout($user);
+
+        if ($nextWorkout) {
+            return $nextWorkout->week_number;
+        }
+
+        // All workouts completed - return the last week or duration_weeks
+        $lastWeek = $this->workoutTemplates()
+            ->max('week_number');
+
+        if ($lastWeek) {
+            return $lastWeek;
+        }
+
+        // No workouts exist - return duration_weeks if available, otherwise 1
+        return $this->duration_weeks ?? 1;
     }
 }
