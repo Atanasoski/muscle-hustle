@@ -1500,7 +1500,7 @@ class ExerciseSeeder extends Seeder
                     'name' => $exerciseData['name'],
                 ],
                 [
-                    'category_id' => $categories[$exerciseData['category']] ?? null,
+                    'category_id' => isset($exerciseData['category']) ? ($categories[$exerciseData['category']] ?? null) : null,
                     'default_rest_sec' => $exerciseData['default_rest_sec'],
                     'muscle_group_image' => $muscleGroupImagePath,
                 ]
