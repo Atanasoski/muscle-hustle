@@ -68,6 +68,7 @@ class ExerciseClassificationSeeder extends Seeder
     private const CATEGORY_TO_EQUIPMENT = [
         'barbell' => 'BARBELL',
         'dumbbell' => 'DUMBBELL',
+        'kettlebell' => 'KETTLEBELL',
         'cable' => 'CABLE',
         'machine-cable' => 'MACHINE',
         'machine-plate-loaded' => 'MACHINE',

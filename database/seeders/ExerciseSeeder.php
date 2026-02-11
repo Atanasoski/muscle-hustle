@@ -36,7 +36,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Barbell Bench Press',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -44,7 +44,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Bench Press',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -52,7 +52,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Incline Barbell Bench Press',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps'],
@@ -60,7 +60,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Incline Dumbbell Bench Press',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps'],
@@ -68,7 +68,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Decline Barbell Bench Press',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps'],
@@ -76,7 +76,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Decline Dumbbell Bench Press',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -84,7 +84,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Close-Grip Bench Press (Chest Focus)',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest', 'Triceps'],
                 'secondary' => ['Front Delts'],
@@ -93,7 +93,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Machine Chest Press',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -101,7 +101,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Incline Chest Press Machine',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps'],
@@ -109,7 +109,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Decline Chest Press Machine',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -118,7 +118,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Plate-Loaded Chest Press',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -126,7 +126,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Plate-Loaded Incline Chest Press',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps'],
@@ -134,7 +134,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Plate-Loaded Decline Chest Press',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps'],
@@ -143,7 +143,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Smith Machine Bench Press',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -151,7 +151,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Smith Machine Incline Bench Press',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps'],
@@ -159,7 +159,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Smith Machine Decline Bench Press',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -168,7 +168,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Cable Chest Press',
-                'category' => 'cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts', 'Abs'],
@@ -176,7 +176,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Seated Cable Chest Press',
-                'category' => 'cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -184,7 +184,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Cable Chest Press',
-                'category' => 'cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts', 'Abs'],
@@ -193,7 +193,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Pec Deck Fly',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => [],
@@ -201,7 +201,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Machine Chest Fly',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => [],
@@ -210,7 +210,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Cable Fly',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => [],
@@ -218,7 +218,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Low-to-High Cable Fly',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => [],
@@ -226,7 +226,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'High-to-Low Cable Fly',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => [],
@@ -234,7 +234,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Cable Fly',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => ['Abs'],
@@ -242,7 +242,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Cable Chest Fly',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => ['Abs'],
@@ -251,7 +251,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Dumbbell Fly',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => [],
@@ -259,7 +259,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Incline Dumbbell Fly',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => [],
@@ -267,7 +267,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Pullover (Chest Focus)',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => ['Lats', 'Triceps'],
@@ -276,7 +276,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Push-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts', 'Abs'],
@@ -284,7 +284,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Wide Push-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => ['Front Delts', 'Abs'],
@@ -292,7 +292,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Incline Push-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts', 'Abs'],
@@ -300,7 +300,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Decline Push-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Chest', 'Front Delts'],
                 'secondary' => ['Triceps', 'Abs'],
@@ -308,7 +308,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dips (Chest)',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -316,7 +316,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Assisted Dips (Chest)',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Chest'],
                 'secondary' => ['Triceps', 'Front Delts'],
@@ -329,7 +329,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Deadlift',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 180,
                 'primary' => ['Lower Back', 'Glutes', 'Hamstrings'],
                 'secondary' => ['Lats', 'Upper Back', 'Quads', 'Forearms', 'Core'],
@@ -337,7 +337,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Romanian Deadlift',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Hamstrings', 'Glutes', 'Lower Back'],
                 'secondary' => ['Lats', 'Forearms', 'Core'],
@@ -345,16 +345,24 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Rack Pull',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 150,
                 'primary' => ['Lower Back', 'Upper Back'],
                 'secondary' => ['Glutes', 'Hamstrings', 'Forearms', 'Lats', 'Core'],
                 'description' => 'Set bar on pins just below/at knees, brace and pull to lockout, squeeze upper back, lower to pins under control.',
             ],
+            [
+                'name' => 'Trap Bar Deadlift',
+
+                'default_rest_sec' => 180,
+                'primary' => ['Lower Back', 'Glutes', 'Hamstrings', 'Quads'],
+                'secondary' => ['Lats', 'Upper Back', 'Forearms', 'Core'],
+                'description' => 'Stand inside trap bar, grip handles, brace core, drive through floor to stand tall, keep torso more upright than conventional deadlift, lower with control.',
+            ],
 
             [
                 'name' => 'Barbell Row',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Lats', 'Upper Back'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Lower Back', 'Core', 'Forearms'],
@@ -362,7 +370,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Pendlay Row',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Lower Back', 'Core', 'Forearms'],
@@ -370,7 +378,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Row',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats', 'Upper Back'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Core', 'Forearms'],
@@ -378,7 +386,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Chest-Supported Dumbbell Row',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -387,7 +395,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Seated Cable Row',
-                'category' => 'cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats', 'Upper Back'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -395,7 +403,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Close-Grip Seated Cable Row',
-                'category' => 'cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats'],
                 'secondary' => ['Upper Back', 'Biceps', 'Rear Delts', 'Forearms'],
@@ -403,7 +411,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Wide-Grip Seated Cable Row',
-                'category' => 'cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back'],
                 'secondary' => ['Lats', 'Biceps', 'Rear Delts', 'Forearms'],
@@ -411,7 +419,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Machine Row',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -419,7 +427,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Chest-Supported Machine Row',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -427,7 +435,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Iso-Lateral Row Machine',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -435,7 +443,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Plate-Loaded Row',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -443,7 +451,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'T-Bar Row',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats', 'Upper Back'],
                 'secondary' => ['Biceps', 'Lower Back', 'Forearms', 'Core'],
@@ -451,7 +459,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Chest-Supported T-Bar Row',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Rear Delts', 'Forearms'],
@@ -460,15 +468,31 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Pull-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Lats'],
                 'secondary' => ['Biceps', 'Upper Back', 'Core', 'Forearms'],
                 'description' => 'Hang from bar, brace core, pull chest toward bar by driving elbows down, lower to full hang with control.',
             ],
             [
+                'name' => 'Wide-Grip Pull-ups',
+
+                'default_rest_sec' => 120,
+                'primary' => ['Lats'],
+                'secondary' => ['Upper Back', 'Biceps', 'Core', 'Forearms'],
+                'description' => 'Grip bar wider than shoulders, pull chest toward bar, keep torso stable, lower to full hang with control.',
+            ],
+            [
+                'name' => 'Close-Grip Pull-ups',
+
+                'default_rest_sec' => 120,
+                'primary' => ['Lats'],
+                'secondary' => ['Biceps', 'Upper Back', 'Core', 'Forearms'],
+                'description' => 'Grip bar closer than shoulders, pull chest toward bar, keep elbows tucked, lower to full hang with control.',
+            ],
+            [
                 'name' => 'Chin-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Lats'],
                 'secondary' => ['Biceps', 'Upper Back', 'Core', 'Forearms'],
@@ -476,7 +500,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Assisted Pull-ups',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats'],
                 'secondary' => ['Biceps', 'Upper Back', 'Core', 'Forearms'],
@@ -484,7 +508,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Lat Pulldown',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats'],
                 'secondary' => ['Biceps', 'Upper Back', 'Forearms'],
@@ -492,7 +516,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Wide-Grip Lat Pulldown',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats'],
                 'secondary' => ['Upper Back', 'Biceps', 'Forearms'],
@@ -500,15 +524,31 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Close-Grip Lat Pulldown',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats'],
                 'secondary' => ['Biceps', 'Upper Back', 'Forearms'],
                 'description' => 'Use close handle, pull to upper chest, keep elbows tucked, squeeze lats, return under control.',
             ],
             [
+                'name' => 'Underhand Close-Grip Lat Pulldown',
+
+                'default_rest_sec' => 90,
+                'primary' => ['Lats'],
+                'secondary' => ['Biceps', 'Upper Back', 'Forearms'],
+                'description' => 'Use close underhand grip, pull bar to upper chest, keep elbows tucked, squeeze lats and biceps, return under control.',
+            ],
+            [
+                'name' => 'Behind-the-Head Lat Pulldown',
+
+                'default_rest_sec' => 90,
+                'primary' => ['Lats'],
+                'secondary' => ['Upper Back', 'Biceps', 'Forearms'],
+                'description' => 'Pull bar behind head to upper neck/shoulder level, keep torso upright, return slowly to full stretch; use caution with shoulder mobility.',
+            ],
+            [
                 'name' => 'Neutral-Grip Lat Pulldown',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Lats'],
                 'secondary' => ['Biceps', 'Upper Back', 'Forearms'],
@@ -516,7 +556,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Lat Pulldown',
-                'category' => 'cable',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Lats'],
                 'secondary' => ['Upper Back', 'Biceps', 'Core', 'Forearms'],
@@ -525,7 +565,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Straight-Arm Cable Pulldown',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Lats'],
                 'secondary' => ['Core'],
@@ -533,7 +573,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Cable Pullover',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Lats'],
                 'secondary' => ['Core'],
@@ -542,7 +582,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Face Pulls',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts', 'Upper Back'],
                 'secondary' => [],
@@ -550,7 +590,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Reverse Cable Flyes',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts'],
                 'secondary' => ['Upper Back'],
@@ -558,7 +598,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Reverse Pec Deck Fly',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts'],
                 'secondary' => ['Upper Back'],
@@ -566,7 +606,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Rear Delt Flyes',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts'],
                 'secondary' => ['Upper Back'],
@@ -575,7 +615,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Hyperextensions',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Lower Back'],
                 'secondary' => ['Glutes', 'Hamstrings', 'Core'],
@@ -583,7 +623,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => '45-Degree Back Extension',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Lower Back'],
                 'secondary' => ['Glutes', 'Hamstrings', 'Core'],
@@ -591,7 +631,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Machine Back Extension',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Lower Back'],
                 'secondary' => ['Glutes', 'Hamstrings', 'Core'],
@@ -600,7 +640,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Inverted Row',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Upper Back', 'Lats'],
                 'secondary' => ['Biceps', 'Core', 'Forearms', 'Rear Delts'],
@@ -613,7 +653,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Back Squat',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 150,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core', 'Lower Back'],
@@ -621,7 +661,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Front Squat',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 150,
                 'primary' => ['Quads'],
                 'secondary' => ['Glutes', 'Core', 'Upper Back'],
@@ -629,7 +669,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Goblet Squat',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -637,7 +677,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Box Squat',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Glutes', 'Quads'],
                 'secondary' => ['Hamstrings', 'Core', 'Lower Back'],
@@ -646,15 +686,23 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Smith Machine Squat',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings'],
                 'description' => 'Set feet slightly forward, squat down with control, keep knees tracking, press up without locking knees harshly.',
             ],
             [
+                'name' => 'Smith Machine Split Squat',
+
+                'default_rest_sec' => 120,
+                'primary' => ['Quads', 'Glutes'],
+                'secondary' => ['Hamstrings', 'Core'],
+                'description' => 'In split stance with back foot elevated on smith bar or platform, lower until front thigh is near parallel, press up through front foot, keep torso upright.',
+            ],
+            [
                 'name' => 'Hack Squat Machine',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads'],
                 'secondary' => ['Glutes', 'Hamstrings'],
@@ -662,7 +710,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Pendulum Squat Machine',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads'],
                 'secondary' => ['Glutes', 'Hamstrings'],
@@ -671,7 +719,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Hip Thrust (Barbell)',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -679,7 +727,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Hip Thrust Machine',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Glutes'],
                 'secondary' => ['Hamstrings'],
@@ -687,7 +735,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Glute Bridge',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -696,7 +744,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Walking Lunges',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -704,7 +752,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Stationary Lunges',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -712,7 +760,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Reverse Lunges',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Glutes', 'Quads'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -720,7 +768,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Bulgarian Split Squat',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -728,7 +776,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Split Squat',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -736,7 +784,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Step-Ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -745,7 +793,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Leg Press',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings'],
@@ -753,7 +801,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Horizontal Leg Press',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads'],
                 'secondary' => ['Glutes', 'Hamstrings'],
@@ -761,7 +809,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => '45-Degree Leg Press',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Quads'],
                 'secondary' => ['Glutes', 'Hamstrings'],
@@ -770,7 +818,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Leg Extensions',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Quads'],
                 'secondary' => [],
@@ -778,7 +826,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Leg Extension',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Quads'],
                 'secondary' => [],
@@ -787,7 +835,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Lying Leg Curl',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Hamstrings'],
                 'secondary' => [],
@@ -795,7 +843,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Seated Leg Curl',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Hamstrings'],
                 'secondary' => [],
@@ -803,7 +851,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Standing Leg Curl',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Hamstrings'],
                 'secondary' => [],
@@ -811,7 +859,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Nordic Hamstring Curl',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Hamstrings'],
                 'secondary' => ['Glutes', 'Core'],
@@ -820,7 +868,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Cable Glute Kickbacks',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -828,7 +876,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Machine Glute Kickback',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Glutes'],
                 'secondary' => ['Hamstrings'],
@@ -836,7 +884,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Hip Abduction Machine',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Glutes'],
                 'secondary' => [],
@@ -845,7 +893,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Standing Calf Raises',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Calves'],
                 'secondary' => [],
@@ -853,7 +901,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Seated Calf Raises',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Calves'],
                 'secondary' => [],
@@ -861,7 +909,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Leg Press Calf Raises',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Calves'],
                 'secondary' => [],
@@ -869,7 +917,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Leg Calf Raises',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Calves'],
                 'secondary' => ['Core'],
@@ -878,7 +926,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Bodyweight Squats',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Core'],
@@ -886,7 +934,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Jump Squats',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Quads', 'Glutes'],
                 'secondary' => ['Hamstrings', 'Calves', 'Core'],
@@ -894,7 +942,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Wall Sit',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Quads'],
                 'secondary' => ['Glutes'],
@@ -907,7 +955,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Overhead Barbell Press',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps', 'Core', 'Upper Back'],
@@ -915,7 +963,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Seated Barbell Shoulder Press',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps', 'Core'],
@@ -923,7 +971,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Shoulder Press',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps', 'Core'],
@@ -931,7 +979,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Arnold Press',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps'],
@@ -940,7 +988,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Machine Shoulder Press',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps'],
@@ -948,7 +996,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Smith Machine Shoulder Press',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps'],
@@ -957,7 +1005,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Dumbbell Lateral Raises',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Side Delts'],
                 'secondary' => [],
@@ -965,7 +1013,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Seated Dumbbell Lateral Raises',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Side Delts'],
                 'secondary' => [],
@@ -973,7 +1021,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Cable Lateral Raises',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Side Delts'],
                 'secondary' => [],
@@ -981,7 +1029,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Machine Lateral Raise',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Side Delts'],
                 'secondary' => [],
@@ -989,7 +1037,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Cable Lateral Raise',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Side Delts'],
                 'secondary' => ['Core'],
@@ -998,7 +1046,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Dumbbell Front Raises',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Front Delts'],
                 'secondary' => [],
@@ -1006,7 +1054,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Plate Front Raises',
-                'category' => 'machine-plate-loaded',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Front Delts'],
                 'secondary' => [],
@@ -1014,7 +1062,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Cable Front Raises',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Front Delts'],
                 'secondary' => [],
@@ -1022,7 +1070,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Barbell Front Raises',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Front Delts'],
                 'secondary' => [],
@@ -1031,7 +1079,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Reverse Pec Deck Fly',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts'],
                 'secondary' => ['Upper Back'],
@@ -1039,7 +1087,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Reverse Cable Flyes',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts'],
                 'secondary' => ['Upper Back'],
@@ -1047,7 +1095,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Bent-Over Cable Rear Delt Fly',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Rear Delts'],
                 'secondary' => ['Upper Back'],
@@ -1056,7 +1104,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Upright Row (Barbell)',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Side Delts'],
                 'secondary' => ['Trapezius', 'Biceps'],
@@ -1064,7 +1112,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Upright Row (Cable)',
-                'category' => 'cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Side Delts'],
                 'secondary' => ['Trapezius', 'Biceps'],
@@ -1072,7 +1120,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'High Pull',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Side Delts', 'Front Delts'],
                 'secondary' => ['Trapezius', 'Upper Back', 'Core'],
@@ -1081,7 +1129,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Pike Push-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps', 'Core'],
@@ -1089,7 +1137,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Handstand Push-ups',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Triceps', 'Core'],
@@ -1097,7 +1145,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Wall-Supported Handstand Hold',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Front Delts', 'Side Delts'],
                 'secondary' => ['Core'],
@@ -1110,7 +1158,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Chin-ups (Biceps Focus)',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Biceps'],
                 'secondary' => ['Lats', 'Upper Back', 'Forearms', 'Core'],
@@ -1118,7 +1166,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Close-Grip Lat Pulldown (Biceps Focus)',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Biceps'],
                 'secondary' => ['Lats', 'Upper Back', 'Forearms'],
@@ -1127,7 +1175,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Barbell Curl',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1135,7 +1183,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'EZ-Bar Curl',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1143,7 +1191,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Curl',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1151,7 +1199,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Alternating Dumbbell Curl',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1159,7 +1207,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Hammer Curl',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps', 'Forearms'],
                 'secondary' => [],
@@ -1167,7 +1215,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Incline Dumbbell Curl',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1175,7 +1223,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Concentration Curl',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => [],
@@ -1183,7 +1231,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Preacher Curl (EZ-Bar)',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1191,7 +1239,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Preacher Curl (Machine)',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => [],
@@ -1200,7 +1248,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Cable Curl',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1208,7 +1256,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Rope Hammer Curl (Cable)',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps', 'Forearms'],
                 'secondary' => [],
@@ -1216,7 +1264,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Cable Curl',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Biceps'],
                 'secondary' => ['Forearms'],
@@ -1225,7 +1273,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Close-Grip Bench Press (Triceps Focus)',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Triceps'],
                 'secondary' => ['Chest', 'Front Delts'],
@@ -1233,7 +1281,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dips (Triceps)',
-                'category' => 'bodyweight',
+
                 'default_rest_sec' => 120,
                 'primary' => ['Triceps'],
                 'secondary' => ['Chest', 'Front Delts'],
@@ -1241,7 +1289,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Assisted Dips (Triceps)',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Triceps'],
                 'secondary' => ['Chest', 'Front Delts'],
@@ -1250,7 +1298,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Triceps Pushdown (Cable)',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => [],
@@ -1258,15 +1306,23 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Rope Triceps Pushdown',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => [],
                 'description' => 'Press rope down and slightly apart at bottom, squeeze, return with control keeping elbows tucked.',
             ],
             [
+                'name' => 'Reverse-Grip Triceps Pushdown',
+
+                'default_rest_sec' => 60,
+                'primary' => ['Triceps'],
+                'secondary' => [],
+                'description' => 'Use underhand grip on bar, elbows pinned to sides, press bar down until arms extend, squeeze triceps, return to ~90° elbow bend.',
+            ],
+            [
                 'name' => 'Single-Arm Triceps Pushdown',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => ['Core'],
@@ -1275,7 +1331,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Overhead Triceps Extension (Dumbbell)',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => ['Core'],
@@ -1283,7 +1339,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Seated Overhead Triceps Extension (Dumbbell)',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => ['Core'],
@@ -1291,7 +1347,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Cable Overhead Triceps Extension',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => ['Core'],
@@ -1299,7 +1355,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Single-Arm Overhead Cable Triceps Extension',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => ['Core'],
@@ -1308,7 +1364,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Skull Crushers (EZ-Bar)',
-                'category' => 'barbell',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Triceps'],
                 'secondary' => [],
@@ -1316,7 +1372,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Dumbbell Skull Crushers',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 75,
                 'primary' => ['Triceps'],
                 'secondary' => [],
@@ -1324,7 +1380,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Triceps Kickbacks (Dumbbell)',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => [],
@@ -1333,7 +1389,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Triceps Extension Machine',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Triceps'],
                 'secondary' => [],
@@ -1342,7 +1398,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Wrist Curls',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Forearms'],
                 'secondary' => [],
@@ -1350,7 +1406,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Reverse Wrist Curls',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Forearms'],
                 'secondary' => [],
@@ -1358,7 +1414,7 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Farmer\'s Walk',
-                'category' => 'dumbbell',
+
                 'default_rest_sec' => 90,
                 'primary' => ['Forearms'],
                 'secondary' => ['Trapezius', 'Core'],
@@ -1371,7 +1427,7 @@ class ExerciseSeeder extends Seeder
 
             [
                 'name' => 'Ab Crunch Machine',
-                'category' => 'machine-cable',
+
                 'default_rest_sec' => 45,
                 'primary' => ['Abs'],
                 'secondary' => [],
@@ -1379,11 +1435,27 @@ class ExerciseSeeder extends Seeder
             ],
             [
                 'name' => 'Cable Woodchoppers',
-                'category' => 'cable',
+
                 'default_rest_sec' => 60,
                 'primary' => ['Abs', 'Obliques'],
                 'secondary' => ['Core'],
                 'description' => 'Set cable high, stand sideways, pull cable down and across body in a chopping motion, rotate torso, return slowly; repeat other side.',
+            ],
+            [
+                'name' => 'Knee Raises',
+
+                'default_rest_sec' => 60,
+                'primary' => ['Abs'],
+                'secondary' => ['Core'],
+                'description' => 'Hang from bar or use captain\'s chair, raise knees toward chest, squeeze abs at top, lower slowly with control.',
+            ],
+            [
+                'name' => 'Straight Leg Raises',
+
+                'default_rest_sec' => 60,
+                'primary' => ['Abs'],
+                'secondary' => ['Core'],
+                'description' => 'Hang from bar or lie on back, raise straight legs up toward ceiling, keep core braced, lower slowly with control.',
             ],
 
         ];

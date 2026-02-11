@@ -53,79 +53,7 @@ class PartnerSeeder extends Seeder
             'border_color_dark' => '#3a3a3a',
         ]);
 
-        // Example Partner 1 - FitLife Pro
-        $fitLife = Partner::create([
-            'name' => 'FitLife Pro',
-            'slug' => 'fitlife-pro',
-            'domain' => 'fitlife.example.com',
-            'is_active' => true,
-        ]);
 
-        $fitLife->identity()->create([
-            'primary_color' => '#3b82f6', // Blue
-            'secondary_color' => '#10b981', // Green
-            'logo' => '/images/partners/fitlife-logo.png',
-            'font_family' => 'Poppins',
-            'background_color' => '#ffffff',
-            'card_background_color' => '#f9fafb',
-            'text_primary_color' => '#111827',
-            'text_secondary_color' => '#6b7280',
-            'text_on_primary_color' => '#ffffff',
-            'success_color' => '#10b981',
-            'warning_color' => '#f59e0b',
-            'danger_color' => '#ef4444',
-            'accent_color' => '#8b5cf6',
-            'border_color' => '#e5e7eb',
-            'primary_color_dark' => '#60a5fa',
-            'secondary_color_dark' => '#34d399',
-            'background_color_dark' => '#0f172a',
-            'card_background_color_dark' => '#1e293b',
-            'text_primary_color_dark' => '#f1f5f9',
-            'text_secondary_color_dark' => '#94a3b8',
-            'text_on_primary_color_dark' => '#ffffff',
-            'success_color_dark' => '#4ade80',
-            'warning_color_dark' => '#fbbf24',
-            'danger_color_dark' => '#f87171',
-            'accent_color_dark' => '#a78bfa',
-            'border_color_dark' => '#334155',
-        ]);
-
-        // Example Partner 2 - PowerGym Elite
-        $powerGym = Partner::create([
-            'name' => 'PowerGym Elite',
-            'slug' => 'powergym-elite',
-            'domain' => 'powergym.example.com',
-            'is_active' => true,
-        ]);
-
-        $powerGym->identity()->create([
-            'primary_color' => '#8b5cf6', // Purple
-            'secondary_color' => '#ec4899', // Pink
-            'logo' => '/images/partners/powergym-logo.png',
-            'font_family' => 'Montserrat',
-            'background_color' => '#ffffff',
-            'card_background_color' => '#fafafa',
-            'text_primary_color' => '#0f172a',
-            'text_secondary_color' => '#64748b',
-            'text_on_primary_color' => '#ffffff',
-            'success_color' => '#22c55e',
-            'warning_color' => '#fbbf24',
-            'danger_color' => '#f87171',
-            'accent_color' => '#a855f7',
-            'border_color' => '#e2e8f0',
-            'primary_color_dark' => '#a78bfa',
-            'secondary_color_dark' => '#f472b6',
-            'background_color_dark' => '#0f172a',
-            'card_background_color_dark' => '#1e293b',
-            'text_primary_color_dark' => '#f1f5f9',
-            'text_secondary_color_dark' => '#94a3b8',
-            'text_on_primary_color_dark' => '#ffffff',
-            'success_color_dark' => '#4ade80',
-            'warning_color_dark' => '#fbbf24',
-            'danger_color_dark' => '#f87171',
-            'accent_color_dark' => '#c084fc',
-            'border_color_dark' => '#334155',
-        ]);
 
         // Create partner admin users
         $partnerAdminRole = Role::where('slug', 'partner_admin')->first();
@@ -140,28 +68,6 @@ class PartnerSeeder extends Seeder
             ]
         );
         $muscleHustleAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
-
-        $fitLifeAdmin = User::firstOrCreate(
-            ['email' => 'admin@fitlife.gym'],
-            [
-                'name' => 'FitLife Admin',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'partner_id' => $fitLife->id,
-            ]
-        );
-        $fitLifeAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
-
-        $powerGymAdmin = User::firstOrCreate(
-            ['email' => 'admin@powergym.gym'],
-            [
-                'name' => 'PowerGym Admin',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'partner_id' => $powerGym->id,
-            ]
-        );
-        $powerGymAdmin->roles()->syncWithoutDetaching($partnerAdminRole);
 
         // Synergy Fitness Center
         $synergyFitness = Partner::create([
@@ -287,41 +193,14 @@ class PartnerSeeder extends Seeder
         );
         $fitNationTrainer2->roles()->syncWithoutDetaching($trainerRole);
 
-        // Trainer for FitLife Pro
-        $fitLifeTrainer = User::firstOrCreate(
-            ['email' => 'trainer@fitlife.gym'],
-            [
-                'name' => 'Mike Coach',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'partner_id' => $fitLife->id,
-            ]
-        );
-        $fitLifeTrainer->roles()->syncWithoutDetaching($trainerRole);
-
-        // Trainer for PowerGym Elite
-        $powerGymTrainer = User::firstOrCreate(
-            ['email' => 'trainer@powergym.gym'],
-            [
-                'name' => 'Emma Strength',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'partner_id' => $powerGym->id,
-            ]
-        );
-        $powerGymTrainer->roles()->syncWithoutDetaching($trainerRole);
 
         $this->command->info('Partner admin users created:');
         $this->command->info('  - admin@fitnation.gym (password: password)');
-        $this->command->info('  - admin@fitlife.gym (password: password)');
-        $this->command->info('  - admin@powergym.gym (password: password)');
         $this->command->info('  - admin@synergy.gym (password: password)');
         $this->command->info('  - admin@premium.gym (password: password)');
         $this->command->info('');
         $this->command->info('Trainer users created:');
         $this->command->info('  - trainer1@fitnation.gym (password: password)');
         $this->command->info('  - trainer2@fitnation.gym (password: password)');
-        $this->command->info('  - trainer@fitlife.gym (password: password)');
-        $this->command->info('  - trainer@powergym.gym (password: password)');
     }
 }
