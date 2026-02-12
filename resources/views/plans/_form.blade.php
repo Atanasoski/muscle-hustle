@@ -5,6 +5,7 @@
     'context' => 'library', // 'library' or 'user'
     'user' => null,
     'cancelUrl' => null,
+    'cancelAlpineHandler' => null, // when set, Cancel is a button that calls this (e.g. 'closeCreatePlanModal')
 ])
 
 <form action="{{ $action }}" method="POST">
@@ -135,11 +136,17 @@
 
     <!-- Form Actions -->
     <div class="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-6 dark:border-gray-800">
-        <a href="{{ $context === 'library' ? ($cancelUrl ?? route('partner.programs.index')) : route('plans.index', $user) }}">
-            <x-ui.button variant="outline" size="md">
+        @if($cancelAlpineHandler)
+            <x-ui.button variant="outline" size="md" type="button" @click="{{ $cancelAlpineHandler }}()">
                 Cancel
             </x-ui.button>
-        </a>
+        @else
+            <a href="{{ $context === 'library' ? ($cancelUrl ?? route('partner.programs.index')) : route('plans.index', $user) }}">
+                <x-ui.button variant="outline" size="md">
+                    Cancel
+                </x-ui.button>
+            </a>
+        @endif
         <x-ui.button variant="primary" size="md" type="submit">
             {{ $plan ? 'Update' : 'Create' }} {{ $context === 'library' ? 'Program' : 'Plan' }}
         </x-ui.button>

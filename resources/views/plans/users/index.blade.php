@@ -6,6 +6,7 @@
 <div class="space-y-6" x-data="{
     editModalOpen: false,
     editingPlan: null,
+    createPlanModalOpen: false,
     openEditModal(planData) {
         this.editingPlan = typeof planData === 'string' ? JSON.parse(planData) : planData;
         this.editModalOpen = true;
@@ -13,8 +14,10 @@
     closeEditModal() {
         this.editModalOpen = false;
         this.editingPlan = null;
-    }
-}">
+    },
+    openCreatePlanModal() { this.createPlanModalOpen = true; },
+    closeCreatePlanModal() { this.createPlanModalOpen = false; }
+}" x-init="if ({{ Js::encode($errors->any()) }}) { createPlanModalOpen = true; }">
     <x-common.page-breadcrumb
         pageTitle="Plans"
         :items="[
@@ -23,14 +26,25 @@
         ]"
     />
 
+    @if ($errors->any())
+        <div class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+            <div class="mb-2 text-sm font-semibold text-red-800 dark:text-red-400">There were some errors with your submission:</div>
+            <ul class="list-inside list-disc space-y-1 text-sm text-red-700 dark:text-red-300">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <div class="text-xl font-semibold text-gray-900 dark:text-white">Plans for {{ $user->name }}</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Manage and create plans for this user.</div>
         </div>
-        <a href="{{ route('plans.create', $user) }}" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+        <button type="button" @click="openCreatePlanModal()" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
             Create Plan
-        </a>
+        </button>
     </div>
 
     <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/30">
@@ -167,37 +181,16 @@
                 <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">No plans</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new plan for this user.</p>
                 <div class="mt-6">
-                    <a href="{{ route('plans.create', $user) }}" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+                    <button type="button" @click="openCreatePlanModal()" class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
                         Create Plan
-                    </a>
+                    </button>
                 </div>
             </div>
         @endif
     </div>
 
-    <!-- Edit Plan Modal (matches Add Exercise modal structure) -->
-    <div x-show="editModalOpen"
-        x-cloak
-        @keydown.escape.window="closeEditModal()"
-        class="modal fixed inset-0 flex items-center justify-center overflow-y-auto p-5"
-        style="z-index: 999999 !important;"
-        aria-labelledby="edit-plan-modal-title"
-        role="dialog"
-        aria-modal="true">
-        <div x-show="editModalOpen"
-            class="fixed inset-0 bg-gray-100 opacity-80 transition-opacity dark:bg-gray-900 dark:opacity-100"
-            @click="closeEditModal()"></div>
-
-        <div class="flex min-h-full items-center justify-center p-4">
-            <div x-show="editModalOpen"
-                class="relative w-full max-w-3xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
-                @click.away="closeEditModal()">
-                <template x-if="editingPlan">
-                    <x-plans.edit-form :subtitle="'Update plan details for ' . $user->name . '.'" />
-                </template>
-            </div>
-        </div>
-    </div>
+    <x-modals.edit-plan :subtitle="'Update plan details for ' . $user->name . '.'" />
+    <x-modals.create-plan :user="$user" :storeUrl="route('plans.store', $user)" />
 </div>
 @endsection
 
