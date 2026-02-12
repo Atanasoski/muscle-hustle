@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Angle;
+use App\Models\Category;
 use App\Models\EquipmentType;
 use App\Models\Exercise;
 use App\Models\MovementPattern;
@@ -26,6 +27,8 @@ class ExerciseClassificationSeeder extends Seeder
     private array $equipmentTypes = [];
 
     private array $angles = [];
+
+    private array $categories = [];
 
     /**
      * Movement pattern to target region mapping.
@@ -117,18 +120,26 @@ class ExerciseClassificationSeeder extends Seeder
         $this->targetRegions = TargetRegion::pluck('id', 'code')->toArray();
         $this->equipmentTypes = EquipmentType::pluck('id', 'code')->toArray();
         $this->angles = Angle::pluck('id', 'code')->toArray();
+        $this->categories = Category::pluck('id', 'slug')->toArray();
     }
 
     /**
      * Classify an exercise based on name, category, and primary muscle groups.
      *
-     * @return array{movement_pattern_id: ?int, target_region_id: ?int, equipment_type_id: ?int, angle_id: ?int}
+     * @return array{category_id: ?int, movement_pattern_id: ?int, target_region_id: ?int, equipment_type_id: ?int, angle_id: ?int}
      */
     private function classifyExercise(Exercise $exercise): array
     {
         $name = $exercise->name;
         $categorySlug = $exercise->category?->slug;
         $primaryMuscles = $exercise->primaryMuscleGroups->pluck('name')->toArray();
+
+        // Determine exercise type category (if not already set)
+        $categoryId = $exercise->category_id;
+        if (! $categoryId) {
+            $inferredCategorySlug = $this->inferCategory($name, $primaryMuscles);
+            $categoryId = $inferredCategorySlug ? ($this->categories[$inferredCategorySlug] ?? null) : null;
+        }
 
         // Determine equipment type
         $equipmentCode = $this->inferEquipmentType($name, $categorySlug);
@@ -147,6 +158,7 @@ class ExerciseClassificationSeeder extends Seeder
         $angleId = $angleCode ? ($this->angles[$angleCode] ?? null) : null;
 
         return [
+            'category_id' => $categoryId,
             'movement_pattern_id' => $movementPatternId,
             'target_region_id' => $targetRegionId,
             'equipment_type_id' => $equipmentTypeId,
@@ -403,5 +415,99 @@ class ExerciseClassificationSeeder extends Seeder
 
         // Don't force any angle - return null
         return null;
+    }
+
+    /**
+     * Infer exercise type category from exercise name and characteristics.
+     *
+     * @param  string  $name
+     * @param  array<string>  $primaryMuscles
+     * @return string|null
+     */
+    private function inferCategory(string $name, array $primaryMuscles): ?string
+    {
+        $nameLower = Str::lower($name);
+
+        // Power/Olympic Lifting - explosive movements
+        if (Str::contains($nameLower, ['clean', 'snatch', 'jerk', 'high pull'])) {
+            return 'power-olympic-lifting';
+        }
+
+        // Cardio - running, rowing, cycling, HIIT
+        if (Str::contains($nameLower, ['run', 'row', 'cycle', 'bike', 'sprint', 'jog', 'treadmill', 'elliptical', 'hiit'])) {
+            return 'cardio';
+        }
+
+        // Mobility & Flexibility - stretching, yoga
+        if (Str::contains($nameLower, ['stretch', 'yoga', 'mobility', 'flexibility', 'foam roll'])) {
+            return 'mobility-flexibility';
+        }
+
+        // Bodyweight - calisthenics, gymnastics movements
+        $bodyweightPatterns = [
+            'push-up', 'pushup', 'push up',
+            'pull-up', 'pullup', 'pull up',
+            'chin-up', 'chinup', 'chin up',
+            'dip',
+            'bodyweight squat',
+            'jump squat',
+            'wall sit',
+            'handstand',
+            'pike push-up',
+            'inverted row',
+            'plank',
+            'burpee',
+        ];
+
+        $isBodyweight = false;
+        foreach ($bodyweightPatterns as $pattern) {
+            if (Str::contains($nameLower, $pattern)) {
+                $isBodyweight = true;
+                break;
+            }
+        }
+
+        // Check if it's bodyweight by absence of equipment keywords
+        if (! $isBodyweight) {
+            $equipmentKeywords = ['barbell', 'dumbbell', 'machine', 'cable', 'smith', 'plate', 'band', 'kettlebell', 'trx'];
+            $hasEquipment = false;
+            foreach ($equipmentKeywords as $keyword) {
+                if (Str::contains($nameLower, $keyword)) {
+                    $hasEquipment = true;
+                    break;
+                }
+            }
+
+            if (! $hasEquipment && (
+                Str::contains($nameLower, ['squat', 'lunge', 'step-up', 'step up', 'bridge', 'raise', 'crunch', 'sit-up', 'situp'])
+            )) {
+                $isBodyweight = true;
+            }
+        }
+
+        if ($isBodyweight) {
+            return 'bodyweight';
+        }
+
+        // Functional Training - movement-based, real-world patterns
+        $functionalPatterns = [
+            'lunge', 'walking', 'step-up', 'step up', 'carry', "farmer's walk", 'farmers walk',
+            'bulgarian', 'split squat', 'goblet', 'trap bar', 'kettlebell swing',
+        ];
+
+        foreach ($functionalPatterns as $pattern) {
+            if (Str::contains($nameLower, $pattern)) {
+                return 'functional-training';
+            }
+        }
+
+        // Hybrid/CrossFit - complex movements, combinations
+        if (Str::contains($nameLower, ['thruster', 'burpee', 'man maker', 'devil press', 'complex'])) {
+            return 'hybrid-crossfit';
+        }
+
+        // Strength Training - default for most weighted exercises
+        // This includes: barbell, dumbbell, machine, cable exercises
+        return 'strength-training';
     }
 }

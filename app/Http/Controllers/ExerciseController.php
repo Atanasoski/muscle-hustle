@@ -122,18 +122,18 @@ class ExerciseController extends Controller
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($exercise->image) {
-                Storage::disk('public')->delete($exercise->image);
+                Storage::delete($exercise->image);
             }
-            $updateData['image'] = $request->file('image')->store('exercises/images', 'public');
+            $updateData['image'] = $request->file('image')->store('exercises/images');
         }
 
         // Handle video upload
         if ($request->hasFile('video')) {
             // Delete old video if exists
             if ($exercise->video) {
-                Storage::disk('public')->delete($exercise->video);
+                Storage::delete($exercise->video);
             }
-            $updateData['video'] = $request->file('video')->store('exercises/videos', 'public');
+            $updateData['video'] = $request->file('video')->store('exercises/videos');
         }
 
         $exercise->update($updateData);
@@ -170,16 +170,16 @@ class ExerciseController extends Controller
 
         if ($request->hasFile('image')) {
             if ($pivot?->image) {
-                Storage::disk('public')->delete($pivot->image);
+                Storage::delete($pivot->image);
             }
-            $pivotData['image'] = $request->file('image')->store('exercises/images', 'public');
+            $pivotData['image'] = $request->file('image')->store('exercises/images');
         }
 
         if ($request->hasFile('video')) {
             if ($pivot?->video) {
-                Storage::disk('public')->delete($pivot->video);
+                Storage::delete($pivot->video);
             }
-            $pivotData['video'] = $request->file('video')->store('exercises/videos', 'public');
+            $pivotData['video'] = $request->file('video')->store('exercises/videos');
         }
 
         if ($existingPivot) {
@@ -349,10 +349,10 @@ class ExerciseController extends Controller
         $pivotData = $partner->exercises()->find($exercise->id);
         if ($pivotData && $pivotData->pivot) {
             if ($pivotData->pivot->image) {
-                Storage::disk('public')->delete($pivotData->pivot->image);
+                Storage::delete($pivotData->pivot->image);
             }
             if ($pivotData->pivot->video) {
-                Storage::disk('public')->delete($pivotData->pivot->video);
+                Storage::delete($pivotData->pivot->video);
             }
         }
 

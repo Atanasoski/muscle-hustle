@@ -86,7 +86,7 @@ class PartnerController extends Controller
             // Delete old logo if exists
             if ($partner->identity?->logo) {
                 $oldLogoPath = str_replace('storage/', '', $partner->identity->logo);
-                Storage::disk('public')->delete($oldLogoPath);
+                Storage::delete($oldLogoPath);
             }
 
             $logoPath = $request->file('logo')->store('partners', 'public');
@@ -98,7 +98,7 @@ class PartnerController extends Controller
             // Delete old pattern if exists
             if ($partner->identity?->background_pattern) {
                 $oldPatternPath = str_replace('storage/', '', $partner->identity->background_pattern);
-                Storage::disk('public')->delete($oldPatternPath);
+                Storage::delete($oldPatternPath);
             }
 
             $patternPath = $request->file('background_pattern')->store('partners', 'public');
@@ -134,13 +134,13 @@ class PartnerController extends Controller
         // Delete logo if exists
         if ($partner->identity?->logo) {
             $logoPath = str_replace('storage/', '', $partner->identity->logo);
-            Storage::disk('public')->delete($logoPath);
+            Storage::delete($logoPath);
         }
 
         // Delete background pattern if exists
         if ($partner->identity?->background_pattern) {
             $patternPath = str_replace('storage/', '', $partner->identity->background_pattern);
-            Storage::disk('public')->delete($patternPath);
+            Storage::delete($patternPath);
         }
 
         $partner->delete();

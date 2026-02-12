@@ -4,6 +4,7 @@ namespace App\Http\Resources\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ExerciseResource extends JsonResource
 {
@@ -47,9 +48,9 @@ class ExerciseResource extends JsonResource
             }),
             'name' => $this->name,
             'description' => $description,
-            'muscle_group_image' => $this->muscle_group_image ? asset('storage/'.$this->muscle_group_image) : null,
-            'image' => $image ? asset('storage/'.$image) : null,
-            'video' => $video ? asset('storage/'.$video) : null,
+            'muscle_group_image' => $this->muscle_group_image ? Storage::url($this->muscle_group_image) : null,
+            'image' => $image ? Storage::url($image) : null,
+            'video' => $video ? Storage::url($video) : null,
             'default_rest_sec' => $this->default_rest_sec,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

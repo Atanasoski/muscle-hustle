@@ -20,7 +20,7 @@
     <form action="{{ route('exercises.updatePartner', $exercise) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        
+
         <!-- Main Content Grid -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Left Column: Form Fields -->
@@ -33,7 +33,7 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Custom Description
                             </label>
-                            <textarea name="description" 
+                            <textarea name="description"
                                       rows="6"
                                       placeholder="Enter custom description for this exercise (leave empty to use default)..."
                                       class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">{{ $formDescription }}</textarea>
@@ -57,7 +57,7 @@
                                 </x-ui.badge>
                             </div>
                             <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-64 w-full object-contain">
+                                <img src="{{ Storage::url($exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-64 w-full object-contain">
                             </div>
                             <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">This image is automatically generated based on the exercise's muscle groups.</p>
                         </div>
@@ -81,17 +81,17 @@
                             </div>
                             @if($formImage)
                                 <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset('storage/' . $formImage) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ Storage::url($formImage) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom image is currently set</p>
                             @elseif($exercise->image)
                                 <div class="mb-3 flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset('storage/' . $exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ Storage::url($exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                                 <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Currently using default image</p>
                             @endif
-                            <input type="file" 
-                                   name="image" 
+                            <input type="file"
+                                   name="image"
                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -121,21 +121,21 @@
                             </div>
                             @if($formVideo)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset('storage/' . $formVideo) }}" controls class="h-auto w-full">
+                                    <video src="{{ Storage::url($formVideo) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom video is currently set</p>
                             @elseif($exercise->video)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset('storage/' . $exercise->video) }}" controls class="h-auto w-full">
+                                    <video src="{{ Storage::url($exercise->video) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                                 <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Currently using default video</p>
                             @endif
-                            <input type="file" 
-                                   name="video" 
+                            <input type="file"
+                                   name="video"
                                    accept="video/mp4,video/webm,video/ogg"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -160,8 +160,8 @@
                             <label class="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
                                 Exercise Name
                             </label>
-                            <input type="text" 
-                                   value="{{ $exercise->name }}" 
+                            <input type="text"
+                                   value="{{ $exercise->name }}"
                                    disabled
                                    class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 outline-none dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400">
                         </div>
@@ -204,7 +204,7 @@
                                     @endif
                                     <span>Custom Description</span>
                                 </div>
-                                
+
                                 <!-- Custom Image -->
                                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                                     @if($pivot && $pivot->image)
@@ -218,7 +218,7 @@
                                     @endif
                                     <span>Custom Image</span>
                                 </div>
-                                
+
                                 <!-- Custom Video -->
                                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                                     @if($pivot && $pivot->video)
@@ -240,7 +240,7 @@
                 <!-- Footer Buttons -->
                 <div class="flex gap-2">
                     <a href="{{ route('partner.exercises.index', $exercise) }}" class="flex-1">
-                        <x-ui.button type="button" 
+                        <x-ui.button type="button"
                                 variant="outline"
                                 className="w-full">
                             Cancel

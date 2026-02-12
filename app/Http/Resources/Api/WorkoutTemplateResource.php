@@ -5,6 +5,7 @@ namespace App\Http\Resources\Api;
 use App\Http\Resources\Concerns\FormatsWeights;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class WorkoutTemplateResource extends JsonResource
 {
@@ -39,9 +40,9 @@ class WorkoutTemplateResource extends JsonResource
                         'id' => $exercise->id,
                         'name' => $exercise->name,
                         'description' => $exercise->getDescription($partner),
-                        'image' => $image ? asset('storage/'.$image) : null,
-                        'video' => $video ? asset('storage/'.$video) : null,
-                        'muscle_group_image' => $exercise->muscle_group_image ? asset('storage/'.$exercise->muscle_group_image) : null,
+                        'image' => $image ? Storage::url($image) : null,
+                        'video' => $video ? Storage::url($video) : null,
+                        'muscle_group_image' => $exercise->muscle_group_image ? Storage::url($exercise->muscle_group_image) : null,
                         'default_rest_sec' => $exercise->default_rest_sec,
                         'category' => $exercise->category ? new CategoryResource($exercise->category) : null,
                         'muscle_groups' => $exercise->relationLoaded('muscleGroups')

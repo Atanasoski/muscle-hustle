@@ -25,8 +25,8 @@
                     Edit
                 </x-ui.button>
             </a>
-            <form action="{{ route('exercises.destroy', $exercise) }}" 
-                  method="POST" 
+            <form action="{{ route('exercises.destroy', $exercise) }}"
+                  method="POST"
                   class="inline"
                   onsubmit="return confirm('Delete this exercise? This action cannot be undone.')">
                 @csrf
@@ -92,7 +92,7 @@
                                     </x-ui.badge>
                                 </label>
                                 <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ Storage::url($exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
                                 </div>
                             </div>
                         @endif
@@ -104,7 +104,7 @@
                                     Image
                                 </label>
                                 <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ asset('storage/' . $exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
+                                    <img src="{{ Storage::url($exercise->image) }}" alt="Exercise image" class="max-h-96 w-full object-contain">
                                 </div>
                             </div>
                         @endif
@@ -116,7 +116,7 @@
                                     Video
                                 </label>
                                 <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ asset('storage/' . $exercise->video) }}" controls class="h-auto w-full">
+                                    <video src="{{ Storage::url($exercise->video) }}" controls class="h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>

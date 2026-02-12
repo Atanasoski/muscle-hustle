@@ -107,7 +107,7 @@
                             </x-ui.badge>
                         </div>
                         <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                            <img src="{{ asset('storage/' . $exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
+                            <img src="{{ Storage::url($exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
                         </div>
                         <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">This image is automatically generated based on the exercise's muscle groups.</p>
                     </div>
@@ -130,7 +130,7 @@
                     </div>
                     @if($imageForPartner || $exercise->image)
                         <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                            <img src="{{ asset('storage/' . ($imageForPartner ?? $exercise->image)) }}" alt="Exercise image" class="h-auto w-full object-contain">
+                            <img src="{{ Storage::url(($imageForPartner ?? $exercise->image)) }}" alt="Exercise image" class="h-auto w-full object-contain">
                         </div>
                         <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             @if($pivot && $pivot->image)
@@ -165,7 +165,7 @@
                     </div>
                     @if($videoForPartner || $exercise->video)
                         <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                            <video src="{{ asset('storage/' . ($videoForPartner ?? $exercise->video)) }}" controls class="max-h-96 w-full">
+                            <video src="{{ Storage::url(($videoForPartner ?? $exercise->video)) }}" controls class="max-h-96 w-full">
                                 Your browser does not support the video tag.
                             </video>
                         </div>

@@ -218,7 +218,6 @@ class MuscleGroupImageService
         array $primaryMuscles = [],
         array $secondaryMuscles = [],
         ?string $filename = null,
-        string $disk = 'public'
     ): ?string {
         $imageContent = $this->fetchMuscleGroupImage($primaryMuscles, $secondaryMuscles);
 
@@ -238,7 +237,7 @@ class MuscleGroupImageService
         $path = "exercises/muscle-images/{$filename}.png";
 
         try {
-            Storage::disk($disk)->put($path, $imageContent);
+            Storage::put($path, $imageContent);
             Log::info('[MuscleGroupImageService] Image stored successfully', ['path' => $path]);
 
             return $path;
@@ -257,9 +256,9 @@ class MuscleGroupImageService
      * @param  string  $path  Storage path of the image
      * @param  string  $disk  Storage disk
      */
-    public function getImageUrl(string $path, string $disk = 'public'): string
+    public function getImageUrl(string $path): string
     {
-        return Storage::disk($disk)->url($path);
+        return Storage::url($path);
     }
 
     /**
@@ -272,12 +271,11 @@ class MuscleGroupImageService
     public function imageExists(
         array $primaryMuscles,
         array $secondaryMuscles = [],
-        string $disk = 'public'
     ): bool {
         $muscleHash = md5(implode(',', array_merge($primaryMuscles, $secondaryMuscles)));
         $path = "exercises/muscle-images/muscle-image-{$muscleHash}.png";
 
-        return Storage::disk($disk)->exists($path);
+        return Storage::exists($path);
     }
 
     /**
