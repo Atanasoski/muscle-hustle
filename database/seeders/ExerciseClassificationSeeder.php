@@ -171,9 +171,36 @@ class ExerciseClassificationSeeder extends Seeder
      */
     private function inferEquipmentType(string $name, ?string $categorySlug): string
     {
+        $nameLower = Str::lower($name);
+
         // Check for Smith Machine in name first (overrides category)
-        if (Str::contains($name, 'Smith', true)) {
+        if (Str::contains($nameLower, 'smith')) {
             return 'SMITH';
+        }
+
+        // Check exercise name for equipment keywords
+        if (Str::contains($nameLower, 'dumbbell')) {
+            return 'DUMBBELL';
+        }
+
+        if (Str::contains($nameLower, 'barbell') || Str::contains($nameLower, 'ez-bar') || Str::contains($nameLower, 'ez bar')) {
+            return 'BARBELL';
+        }
+
+        if (Str::contains($nameLower, 'kettlebell')) {
+            return 'KETTLEBELL';
+        }
+
+        if (Str::contains($nameLower, 'cable')) {
+            return 'CABLE';
+        }
+
+        if (Str::contains($nameLower, ['band', 'resistance band'])) {
+            return 'BAND';
+        }
+
+        if (Str::contains($nameLower, 'trx')) {
+            return 'BODYWEIGHT';
         }
 
         // Use category slug mapping
@@ -420,9 +447,7 @@ class ExerciseClassificationSeeder extends Seeder
     /**
      * Infer exercise type category from exercise name and characteristics.
      *
-     * @param  string  $name
      * @param  array<string>  $primaryMuscles
-     * @return string|null
      */
     private function inferCategory(string $name, array $primaryMuscles): ?string
     {
