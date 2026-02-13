@@ -4,10 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Exercise;
 use App\Models\Partner;
+use App\Services\PartnerExerciseFileService;
 use Illuminate\Database\Seeder;
 
 class PartnerExerciseSeeder extends Seeder
 {
+    public function __construct(
+        private PartnerExerciseFileService $fileService
+    ) {}
+
     /**
      * Run the database seeds.
      */
@@ -61,37 +66,42 @@ class PartnerExerciseSeeder extends Seeder
 
         // Link exercises to partners
         foreach ($partners as $partner) {
+            $exercisesToLink = [];
+
             if ($partner->slug === 'premium-sport-center') {
                 // For Premium Sport Center, only add specific exercises
-                $premiumExercises = Exercise::whereIn('name', $premiumExerciseNames)->get();
-
-                $pivotData = [];
-                foreach ($premiumExercises as $exercise) {
-                    $pivotData[$exercise->id] = [
-                        'description' => null,
-                        'image' => null,
-                        'video' => null,
-                    ];
-                }
-
-                // Sync without detaching to avoid removing existing customizations
-                $partner->exercises()->syncWithoutDetaching($pivotData);
-
-                $this->command->info('Linked '.$premiumExercises->count().' specific exercises to Premium Sport Center.');
+                $exercisesToLink = Exercise::whereIn('name', $premiumExerciseNames)->get();
+                $this->command->info('Linking '.$exercisesToLink->count().' specific exercises to Premium Sport Center.');
             } else {
                 // For all other partners, link all default exercises
-                $pivotData = [];
-                foreach ($defaultExercises as $exercise) {
-                    $pivotData[$exercise->id] = [
-                        'description' => null,
-                        'image' => null,
-                        'video' => null,
-                    ];
+                $exercisesToLink = $defaultExercises;
+            }
+
+            $pivotData = [];
+            foreach ($exercisesToLink as $exercise) {
+                $imagePath = null;
+                $videoPath = null;
+
+                // Check if files exist from previous runs (preserved after migrate fresh)
+                if ($this->fileService->imageExists($partner, $exercise)) {
+                    // Find the actual file path (handles different extensions)
+                    $imagePath = $this->fileService->getExistingImagePath($partner, $exercise);
                 }
 
-                // Sync without detaching to avoid removing existing customizations
-                $partner->exercises()->syncWithoutDetaching($pivotData);
+                if ($this->fileService->videoExists($partner, $exercise)) {
+                    // Find the actual file path (handles different extensions)
+                    $videoPath = $this->fileService->getExistingVideoPath($partner, $exercise);
+                }
+
+                $pivotData[$exercise->id] = [
+                    'description' => null,
+                    'image' => $imagePath,
+                    'video' => $videoPath,
+                ];
             }
+
+            // Sync without detaching to avoid removing existing customizations
+            $partner->exercises()->syncWithoutDetaching($pivotData);
         }
 
         $this->command->info('Linked exercises to all partners.');

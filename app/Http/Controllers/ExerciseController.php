@@ -14,11 +14,16 @@ use App\Models\Exercise;
 use App\Models\MovementPattern;
 use App\Models\Partner;
 use App\Models\TargetRegion;
+use App\Services\PartnerExerciseFileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
 {
+    public function __construct(
+        private PartnerExerciseFileService $fileService
+    ) {}
+
     public function index()
     {
         $user = auth()->user();
@@ -169,17 +174,19 @@ class ExerciseController extends Controller
         }
 
         if ($request->hasFile('image')) {
+            // Delete old image if exists
             if ($pivot?->image) {
-                Storage::delete($pivot->image);
+                $this->fileService->deleteImage($partner, $exercise);
             }
-            $pivotData['image'] = $request->file('image')->store('exercises/images');
+            $pivotData['image'] = $this->fileService->storeImage($request->file('image'), $partner, $exercise);
         }
 
         if ($request->hasFile('video')) {
+            // Delete old video if exists
             if ($pivot?->video) {
-                Storage::delete($pivot->video);
+                $this->fileService->deleteVideo($partner, $exercise);
             }
-            $pivotData['video'] = $request->file('video')->store('exercises/videos');
+            $pivotData['video'] = $this->fileService->storeVideo($request->file('video'), $partner, $exercise);
         }
 
         if ($existingPivot) {
@@ -349,10 +356,10 @@ class ExerciseController extends Controller
         $pivotData = $partner->exercises()->find($exercise->id);
         if ($pivotData && $pivotData->pivot) {
             if ($pivotData->pivot->image) {
-                Storage::delete($pivotData->pivot->image);
+                $this->fileService->deleteImage($partner, $exercise);
             }
             if ($pivotData->pivot->video) {
-                Storage::delete($pivotData->pivot->video);
+                $this->fileService->deleteVideo($partner, $exercise);
             }
         }
 
