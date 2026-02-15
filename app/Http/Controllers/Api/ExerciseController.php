@@ -23,6 +23,7 @@ class ExerciseController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $exercises = Exercise::with('category', 'muscleGroups', 'partners', 'angle', 'movementPattern', 'targetRegion', 'equipmentType')
+            ->forPartner(auth()->user()?->partner)
             ->latest()
             ->get();
 
