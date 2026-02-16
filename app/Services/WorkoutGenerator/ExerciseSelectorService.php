@@ -10,9 +10,10 @@ class ExerciseSelectorService
     /**
      * Get available exercises based on filters
      */
-    public function getAvailableExercises(array $filters = []): Collection
+    public function getAvailableExercises(array $filters = [], $partner = null): Collection
     {
-        $query = Exercise::with(['muscleGroups', 'category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle']);
+        $query = Exercise::with(['muscleGroups', 'category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle'])
+            ->forPartner($partner);
 
         // Filter by muscle groups if provided
         if (! empty($filters['focus_muscle_groups'])) {

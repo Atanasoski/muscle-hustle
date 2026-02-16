@@ -33,7 +33,7 @@ class DeterministicWorkoutGenerator
             'movement_patterns' => $normalizedPreferences['movement_patterns'] ?? null,
             'angles' => $normalizedPreferences['angles'] ?? null,
             'limit' => 200,
-        ]);
+        ], $user->partner);
 
         if ($exercises->isEmpty()) {
             throw new \Exception('No exercises available matching the specified criteria');
