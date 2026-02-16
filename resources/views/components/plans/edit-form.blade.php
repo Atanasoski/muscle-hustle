@@ -46,18 +46,9 @@
                     class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 outline-none transition-shadow focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-white dark:focus:ring-white/10"></textarea>
             </div>
 
-            <div>
-                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">Plan Type <span class="text-red-500">*</span></label>
-                <select name="type"
-                    x-model="editingPlan.type"
-                    required
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-white dark:focus:ring-white/10">
-                    <option value="custom">Custom Plan</option>
-                    <option value="program">Program</option>
-                </select>
-            </div>
+            <input type="hidden" name="type" value="program">
 
-            <div x-show="editingPlan.type === 'program'" x-transition>
+            <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-400">Duration (weeks)</label>
                 <input type="number"
                     name="duration_weeks"

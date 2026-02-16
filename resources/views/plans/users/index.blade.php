@@ -54,7 +54,6 @@
                     <thead>
                         <tr class="border-b border-gray-200 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-900">
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400" style="width: 300px;">Plan Details</th>
-                            <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Type</th>
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Status</th>
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Templates</th>
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Last Updated</th>
@@ -68,7 +67,7 @@
                                     'id' => $plan->id,
                                     'name' => $plan->name,
                                     'description' => $plan->description ?? '',
-                                    'type' => $plan->type?->value ?? 'custom',
+                                    'type' => 'program',
                                     'duration_weeks' => $plan->duration_weeks,
                                     'is_active' => (bool) $plan->is_active,
                                     'update_url' => route('plans.update', $plan),
@@ -85,17 +84,6 @@
                                             {{ $plan->description ?? 'No description' }}
                                         </span>
                                     </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    @if($plan->isProgram())
-                                        <span class="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700 dark:border-purple-900/40 dark:bg-purple-900/30 dark:text-purple-300">
-                                            Program
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-900/40 dark:bg-blue-900/30 dark:text-blue-300">
-                                            Custom Plan
-                                        </span>
-                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($plan->is_active)
