@@ -7,6 +7,7 @@
     selectedExercises: [],
     selectAll: false,
     collapsedCategories: {},
+    showOnlyLinked: false,
     get selectedCount() { return this.selectedExercises.length; },
     toggleCategory(categoryId) {
         this.collapsedCategories[categoryId] = !this.collapsedCategories[categoryId];
@@ -69,6 +70,45 @@
             inputsContainer.appendChild(input);
         });
         form.submit();
+    },
+    toggleLinkedFilter() {
+        this.showOnlyLinked = !this.showOnlyLinked;
+        this.applyFilters();
+    },
+    applyFilters() {
+        const searchTerm = document.getElementById('exercise-search')?.value.toLowerCase().trim() || '';
+        const exerciseRows = document.querySelectorAll('.exercise-row');
+        const categories = document.querySelectorAll('.exercise-category');
+
+        exerciseRows.forEach(row => {
+            const exerciseName = row.getAttribute('data-name');
+            const muscleGroups = row.getAttribute('data-muscle-groups') || '';
+            const isLinked = row.getAttribute('data-is-linked') === 'true';
+            const searchableText = exerciseName + ' ' + muscleGroups;
+
+            const matchesSearch = searchTerm === '' || searchableText.includes(searchTerm);
+            const matchesLinkedFilter = !this.showOnlyLinked || isLinked;
+
+            if (matchesSearch && matchesLinkedFilter) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+
+        categories.forEach(category => {
+            const tbody = category.querySelector('tbody');
+            if (!tbody) return;
+
+            const visibleRows = tbody.querySelectorAll('.exercise-row:not(.hidden)');
+            if (visibleRows.length === 0) {
+                category.classList.add('hidden');
+            } else {
+                category.classList.remove('hidden');
+            }
+        });
+
+        this.updateSelectAllState();
     }
 }" class="space-y-6">
     <!-- Breadcrumb -->
@@ -83,17 +123,29 @@
         </div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="relative">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-        </span>
-        <input type="text"
-               id="exercise-search"
-               placeholder="Search exercises by name or muscle group..."
-               class="w-full rounded-lg border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+    <!-- Search Bar and Filters -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="relative flex-1">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </span>
+            <input type="text"
+                   id="exercise-search"
+                   placeholder="Search exercises by name or muscle group..."
+                   @input="applyFilters()"
+                   class="w-full rounded-lg border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
+        </div>
+        <div class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-white/3">
+            <label class="flex cursor-pointer items-center gap-2">
+                <input type="checkbox"
+                       @change="toggleLinkedFilter()"
+                       :checked="showOnlyLinked"
+                       class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show only linked</span>
+            </label>
+        </div>
     </div>
 
     <!-- Bulk Action Bar - Fixed at Bottom -->
@@ -182,6 +234,11 @@
                                     </th>
                                     <th class="px-5 py-3 text-left sm:px-6">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            Image
+                                        </p>
+                                    </th>
+                                    <th class="px-5 py-3 text-left sm:px-6">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             Exercise Name
                                         </p>
                                     </th>
@@ -211,7 +268,8 @@
                                 @foreach($category->exercises as $exercise)
                                     <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2"
                                         data-name="{{ strtolower($exercise->name) }}"
-                                        data-muscle-groups="{{ strtolower($exercise->muscleGroups->pluck('name')->implode(' ')) }}">
+                                        data-muscle-groups="{{ strtolower($exercise->muscleGroups->pluck('name')->implode(' ')) }}"
+                                        data-is-linked="{{ isset($exercise->is_linked) && $exercise->is_linked ? 'true' : 'false' }}">
                                         <td class="px-5 py-4 text-center sm:px-6">
                                             @if(!isset($exercise->is_linked) || !$exercise->is_linked)
                                                 <input type="checkbox"
@@ -224,6 +282,15 @@
                                                        class="exercise-checkbox h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                                                        disabled>
                                             @endif
+                                        </td>
+                                        <td class="px-5 py-4 sm:px-6">
+                                            <div class="flex items-center gap-2">
+                                                @if($exercise->getImage($partner))
+                                                    <img src=" {{Storage::url($exercise->getImage($partner))}}" class="w-24 rounded" ></img>
+                                                @else
+                                            <span class="text-gray-400">No image set</span>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center gap-2">
@@ -306,7 +373,7 @@
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                                                 </svg>
                                                             </x-slot:startIcon>
-                                                            Add to inventory
+                                                            Link
                                                         </x-ui.button>
                                                     </form>
                                                 @endif
@@ -333,45 +400,7 @@
 
 @push('scripts')
 <script>
-// Exercise search functionality
-const exerciseSearchInput = document.getElementById('exercise-search');
-if (exerciseSearchInput) {
-    exerciseSearchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase().trim();
-        const exerciseRows = document.querySelectorAll('.exercise-row');
-        const categories = document.querySelectorAll('.exercise-category');
-
-        exerciseRows.forEach(row => {
-            const exerciseName = row.getAttribute('data-name');
-            const muscleGroups = row.getAttribute('data-muscle-groups') || '';
-            const searchableText = exerciseName + ' ' + muscleGroups;
-            if (searchableText.includes(searchTerm)) {
-                row.classList.remove('hidden');
-            } else {
-                row.classList.add('hidden');
-            }
-        });
-
-        categories.forEach(category => {
-            const tbody = category.querySelector('tbody');
-            if (!tbody) return;
-
-            const visibleRows = tbody.querySelectorAll('.exercise-row:not(.hidden)');
-            if (visibleRows.length === 0) {
-                category.classList.add('hidden');
-            } else {
-                category.classList.remove('hidden');
-            }
-        });
-
-        // Update select all state after search
-        if (window.Alpine && window.Alpine.store) {
-            // Trigger Alpine update
-            const event = new Event('alpine:update');
-            document.dispatchEvent(event);
-        }
-    });
-}
+// Filter functionality is now handled by Alpine.js applyFilters() method
 </script>
 
 <style>
