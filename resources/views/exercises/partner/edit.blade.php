@@ -25,6 +25,47 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Left Column: Form Fields -->
             <div class="lg:col-span-2 space-y-6">
+                <!-- Classification & Muscle Groups (read-only) -->
+                <x-common.component-card title="Classification & Muscle Groups">
+                    <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">Set by the exercise library. Shown for reference only.</p>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <h4 class="mb-2 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Classification</h4>
+                            <dl class="space-y-2 text-sm">
+                                <div>
+                                    <dt class="text-gray-500 dark:text-gray-400">Movement Pattern</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $exercise->movementPattern?->name ?? '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-gray-500 dark:text-gray-400">Target Region</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $exercise->targetRegion?->name ?? '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-gray-500 dark:text-gray-400">Equipment Type</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $exercise->equipmentType?->name ?? '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-gray-500 dark:text-gray-400">Angle</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $exercise->angle?->name ?? 'None' }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                        <div>
+                            <h4 class="mb-2 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Muscle Groups</h4>
+                            <dl class="space-y-2 text-sm">
+                                <div>
+                                    <dt class="text-gray-500 dark:text-gray-400">Primary</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $exercise->primaryMuscleGroups->pluck('name')->join(', ') ?: '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-gray-500 dark:text-gray-400">Secondary</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $exercise->secondaryMuscleGroups->pluck('name')->join(', ') ?: '—' }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </x-common.component-card>
+
                 <!-- Exercise Information Card -->
                 <x-common.component-card title="Exercise Information">
                     <div>

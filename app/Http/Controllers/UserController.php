@@ -34,7 +34,7 @@ class UserController extends Controller
                 'workoutSessions as total_workouts',
                 'plans as total_plans',
             ])
-            ->with('activePlan')
+            ->with(relations: 'activeProgram')
             ->latest()
             ->paginate(15);
 
