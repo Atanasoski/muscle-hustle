@@ -33,7 +33,7 @@ class PlanService
         return [
             'user_id' => $user?->id,
             'partner_id' => null,
-            'type' => $validated['type'] ?? PlanType::Custom,
+            'type' => PlanType::Program,
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'duration_weeks' => $validated['duration_weeks'] ?? null,

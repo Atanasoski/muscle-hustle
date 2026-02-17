@@ -41,6 +41,7 @@ class PlanController extends Controller
 
         $plans = Plan::query()
             ->where('user_id', $user->id)
+            ->where('type', PlanType::Program)
             ->withCount('workoutTemplates')
             ->orderByDesc('is_active')
             ->orderByDesc('updated_at')

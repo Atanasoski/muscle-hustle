@@ -45,16 +45,10 @@
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ $plan->description }}</p>
                 @endif
                 <div class="mt-2 flex flex-wrap items-center gap-2">
-                    @if($plan->isProgram())
-                        <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                            Program
-                        </span>
-                    @else
-                        <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                            Custom Plan
-                        </span>
-                    @endif
-                    @if($plan->isProgram() && $plan->duration_weeks)
+                    <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                        Program
+                    </span>
+                    @if($plan->duration_weeks)
                         <span class="text-sm text-gray-500 dark:text-gray-400">
                             • {{ $plan->duration_weeks }} {{ Str::plural('week', $plan->duration_weeks) }}
                         </span>

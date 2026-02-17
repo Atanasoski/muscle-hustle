@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PlanType;
 use App\Enums\WorkoutSessionStatus;
 use App\Http\Requests\InviteUserRequest;
 use App\Mail\UserInvitationMail;
@@ -33,7 +34,7 @@ class UserController extends Controller
                 'workoutSessions as total_workouts',
                 'plans as total_plans',
             ])
-            ->with('activePlan')
+            ->with(relations: 'activeProgram')
             ->latest()
             ->paginate(15);
 
@@ -66,7 +67,7 @@ class UserController extends Controller
         // Get additional stats
         $totalWorkouts = $user->workoutSessions()->count();
         $completedWorkouts = $user->workoutSessions()->where('status', WorkoutSessionStatus::Completed)->count();
-        $activePlan = $user->plans()->where('is_active', true)->first();
+        $activePlan = $user->plans()->where('type', PlanType::Program)->where('is_active', true)->first();
         $lastWorkout = $user->workoutSessions()->where('status', WorkoutSessionStatus::Completed)->latest('performed_at')->first();
 
         // Get recent workout sessions for pagination
@@ -87,7 +88,7 @@ class UserController extends Controller
         $completionRate = $totalWorkouts > 0 ? (int) round(($completedWorkouts / $totalWorkouts) * 100) : null;
         $weeklyWorkouts = $fitnessMetrics['weekly_progress']['current_week_workouts'] ?? null;
         $weeklyGoal = $profile?->training_days_per_week ?: null;
-        $latestPlans = $user->plans()->withCount('workoutTemplates')->latest()->limit(3)->get();
+        $latestPlans = $user->plans()->where('type', PlanType::Program)->withCount('workoutTemplates')->latest()->limit(3)->get();
 
         return view('users.show', compact(
             'partner',

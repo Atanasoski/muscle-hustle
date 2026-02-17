@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\PlanType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -64,7 +65,15 @@ class User extends Authenticatable
      */
     public function activePlan(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(Plan::class)->where('is_active', true);
+        return $this->hasOne(Plan::class)->where('is_active', true)->where('type', PlanType::Custom);
+    }
+
+    /**
+     * Get the active plan for the user.
+     */
+    public function activeProgram(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Plan::class)->where('is_active', true)->where('type', PlanType::Program);
     }
 
     /**

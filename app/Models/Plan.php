@@ -18,6 +18,7 @@ class Plan extends Model
         'partner_id',
         'name',
         'description',
+        'cover_image',
         'is_active',
         'type',
         'duration_weeks',

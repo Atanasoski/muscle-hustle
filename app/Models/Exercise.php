@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ExerciseDifficulty;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +27,15 @@ class Exercise extends Model
         'image',
         'video',
         'default_rest_sec',
+        'difficulty',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'difficulty' => ExerciseDifficulty::class,
+        ];
+    }
 
     /**
      * Relationship: Exercise belongs to Category
