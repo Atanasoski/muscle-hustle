@@ -48,7 +48,7 @@ class UpdateExerciseMuscleImages extends Command
             $this->info('Skipping exercises that already have muscle group images.');
         }
 
-        $exercises = $query->limit(10)->get();
+        $exercises = $query->get();
 
         if ($exercises->isEmpty()) {
             $this->warn('No exercises found to process.');
