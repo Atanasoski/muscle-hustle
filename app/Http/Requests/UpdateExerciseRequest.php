@@ -53,6 +53,10 @@ class UpdateExerciseRequest extends FormRequest
             'default_rest_sec' => ['nullable', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
             'video' => ['nullable', 'mimes:mp4,webm,ogg', 'max:51200'],
+            'primary_muscle_group_ids' => ['nullable', 'array'],
+            'primary_muscle_group_ids.*' => ['exists:muscle_groups,id'],
+            'secondary_muscle_group_ids' => ['nullable', 'array'],
+            'secondary_muscle_group_ids.*' => ['exists:muscle_groups,id'],
         ];
     }
 }

@@ -44,6 +44,10 @@ class StoreExerciseRequest extends FormRequest
             'angle_id' => ['nullable', 'exists:angles,id'],
             'image' => ['nullable', 'string', 'max:255'],
             'default_rest_sec' => ['nullable', 'integer', 'min:0'],
+            'primary_muscle_group_ids' => ['nullable', 'array'],
+            'primary_muscle_group_ids.*' => ['exists:muscle_groups,id'],
+            'secondary_muscle_group_ids' => ['nullable', 'array'],
+            'secondary_muscle_group_ids.*' => ['exists:muscle_groups,id'],
         ];
     }
 }

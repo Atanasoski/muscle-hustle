@@ -3,7 +3,7 @@
 @section('title', 'Exercise Library')
 
 @section('content')
-<div x-data="{ 
+<div x-data="{
     collapsedCategories: {},
     toggleCategory(categoryId) {
         this.collapsedCategories[categoryId] = !this.collapsedCategories[categoryId];
@@ -41,8 +41,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
         </span>
-        <input type="text" 
-               id="exercise-search" 
+        <input type="text"
+               id="exercise-search"
                placeholder="Search exercises by name or muscle group..."
                class="w-full rounded-lg border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
     </div>
@@ -60,10 +60,10 @@
                                 {{ $category->exercises->count() }}
                             </x-ui.badge>
                         </div>
-                        <x-ui.button 
+                        <x-ui.button
                             @click="toggleCategory({{ $category->id }})"
-                            variant="outline" 
-                            size="sm" 
+                            variant="outline"
+                            size="sm"
                             className="px-3! py-1.5!">
                             <span x-text="isCategoryCollapsed({{ $category->id }}) ? 'Expand' : 'Collapse'"></span>
                         </x-ui.button>
@@ -85,6 +85,11 @@
                                 <tr class="border-b border-gray-100 dark:border-gray-800">
                                     <th class="px-5 py-3 text-left sm:px-6 min-w-[200px]">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            Image
+                                        </p>
+                                    </th>
+                                    <th class="px-5 py-3 text-left sm:px-6 min-w-[200px]">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             Exercise Name
                                         </p>
                                     </th>
@@ -93,14 +98,29 @@
                                             Muscle Groups
                                         </p>
                                     </th>
-                                    <th class="px-5 py-3 text-center sm:px-6 hidden md:table-cell">
+                                    <th class="px-5 py-3 text-left sm:px-6 hidden lg:table-cell">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                            Rest Time
+                                            Secondary Muscle Groups
+                                        </p>
+                                    </th>
+                                    <th class="px-5 py-3 text-left sm:px-6 hidden lg:table-cell">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            Movement Pattern
                                         </p>
                                     </th>
                                     <th class="px-5 py-3 text-center sm:px-6">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                            Type
+                                            Equipment Type
+                                        </p>
+                                    </th>
+                                    <th class="px-5 py-3 text-left sm:px-6 hidden lg:table-cell">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            Target Region
+                                        </p>
+                                    </th>
+                                    <th class="px-5 py-3 text-left sm:px-6 hidden lg:table-cell">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            Angle
                                         </p>
                                     </th>
                                     <th class="px-5 py-3 text-right sm:px-6">
@@ -112,9 +132,17 @@
                             </thead>
                             <tbody>
                                 @foreach($category->exercises as $exercise)
-                                    <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2" 
+
+                                    <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2"
                                         data-name="{{ strtolower($exercise->name) }}"
                                         data-muscle-groups="{{ strtolower($exercise->muscleGroups->pluck('name')->implode(' ')) }}">
+                                        <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
+                                            @if($exercise->muscle_group_image)
+                                                <img src="{{ Storage::url($exercise->muscle_group_image) }}" class="w-24 rounded" />
+                                            @else
+                                                <span class="text-xs text-gray-400 dark:text-gray-500">No muscle group image set</span>
+                                            @endif
+                                        </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center gap-2">
                                                 <a href="{{ route('exercises.show', $exercise) }}" class="font-medium text-gray-800 text-theme-sm dark:text-white/90 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
@@ -124,7 +152,7 @@
                                         </td>
                                         <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
                                             <div class="flex flex-wrap gap-1">
-                                                @forelse($exercise->muscleGroups as $muscleGroup)
+                                                @forelse($exercise->primaryMuscleGroups as $muscleGroup)
                                                     <x-ui.badge variant="light" color="light" size="sm">
                                                         {{ $muscleGroup->name }}
                                                     </x-ui.badge>
@@ -133,15 +161,28 @@
                                                 @endforelse
                                             </div>
                                         </td>
-                                        <td class="px-5 py-4 text-center sm:px-6 hidden md:table-cell">
-                                            <x-ui.badge variant="light" color="light" size="sm">
-                                                {{ $exercise->default_rest_sec }}s
-                                            </x-ui.badge>
+                                        <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
+                                            <div class="flex flex-wrap gap-1">
+                                                @forelse($exercise->secondaryMuscleGroups as $muscleGroup)
+                                                    <x-ui.badge variant="light" color="light" size="sm">
+                                                        {{ $muscleGroup->name }}
+                                                    </x-ui.badge>
+                                                @empty
+                                                    <span class="text-xs text-gray-400 dark:text-gray-500">—</span>
+                                                @endforelse
+                                            </div>
                                         </td>
-                                        <td class="px-5 py-4 text-center sm:px-6">
-                                            <x-ui.badge variant="light" color="success" size="sm">
-                                                Global
-                                            </x-ui.badge>
+                                        <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $exercise->movementPattern->name ?? '-' }}</span>
+                                        </td>
+                                        <td class="px-5 py-4 sm:px-6">
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $exercise->equipmentType->name ?? '-' }}</span>
+                                        </td>
+                                        <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $exercise->targetRegion->name ?? '-' }}</span>
+                                        </td>
+                                        <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $exercise->angle->name ?? '-' }}</span>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center justify-end gap-2">
@@ -188,7 +229,7 @@ if (exerciseSearchInput) {
         const searchTerm = this.value.toLowerCase().trim();
         const exerciseRows = document.querySelectorAll('.exercise-row');
         const categories = document.querySelectorAll('.exercise-category');
-        
+
         exerciseRows.forEach(row => {
             const exerciseName = row.getAttribute('data-name');
             const muscleGroups = row.getAttribute('data-muscle-groups') || '';
@@ -199,11 +240,11 @@ if (exerciseSearchInput) {
                 row.classList.add('hidden');
             }
         });
-        
+
         categories.forEach(category => {
             const tbody = category.querySelector('tbody');
             if (!tbody) return;
-            
+
             const visibleRows = tbody.querySelectorAll('.exercise-row:not(.hidden)');
             if (visibleRows.length === 0) {
                 category.classList.add('hidden');

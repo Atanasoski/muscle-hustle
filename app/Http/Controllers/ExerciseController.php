@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\EquipmentType;
 use App\Models\Exercise;
 use App\Models\MovementPattern;
+use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\TargetRegion;
 use App\Services\PartnerExerciseFileService;
@@ -95,7 +96,7 @@ class ExerciseController extends Controller
 
     public function store(StoreExerciseRequest $request)
     {
-        Exercise::create([
+        $exercise = Exercise::create([
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
@@ -105,6 +106,28 @@ class ExerciseController extends Controller
             'angle_id' => $request->angle_id,
             'default_rest_sec' => $request->default_rest_sec ?? 90,
         ]);
+
+        // Sync muscle groups
+        $muscleGroupAttachments = [];
+
+        // Add primary muscle groups
+        if ($request->has('primary_muscle_group_ids') && is_array($request->primary_muscle_group_ids)) {
+            foreach ($request->primary_muscle_group_ids as $muscleGroupId) {
+                $muscleGroupAttachments[$muscleGroupId] = ['is_primary' => true];
+            }
+        }
+
+        // Add secondary muscle groups
+        if ($request->has('secondary_muscle_group_ids') && is_array($request->secondary_muscle_group_ids)) {
+            foreach ($request->secondary_muscle_group_ids as $muscleGroupId) {
+                // If already in array as primary, skip (can't be both)
+                if (! isset($muscleGroupAttachments[$muscleGroupId])) {
+                    $muscleGroupAttachments[$muscleGroupId] = ['is_primary' => false];
+                }
+            }
+        }
+
+        $exercise->muscleGroups()->sync($muscleGroupAttachments);
 
         return redirect()->route('exercises.index')
             ->with('success', 'Exercise created successfully!');
@@ -142,6 +165,28 @@ class ExerciseController extends Controller
         }
 
         $exercise->update($updateData);
+
+        // Sync muscle groups
+        $muscleGroupAttachments = [];
+
+        // Add primary muscle groups
+        if ($request->has('primary_muscle_group_ids') && is_array($request->primary_muscle_group_ids)) {
+            foreach ($request->primary_muscle_group_ids as $muscleGroupId) {
+                $muscleGroupAttachments[$muscleGroupId] = ['is_primary' => true];
+            }
+        }
+
+        // Add secondary muscle groups
+        if ($request->has('secondary_muscle_group_ids') && is_array($request->secondary_muscle_group_ids)) {
+            foreach ($request->secondary_muscle_group_ids as $muscleGroupId) {
+                // If already in array as primary, skip (can't be both)
+                if (! isset($muscleGroupAttachments[$muscleGroupId])) {
+                    $muscleGroupAttachments[$muscleGroupId] = ['is_primary' => false];
+                }
+            }
+        }
+
+        $exercise->muscleGroups()->sync($muscleGroupAttachments);
 
         return redirect()->route('exercises.show', $exercise)
             ->with('success', 'Exercise updated successfully!');
@@ -228,7 +273,7 @@ class ExerciseController extends Controller
         }
 
         // Load exercise with relationships
-        $exercise->load(['category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle']);
+        $exercise->load(['category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle', 'muscleGroups']);
 
         // Get all categories for the dropdown
         $categories = Category::where('type', CategoryType::Workout)
@@ -251,6 +296,15 @@ class ExerciseController extends Controller
             ->orderBy('display_order')
             ->get();
 
+        $muscleGroups = MuscleGroup::query()
+            ->orderBy('body_region')
+            ->orderBy('name')
+            ->get();
+
+        // Get currently selected muscle group IDs
+        $primaryMuscleGroupIds = $exercise->primaryMuscleGroups()->pluck('muscle_groups.id')->toArray();
+        $secondaryMuscleGroupIds = $exercise->secondaryMuscleGroups()->pluck('muscle_groups.id')->toArray();
+
         return view('exercises.admin.edit', compact(
             'exercise',
             'categories',
@@ -258,6 +312,9 @@ class ExerciseController extends Controller
             'targetRegions',
             'equipmentTypes',
             'angles',
+            'muscleGroups',
+            'primaryMuscleGroupIds',
+            'secondaryMuscleGroupIds',
         ));
     }
 
@@ -292,12 +349,18 @@ class ExerciseController extends Controller
             ->orderBy('display_order')
             ->get();
 
+        $muscleGroups = MuscleGroup::query()
+            ->orderBy('body_region')
+            ->orderBy('name')
+            ->get();
+
         return view('exercises.admin.create', compact(
             'categories',
             'movementPatterns',
             'targetRegions',
             'equipmentTypes',
             'angles',
+            'muscleGroups',
         ));
     }
 
