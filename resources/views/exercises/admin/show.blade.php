@@ -3,7 +3,36 @@
 @section('title', $exercise->name)
 
 @section('content')
-<div class="space-y-6">
+<div x-data="{
+    exerciseId: {{ $exercise->id }},
+    imageUrl: @js($exercise->muscle_group_image ? Storage::url($exercise->muscle_group_image) : ''),
+    isLoading: false,
+    async updateMuscleImage() {
+        this.isLoading = true;
+        try {
+            const response = await fetch(`/admin/exercises/${this.exerciseId}/update-muscle-group-image`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                this.imageUrl = data.image_url;
+                alert('Muscle group image updated successfully!');
+            } else {
+                alert(data.error || 'Failed to update muscle group image.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating the muscle group image.');
+        } finally {
+            this.isLoading = false;
+        }
+    }
+}" class="space-y-6">
     <!-- Breadcrumb -->
     <x-common.page-breadcrumb :pageTitle="$exercise->name" :items="[['label' => 'Exercise Library', 'url' => route('exercises.index')]]" />
 
@@ -83,19 +112,39 @@
                 <x-common.component-card title="Media">
                     <div class="grid grid-cols-1 gap-6 {{ ($exercise->image && $exercise->video) || ($exercise->muscle_group_image && ($exercise->image || $exercise->video)) ? 'md:grid-cols-2' : '' }}">
                         <!-- Muscle Group Image -->
-                        @if($exercise->muscle_group_image)
-                            <div>
-                                <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <div>
+                            <div class="mb-3 flex items-center justify-between gap-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Muscle Group Image
                                     <x-ui.badge variant="light" color="info" size="sm" className="ml-2">
                                         Auto-generated
                                     </x-ui.badge>
                                 </label>
-                                <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <img src="{{ Storage::url($exercise->muscle_group_image) }}" alt="Muscle group image" class="max-h-96 w-full object-contain">
+                                <button type="button"
+                                        @click="updateMuscleImage()"
+                                        :disabled="isLoading"
+                                        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-white/3 dark:text-gray-300 dark:hover:bg-white/5">
+                                    <template x-if="!isLoading">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </template>
+                                    <template x-if="isLoading">
+                                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </template>
+                                    <span x-text="isLoading ? 'Updating...' : 'Update Image'"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                <img x-show="imageUrl" :src="imageUrl" alt="Muscle group image" class="max-h-96 w-full object-contain" />
+                                <div x-show="!imageUrl" class="flex items-center justify-center py-8">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">No muscle group image available</p>
                                 </div>
                             </div>
-                        @endif
+                        </div>
 
                         <!-- Image -->
                         @if($exercise->image)

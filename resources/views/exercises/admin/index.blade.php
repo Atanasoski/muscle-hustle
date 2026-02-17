@@ -134,6 +134,16 @@
                                 @foreach($category->exercises as $exercise)
 
                                     <tr class="exercise-row border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/2"
+                                        x-data="{
+                                            dropdownOpen: false,
+                                            toggleDropdown() {
+                                                this.dropdownOpen = !this.dropdownOpen;
+                                            },
+                                            closeDropdown() {
+                                                this.dropdownOpen = false;
+                                            }
+                                        }"
+                                        @click.away="closeDropdown()"
                                         data-name="{{ strtolower($exercise->name) }}"
                                         data-muscle-groups="{{ strtolower($exercise->muscleGroups->pluck('name')->implode(' ')) }}">
                                         <td class="px-5 py-4 sm:px-6 hidden lg:table-cell">
@@ -185,26 +195,45 @@
                                             <span class="text-xs text-gray-400 dark:text-gray-500">{{ $exercise->angle->name ?? '-' }}</span>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
-                                            <div class="flex items-center justify-end gap-2">
-                                                <a href="{{ route('exercises.show', $exercise) }}">
-                                                    <x-ui.button variant="outline" size="sm" className="px-3! py-1.5!">
-                                                        <x-slot:startIcon>
+                                            <div class="relative flex items-center justify-end">
+                                                <button type="button"
+                                                        @click="toggleDropdown()"
+                                                        class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:border-gray-700 dark:bg-white/3 dark:text-gray-300 dark:hover:bg-white/5">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                                    </svg>
+                                                </button>
+
+                                                <!-- Dropdown Menu -->
+                                                <div x-show="dropdownOpen"
+                                                     x-transition:enter="transition ease-out duration-100"
+                                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                                     x-transition:leave="transition ease-in duration-75"
+                                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                                     x-cloak
+                                                     class="absolute right-0 z-50 mt-2 w-48 rounded-2xl border border-gray-200 bg-white shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
+                                                    <div class="p-2 space-y-1" role="menu">
+                                                        <a href="{{ route('exercises.show', $exercise) }}"
+                                                           @click="closeDropdown()"
+                                                           class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                                             </svg>
-                                                        </x-slot:startIcon>
-                                                    </x-ui.button>
-                                                </a>
-                                                <a href="{{ route('exercises.edit', $exercise) }}">
-                                                    <x-ui.button variant="outline" size="sm" className="px-3! py-1.5!">
-                                                        <x-slot:startIcon>
+                                                            View
+                                                        </a>
+                                                        <a href="{{ route('exercises.edit', $exercise) }}"
+                                                           @click="closeDropdown()"
+                                                           class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                             </svg>
-                                                        </x-slot:startIcon>
-                                                    </x-ui.button>
-                                                </a>
+                                                            Edit
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>

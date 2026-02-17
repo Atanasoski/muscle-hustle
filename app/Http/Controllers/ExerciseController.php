@@ -15,14 +15,17 @@ use App\Models\MovementPattern;
 use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\TargetRegion;
+use App\Services\MuscleGroupImageService;
 use App\Services\PartnerExerciseFileService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
 {
     public function __construct(
-        private PartnerExerciseFileService $fileService
+        private PartnerExerciseFileService $fileService,
+        private MuscleGroupImageService $muscleGroupImageService
     ) {}
 
     public function index()
@@ -376,6 +379,48 @@ class ExerciseController extends Controller
 
         return redirect()->route('exercises.index')
             ->with('success', 'Exercise deleted successfully!');
+    }
+
+    /**
+     * Update muscle group image for an exercise.
+     */
+    public function updateMuscleGroupImage(Exercise $exercise): JsonResponse
+    {
+
+        // Load muscle groups if not already loaded
+        $exercise->load(['primaryMuscleGroups', 'secondaryMuscleGroups']);
+
+        // Get muscle group names
+        $primaryMuscles = $exercise->primaryMuscleGroups->pluck('name')->toArray();
+        $secondaryMuscles = $exercise->secondaryMuscleGroups->pluck('name')->toArray();
+
+        if (empty($primaryMuscles) && empty($secondaryMuscles)) {
+            return response()->json(['error' => 'Exercise must have at least one muscle group assigned.'], 400);
+        }
+
+        // Delete old image if exists
+        if ($exercise->muscle_group_image) {
+            Storage::delete($exercise->muscle_group_image);
+        }
+
+        // Fetch and store new image
+        $imagePath = $this->muscleGroupImageService->fetchAndStoreMuscleImage(
+            $primaryMuscles,
+            $secondaryMuscles
+        );
+
+        if ($imagePath === null) {
+            return response()->json(['error' => 'Failed to fetch muscle group image. Please check API configuration.'], 500);
+        }
+
+        // Update exercise with new image path
+        $exercise->update(['muscle_group_image' => $imagePath]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Muscle group image updated successfully!',
+            'image_url' => Storage::url($imagePath),
+        ]);
     }
 
     /**

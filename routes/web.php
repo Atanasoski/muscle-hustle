@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/exercises', [ExerciseController::class, 'store'])->name('exercises.store');
         Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
         Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
+        Route::post('/exercises/{exercise}/update-muscle-group-image', [ExerciseController::class, 'updateMuscleGroupImage'])->name('exercises.updateMuscleGroupImage');
     });
 
     // Dashboard
