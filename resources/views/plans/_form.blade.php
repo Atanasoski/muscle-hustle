@@ -8,7 +8,11 @@
     'cancelAlpineHandler' => null, // when set, Cancel is a button that calls this (e.g. 'closeCreatePlanModal')
 ])
 
-<form action="{{ $action }}" method="POST">
+<form action="{{ $action }}"
+    method="POST"
+    enctype="multipart/form-data"
+    x-data="{ submitting: false }"
+    @submit.capture="submitting = true">
     @csrf
     @if($method !== 'POST')
         @method($method)
@@ -44,6 +48,20 @@
                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
             @enderror
         </div>
+
+        <x-form.filepond
+            name="cover_image"
+            label="Cover image"
+            accept="image/jpeg,image/png,image/webp"
+            maxFileSize="5MB"
+            :required="false"
+            :allowCrop="false"
+            resizeTargetWidth="2400"
+            resizeTargetHeight="2400"
+            resizeMode="contain"
+            :currentFileUrl="$plan?->cover_image ? asset('storage/'.$plan->cover_image) : null"
+            hint="Optional. Whole image kept (no crop). Saved as JPEG; PNG/WebP are converted and compressed. Max 2400 px, max 5MB."
+        />
 
         @if($context === 'user')
             <!-- User context: Always a program, duration always shown -->
@@ -131,8 +149,17 @@
                 </x-ui.button>
             </a>
         @endif
-        <x-ui.button variant="primary" size="md" type="submit">
-            {{ $plan ? 'Update' : 'Create' }} {{ $context === 'library' ? 'Program' : 'Plan' }}
-        </x-ui.button>
+        <button type="submit"
+            :disabled="submitting"
+            class="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3.5 text-sm font-medium transition bg-gray-900 text-white shadow-theme-xs hover:bg-gray-800 disabled:opacity-50 disabled:bg-gray-400 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 dark:disabled:bg-gray-500 dark:disabled:text-gray-300">
+            <span x-show="!submitting">{{ $plan ? 'Update' : 'Create' }} {{ $context === 'library' ? 'Program' : 'Plan' }}</span>
+            <span x-show="submitting" class="inline-flex items-center gap-2" style="display: none;">
+                <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ $plan ? 'Updating' : 'Creating' }}...
+            </span>
+        </button>
     </div>
 </form>

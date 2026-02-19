@@ -875,6 +875,20 @@ pre[class*='language-'] {
     }
 }
 
+/* FilePond: dark mode and theme alignment */
+.dark .filepond--root {
+  @apply rounded-lg;
+}
+.dark .filepond--drop-label {
+  @apply text-gray-400;
+}
+.dark .filepond--panel-root {
+  @apply border-gray-700 bg-gray-800/50;
+}
+.dark .filepond--item-panel {
+  @apply bg-gray-800;
+}
+
 /* Alpine.js x-cloak */
 [x-cloak] {
   display: none !important;

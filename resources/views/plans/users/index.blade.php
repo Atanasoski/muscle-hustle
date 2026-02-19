@@ -6,14 +6,21 @@
 <div class="space-y-6" x-data="{
     editModalOpen: false,
     editingPlan: null,
+    editPlanSubmitting: false,
     createPlanModalOpen: false,
     openEditModal(planData) {
         this.editingPlan = typeof planData === 'string' ? JSON.parse(planData) : planData;
         this.editModalOpen = true;
+        this.$nextTick(() => {
+            if (typeof window.initFilePond === 'function' && this.$refs.editPlanModalContent) {
+                window.initFilePond(this.$refs.editPlanModalContent);
+            }
+        });
     },
     closeEditModal() {
         this.editModalOpen = false;
         this.editingPlan = null;
+        this.editPlanSubmitting = false;
     },
     openCreatePlanModal() { this.createPlanModalOpen = true; },
     closeCreatePlanModal() { this.createPlanModalOpen = false; }
@@ -71,18 +78,34 @@
                                     'duration_weeks' => $plan->duration_weeks,
                                     'is_active' => (bool) $plan->is_active,
                                     'update_url' => route('plans.update', $plan),
+                                    'cover_image_url' => $plan->cover_image ? asset('storage/'.$plan->cover_image) : null,
                                 ];
                             @endphp
                             <tr class="group transition-colors hover:bg-gray-50/80 dark:hover:bg-gray-700"
                                 data-plan="{{ json_encode($planModalData) }}">
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col">
-                                        <a href="{{ route('plans.show', $plan) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                                            {{ $plan->name }}
-                                        </a>
-                                        <span class="mt-1 line-clamp-1 max-w-[250px] text-xs text-gray-500 dark:text-gray-400">
-                                            {{ $plan->description ?? 'No description' }}
-                                        </span>
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+                                            @if($plan->cover_image)
+                                                <img src="{{ asset('storage/'.$plan->cover_image) }}"
+                                                    alt=""
+                                                    class="h-full w-full object-cover">
+                                            @else
+                                                <div class="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-500">
+                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <a href="{{ route('plans.show', $plan) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                                {{ $plan->name }}
+                                            </a>
+                                            <span class="mt-1 line-clamp-1 block max-w-[250px] text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $plan->description ?? 'No description' }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
