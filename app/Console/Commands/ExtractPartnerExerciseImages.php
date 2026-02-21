@@ -177,8 +177,7 @@ class ExtractPartnerExerciseImages extends Command
 
         $query = $partner->exercises()
             ->wherePivot('video', '!=', null)
-            ->wherePivot('image', null);
-
+        ->wherePivot('image', null);
 
         return $query->get();
     }
@@ -196,7 +195,7 @@ class ExtractPartnerExerciseImages extends Command
         $tempImagePath = null;
 
         try {
-            // Get target image path
+            // Get target image path (JPEG format)
             $targetImagePath = $fileService->getImagePath($partner, $exercise, 'jpg');
 
             // Delete old image if force is enabled
@@ -230,7 +229,7 @@ class ExtractPartnerExerciseImages extends Command
                 $tempVideoPath = $storagePath;
             }
 
-            // Create temp file for extracted image
+            // Create temp file for extracted image (JPEG format)
             $tempImagePath = sys_get_temp_dir().'/'.uniqid('image_', true).'.jpg';
 
             // Format time as HH:MM:SS
@@ -239,11 +238,14 @@ class ExtractPartnerExerciseImages extends Command
             $seconds = $extractTime % 60;
             $timeString = sprintf('%02d:%02d:%05.2f', $hours, $minutes, $seconds);
 
-            // Run FFmpeg command
+            // Run FFmpeg command with JPEG format and scaling
+            // -ss before -i is more efficient (seeks before decoding)
+            // -vf "scale=640:-2" scales to 640px width, maintaining aspect ratio
+            // -q:v 2 sets high quality for JPEG (scale 2-31, lower is better quality)
             $command = sprintf(
-                'ffmpeg -i %s -ss %s -vframes 1 -q:v 2 -y %s 2>&1',
-                escapeshellarg($tempVideoPath),
+                'ffmpeg -ss %s -i %s -vframes 1 -vf "scale=640:-2" -q:v 2 -y %s 2>&1',
                 escapeshellarg($timeString),
+                escapeshellarg($tempVideoPath),
                 escapeshellarg($tempImagePath)
             );
 
