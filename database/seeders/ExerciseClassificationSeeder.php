@@ -167,28 +167,80 @@ class ExerciseClassificationSeeder extends Seeder
     }
 
     /**
+     * Well-known exercises that don't contain equipment in their name.
+     * Checked via exact match (lowercased) before heuristic inference.
+     *
+     * @var array<string, string>
+     */
+    private const EXERCISE_EQUIPMENT_OVERRIDES = [
+        // Barbell exercises
+        'deadlift' => 'BARBELL',
+        'romanian deadlift' => 'BARBELL',
+        'sumo deadlift' => 'BARBELL',
+        'trap bar deadlift' => 'BARBELL',
+        'rack pull' => 'BARBELL',
+        'bent-over row' => 'BARBELL',
+        'pendlay row' => 'BARBELL',
+        't-bar row' => 'BARBELL',
+        'chest-supported t-bar row' => 'BARBELL',
+        'close-grip bench press (chest focus)' => 'BARBELL',
+        'close-grip bench press (triceps focus)' => 'BARBELL',
+        'power clean' => 'BARBELL',
+        'power snatch' => 'BARBELL',
+        'push press' => 'BARBELL',
+        'high pull' => 'BARBELL',
+        'thruster' => 'BARBELL',
+        'wrist curls' => 'BARBELL',
+        'reverse wrist curls' => 'BARBELL',
+        'plate front raises' => 'BARBELL',
+
+        // Dumbbell exercises
+        'arnold press' => 'DUMBBELL',
+        'concentration curl' => 'DUMBBELL',
+        'hammer curl' => 'DUMBBELL',
+        'renegade row' => 'DUMBBELL',
+        'farmer\'s walk' => 'DUMBBELL',
+
+        // Cable exercises
+        'face pulls' => 'CABLE',
+        'rope triceps pushdown' => 'CABLE',
+        'reverse-grip triceps pushdown' => 'CABLE',
+        'single-arm triceps pushdown' => 'CABLE',
+
+        // Bodyweight exercises
+        'inverted row' => 'BODYWEIGHT',
+        'nordic hamstring curl' => 'BODYWEIGHT',
+        'box jump' => 'BODYWEIGHT',
+        'hyperextensions' => 'BODYWEIGHT',
+        '45-degree back extension' => 'BODYWEIGHT',
+        'ballerina split stretch' => 'BODYWEIGHT',
+    ];
+
+    /**
      * Infer equipment type from exercise name and category slug.
      */
     private function inferEquipmentType(string $name, ?string $categorySlug): string
     {
         $nameLower = Str::lower($name);
 
-        // Check for Smith Machine in name first (overrides category)
+        // 1. Exact name override for well-known exercises
+        if (isset(self::EXERCISE_EQUIPMENT_OVERRIDES[$nameLower])) {
+            return self::EXERCISE_EQUIPMENT_OVERRIDES[$nameLower];
+        }
+
+        // 2. Explicit equipment in name (most reliable)
         if (Str::contains($nameLower, 'smith')) {
             return 'SMITH';
         }
 
-        // TRX exercises (check before bodyweight)
         if (Str::contains($nameLower, 'trx')) {
             return 'TRX';
         }
 
-        // Landmine exercises use a barbell in a landmine attachment
         if (Str::contains($nameLower, 'landmine')) {
             return 'BARBELL';
         }
 
-        // Check exercise name for equipment keywords
         if (Str::contains($nameLower, 'dumbbell')) {
             return 'DUMBBELL';
         }
@@ -213,25 +265,88 @@ class ExerciseClassificationSeeder extends Seeder
             return 'MEDICINE_BALL';
         }
 
-        // Bodyweight exercises (check for common bodyweight patterns)
+        // 3. "Machine" explicitly in name → MACHINE
+        if (Str::contains($nameLower, 'machine')) {
+            return 'MACHINE';
+        }
+
+        // 4. Context-based inference for exercises without equipment keywords
+
+        // Machine indicators: plate-loaded, pulldown, leg curl/extension, pec deck, hack squat
+        if (Str::contains($nameLower, [
+            'plate-loaded', 'plate loaded',
+            'pulldown', 'pull-down', 'pull down',
+            'leg extension', 'leg curl', 'lying leg', 'seated leg', 'standing leg curl',
+            'pec deck', 'hip abduction',
+            'hack squat', 'pendulum squat',
+            'leg press',
+        ])) {
+            return 'MACHINE';
+        }
+
+        // Cable indicators: pushdown, face pull, crossover
+        if (Str::contains($nameLower, [
+            'pushdown', 'push-down', 'push down',
+            'face pull', 'crossover', 'cross-over',
+        ])) {
+            return 'CABLE';
+        }
+
+        // Barbell indicators: bench press, deadlift, clean, snatch, press (Olympic context)
+        if (Str::contains($nameLower, [
+            'bench press', 'deadlift', 'clean and', 'power clean', 'power snatch',
+            'snatch grip', 'rack pull', 'pendlay',
+        ])) {
+            return 'BARBELL';
+        }
+
+        // Bodyweight indicators
         if (Str::contains($nameLower, [
             'push-up', 'pushup', 'push up',
             'pull-up', 'pullup', 'pull up',
             'chin-up', 'chinup', 'chin up',
-            'dip', 'squat', 'lunge', 'plank',
-            'burpee', 'mountain climber', 'jumping jack',
-            'crunch', 'sit-up', 'situp', 'leg raise',
+            'plank', 'burpee', 'mountain climber', 'jumping jack',
+            'sit-up', 'situp',
             'handstand', 'pike', 'wall sit',
-        ]) && ! Str::contains($nameLower, ['dumbbell', 'barbell', 'kettlebell', 'cable', 'band', 'machine'])) {
+            'sit through', 'sit-through',
+            'snap', 'windmill',
+            'bear crawl', 'crab walk', 'duck walk',
+            'hollow body', 'superman', 'dead bug',
+            'bird dog', 'scorpion',
+            'v-up', 'v sit', 'v-sit',
+            'flutter kick', 'scissor kick',
+            'dragon flag', 'human flag',
+            'muscle-up', 'muscle up',
+            'box jump', 'broad jump', 'depth jump',
+            'inverted row', 'nordic',
+            'hyperextension', 'back extension',
+        ]) && ! Str::contains($nameLower, ['dumbbell', 'barbell', 'kettlebell', 'cable', 'band', 'machine', 'smith', 'trx', 'plate-loaded'])) {
             return 'BODYWEIGHT';
         }
 
-        // Use category slug mapping
+        // Bodyweight: exercises with these patterns that have no equipment qualifier
+        if (Str::contains($nameLower, [
+            'crunch', 'leg raise', 'russian twist',
+            'hip thrust', 'glute bridge',
+            'single leg', 'single-leg',
+            'calf raise', 'standing calf',
+            'dip', 'lunge', 'squat',
+            'hip circle', 'hip mobility',
+        ]) && ! Str::contains($nameLower, ['dumbbell', 'barbell', 'kettlebell', 'cable', 'band', 'machine', 'smith', 'trx', 'plate-loaded', 'hack', 'pendulum', 'leg press'])) {
+            return 'BODYWEIGHT';
+        }
+
+        // 5. Use category slug mapping (for specific equipment categories)
         if ($categorySlug && isset(self::CATEGORY_TO_EQUIPMENT[$categorySlug])) {
             return self::CATEGORY_TO_EQUIPMENT[$categorySlug];
         }
 
-        // Fallback to MACHINE
+        // 6. Power/Olympic lifting without specific equipment → typically barbell
+        if ($categorySlug === 'power-olympic-lifting') {
+            return 'BARBELL';
+        }
+
+        // 7. Fallback to MACHINE only for exercises that genuinely seem like machines
         return 'MACHINE';
     }
 
