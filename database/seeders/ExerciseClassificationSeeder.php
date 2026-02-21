@@ -77,7 +77,7 @@ class ExerciseClassificationSeeder extends Seeder
         'machine-plate-loaded' => 'MACHINE',
         'bodyweight' => 'BODYWEIGHT',
         'bands' => 'BAND',
-        'trx' => 'BODYWEIGHT',
+        'trx' => 'TRX',
     ];
 
     /**
@@ -178,12 +178,22 @@ class ExerciseClassificationSeeder extends Seeder
             return 'SMITH';
         }
 
+        // TRX exercises (check before bodyweight)
+        if (Str::contains($nameLower, 'trx')) {
+            return 'TRX';
+        }
+
+        // Landmine exercises use a barbell in a landmine attachment
+        if (Str::contains($nameLower, 'landmine')) {
+            return 'BARBELL';
+        }
+
         // Check exercise name for equipment keywords
         if (Str::contains($nameLower, 'dumbbell')) {
             return 'DUMBBELL';
         }
 
-        if (Str::contains($nameLower, 'barbell') || Str::contains($nameLower, 'ez-bar') || Str::contains($nameLower, 'ez bar')) {
+        if (Str::contains($nameLower, ['barbell', 'ez-bar', 'ez bar', 'ez curl bar'])) {
             return 'BARBELL';
         }
 
@@ -195,11 +205,24 @@ class ExerciseClassificationSeeder extends Seeder
             return 'CABLE';
         }
 
-        if (Str::contains($nameLower, ['band', 'resistance band'])) {
+        if (Str::contains($nameLower, ['band', 'resistance band', 'resistance-band'])) {
             return 'BAND';
         }
 
-        if (Str::contains($nameLower, 'trx')) {
+        if (Str::contains($nameLower, ['medicine ball', 'med ball', 'medicine-ball'])) {
+            return 'MEDICINE_BALL';
+        }
+
+        // Bodyweight exercises (check for common bodyweight patterns)
+        if (Str::contains($nameLower, [
+            'push-up', 'pushup', 'push up',
+            'pull-up', 'pullup', 'pull up',
+            'chin-up', 'chinup', 'chin up',
+            'dip', 'squat', 'lunge', 'plank',
+            'burpee', 'mountain climber', 'jumping jack',
+            'crunch', 'sit-up', 'situp', 'leg raise',
+            'handstand', 'pike', 'wall sit',
+        ]) && ! Str::contains($nameLower, ['dumbbell', 'barbell', 'kettlebell', 'cable', 'band', 'machine'])) {
             return 'BODYWEIGHT';
         }
 
