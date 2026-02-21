@@ -7,7 +7,6 @@ use App\Models\Partner;
 use App\Services\PartnerExerciseFileService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -317,7 +316,6 @@ class ImportPartnerExerciseVideos extends Command
 
     /**
      * Move video file to partner's storage directory
-     * Optimizes MP4 files during import (one pass instead of two)
      */
     private function moveVideoFile(
         PartnerExerciseFileService $fileService,
@@ -327,9 +325,6 @@ class ImportPartnerExerciseVideos extends Command
         string $extension,
         ?string $sourceDisk = null
     ): ?string {
-        $tempInputPath = null;
-        $tempOutputPath = null;
-
         try {
             // Get target path using the service (will use default disk)
             $targetPath = $fileService->getVideoPath($partner, $exercise, $extension);
@@ -337,13 +332,10 @@ class ImportPartnerExerciseVideos extends Command
             // Delete old video if exists (different extension)
             $fileService->deleteVideo($partner, $exercise);
 
-            $defaultDisk = config('filesystems.default');
-            $isRemoteStorage = in_array($defaultDisk, ['s3']);
-
-            // Get source file to temp location
+            // Read source file
+            $fileContents = null;
             if ($sourceDisk) {
-                // Read from storage disk (S3, etc.) to temp
-                $tempInputPath = sys_get_temp_dir().'/'.uniqid('video_input_', true).'.'.$extension;
+                // Read from storage disk (S3, etc.)
                 $sourceStorage = Storage::disk($sourceDisk);
                 if (! $sourceStorage->exists($sourcePath)) {
                     Log::error('[ImportPartnerExerciseVideos] Source file does not exist on disk', [
@@ -354,61 +346,20 @@ class ImportPartnerExerciseVideos extends Command
                     return null;
                 }
                 $fileContents = $sourceStorage->get($sourcePath);
-                file_put_contents($tempInputPath, $fileContents);
             } else {
-                // Use local filesystem path directly
-                if (! file_exists($sourcePath)) {
-                    Log::error('[ImportPartnerExerciseVideos] Source file does not exist', [
+                // Read from local filesystem
+                $fileContents = file_get_contents($sourcePath);
+                if ($fileContents === false) {
+                    Log::error('[ImportPartnerExerciseVideos] Failed to read source file', [
                         'source' => $sourcePath,
                     ]);
 
                     return null;
                 }
-                $tempInputPath = $sourcePath;
             }
 
-            // Optimize MP4 files during import (one pass)
-            $finalPath = $tempInputPath;
-            if ($extension === 'mp4') {
-                // Create temp output for optimized video
-                $tempOutputPath = sys_get_temp_dir().'/'.uniqid('video_output_', true).'.mp4';
-
-                // Optimize in one go: source → optimized temp file
-                $command = sprintf(
-                    'ffmpeg -i %s -movflags +faststart -c copy -y %s 2>&1',
-                    escapeshellarg($tempInputPath),
-                    escapeshellarg($tempOutputPath)
-                );
-
-                $result = Process::run($command);
-
-                if (! $result->successful() || ! file_exists($tempOutputPath)) {
-                    Log::warn('[ImportPartnerExerciseVideos] Video optimization failed, using original', [
-                        'command' => $command,
-                        'output' => $result->output(),
-                        'error' => $result->errorOutput(),
-                        'source' => $sourcePath,
-                    ]);
-                    // Fall back to non-optimized version
-                    $finalPath = $tempInputPath;
-                } else {
-                    // Use optimized version
-                    $finalPath = $tempOutputPath;
-                }
-            }
-
-            // Read the final file (optimized or original) and store it
-            $finalContents = file_get_contents($finalPath);
-            if ($finalContents === false) {
-                Log::error('[ImportPartnerExerciseVideos] Failed to read final video', [
-                    'path' => $finalPath,
-                ]);
-
-                return null;
-            }
-
-            // Store directly to target (already optimized if MP4)
-            $stored = Storage::put($targetPath, $finalContents);
+            // Store the file to default disk (could be local or S3)
+            $stored = Storage::put($targetPath, $fileContents);
 
             if (! $stored) {
                 Log::error('[ImportPartnerExerciseVideos] Failed to store video', [
@@ -424,12 +375,11 @@ class ImportPartnerExerciseVideos extends Command
             //     Storage::disk($sourceDisk)->delete($sourcePath);
             // }
 
-            Log::info('[ImportPartnerExerciseVideos] Video imported and optimized successfully', [
+            Log::info('[ImportPartnerExerciseVideos] Video moved successfully', [
                 'source' => $sourcePath,
                 'source_disk' => $sourceDisk ?? 'local',
                 'target' => $targetPath,
                 'target_disk' => config('filesystems.default'),
-                'optimized' => $extension === 'mp4' && $finalPath === $tempOutputPath,
                 'partner' => $partner->slug,
                 'exercise' => $exercise->name,
             ]);
@@ -445,15 +395,6 @@ class ImportPartnerExerciseVideos extends Command
             ]);
 
             return null;
-        } finally {
-            // Clean up temp files
-            if ($tempOutputPath && file_exists($tempOutputPath) && $tempOutputPath !== $tempInputPath) {
-                @unlink($tempOutputPath);
-            }
-            // Only delete temp input if we downloaded it (not if it was a local path)
-            if ($tempInputPath && $sourceDisk && file_exists($tempInputPath)) {
-                @unlink($tempInputPath);
-            }
         }
     }
 }
