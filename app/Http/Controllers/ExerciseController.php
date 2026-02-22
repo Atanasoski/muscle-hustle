@@ -19,6 +19,8 @@ use App\Services\MuscleGroupImageService;
 use App\Services\PartnerExerciseFileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
@@ -149,47 +151,44 @@ class ExerciseController extends Controller
             'default_rest_sec' => $request->default_rest_sec,
         ];
 
-        // Handle image upload
+        $oldFilesToDelete = [];
+
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($exercise->image) {
-                Storage::delete($exercise->image);
+                $oldFilesToDelete[] = $exercise->image;
             }
             $updateData['image'] = $request->file('image')->store('exercises/images');
         }
 
-        // Handle video upload
         if ($request->hasFile('video')) {
-            // Delete old video if exists
             if ($exercise->video) {
-                Storage::delete($exercise->video);
+                $oldFilesToDelete[] = $exercise->video;
             }
             $updateData['video'] = $request->file('video')->store('exercises/videos');
         }
 
-        $exercise->update($updateData);
-
-        // Sync muscle groups
         $muscleGroupAttachments = [];
-
-        // Add primary muscle groups
         if ($request->has('primary_muscle_group_ids') && is_array($request->primary_muscle_group_ids)) {
             foreach ($request->primary_muscle_group_ids as $muscleGroupId) {
                 $muscleGroupAttachments[$muscleGroupId] = ['is_primary' => true];
             }
         }
-
-        // Add secondary muscle groups
         if ($request->has('secondary_muscle_group_ids') && is_array($request->secondary_muscle_group_ids)) {
             foreach ($request->secondary_muscle_group_ids as $muscleGroupId) {
-                // If already in array as primary, skip (can't be both)
                 if (! isset($muscleGroupAttachments[$muscleGroupId])) {
                     $muscleGroupAttachments[$muscleGroupId] = ['is_primary' => false];
                 }
             }
         }
 
-        $exercise->muscleGroups()->sync($muscleGroupAttachments);
+        DB::transaction(function () use ($exercise, $updateData, $muscleGroupAttachments) {
+            $exercise->update($updateData);
+            $exercise->muscleGroups()->sync($muscleGroupAttachments);
+        });
+
+        foreach ($oldFilesToDelete as $path) {
+            Storage::delete($path);
+        }
 
         return redirect()->route('exercises.show', $exercise)
             ->with('success', 'Exercise updated successfully!');
@@ -200,14 +199,49 @@ class ExerciseController extends Controller
      */
     public function updatePartnerExercises(UpdatePartnerExerciseRequest $request, Exercise $exercise): RedirectResponse
     {
-        $user = auth()->user();
-        $partner = $user->partner;
+        try {
+            $partner = $request->user()->partner;
 
-        if (! $partner) {
-            abort(403, 'You must be associated with a partner to customize exercises.');
+            $existingPivot = $partner->exercises()->find($exercise->id);
+            $pivotData = $this->buildPartnerPivotData($request, $partner, $exercise, $existingPivot);
+
+            DB::transaction(function () use ($partner, $exercise, $existingPivot, $pivotData) {
+                if ($existingPivot) {
+                    $partner->exercises()->updateExistingPivot($exercise->id, $pivotData);
+                } else {
+                    $partner->exercises()->attach($exercise->id, $pivotData);
+                }
+            });
+
+            $removedMedia = $request->boolean('remove_video');
+
+            return redirect()
+                ->route($removedMedia ? 'partner.exercises.edit' : 'partner.exercises.show', $exercise)
+                ->with('success', $removedMedia ? 'Custom video removed.' : 'Exercise customization updated successfully!');
+        } catch (\Throwable $e) {
+            Log::error('[ExerciseController] Failed to update partner exercise', [
+                'error' => $e->getMessage(),
+                'exercise_id' => $exercise->id,
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to save changes. Please try again.');
         }
+    }
 
-        $existingPivot = $partner->exercises()->find($exercise->id);
+    /**
+     * Build pivot data for partner exercise customization (description, image, video).
+     *
+     * @param  \App\Models\Exercise|null  $existingPivot  The related Exercise if the partner already has it attached, or null
+     * @return array<string, mixed>
+     */
+    private function buildPartnerPivotData(
+        UpdatePartnerExerciseRequest $request,
+        Partner $partner,
+        Exercise $exercise,
+        ?Exercise $existingPivot,
+    ): array {
         $pivot = $existingPivot?->pivot;
 
         $pivotData = [
@@ -216,35 +250,22 @@ class ExerciseController extends Controller
             'video' => $pivot?->video,
         ];
 
-        // Update description (allow setting to null/empty to use default)
         if ($request->has('description')) {
             $pivotData['description'] = $request->description ?: null;
         }
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($pivot?->image) {
-                $this->fileService->deleteImage($partner, $exercise);
-            }
             $pivotData['image'] = $this->fileService->storeImage($request->file('image'), $partner, $exercise);
         }
 
         if ($request->hasFile('video')) {
-            // Delete old video if exists
-            if ($pivot?->video) {
-                $this->fileService->deleteVideo($partner, $exercise);
-            }
             $pivotData['video'] = $this->fileService->storeVideo($request->file('video'), $partner, $exercise);
+        } elseif ($request->boolean('remove_video') && $pivot?->video) {
+            $this->fileService->deleteVideo($partner, $exercise);
+            $pivotData['video'] = null;
         }
 
-        if ($existingPivot) {
-            $partner->exercises()->updateExistingPivot($exercise->id, $pivotData);
-        } else {
-            $partner->exercises()->attach($exercise->id, $pivotData);
-        }
-
-        return redirect()->route('partner.exercises.show', $exercise)
-            ->with('success', 'Exercise customization updated successfully!');
+        return $pivotData;
     }
 
     /**

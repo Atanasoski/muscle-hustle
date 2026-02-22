@@ -7,6 +7,8 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import FilePondPluginImageCrop from 'filepond-plugin-image-crop';
 import FilePondPluginImageResize from 'filepond-plugin-image-resize';
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform';
+import FilePondPluginMediaPreview from 'filepond-plugin-media-preview';
+import 'filepond-plugin-media-preview/dist/filepond-plugin-media-preview.min.css';
 
 FilePond.registerPlugin(
     FilePondPluginImagePreview,
@@ -15,9 +17,40 @@ FilePond.registerPlugin(
     FilePondPluginImageCrop,
     FilePondPluginImageResize,
     FilePondPluginImageTransform,
+    FilePondPluginMediaPreview,
 );
 
 const INIT_ATTR = 'data-filepond-initialized';
+
+const FILEPOND_VIDEO_SELECTORS = '.filepond video, .filepond--media-preview video';
+
+/**
+ * Mute and ensure no volume control on FilePond preview videos (same as exercise videos).
+ */
+function muteFilePondPreviewVideos() {
+    document.querySelectorAll(FILEPOND_VIDEO_SELECTORS).forEach((video) => {
+        video.muted = true;
+    });
+}
+
+/**
+ * Observe DOM so we mute FilePond preview videos as soon as they appear (plugin renders async).
+ */
+function observeFilePondVideos() {
+    if (typeof document === 'undefined') return;
+    let raf = null;
+    const run = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+            muteFilePondPreviewVideos();
+            raf = null;
+        });
+    };
+    const observer = new MutationObserver(run);
+    observer.observe(document.body, { childList: true, subtree: true });
+    muteFilePondPreviewVideos();
+}
+
 
 /**
  * Build options for FilePond from input data attributes.
@@ -157,6 +190,10 @@ export function initFilePond(container = document) {
         const options = getOptionsFromInput(input);
         const pond = FilePond.create(input, options);
 
+        pond.on('addfile', () => {
+            setTimeout(muteFilePondPreviewVideos, 300);
+        });
+
         input.setAttribute(INIT_ATTR, 'true');
 
         if (form) {
@@ -190,4 +227,5 @@ export function initFilePond(container = document) {
 
 if (typeof window !== 'undefined') {
     window.initFilePond = initFilePond;
+    observeFilePondVideos();
 }

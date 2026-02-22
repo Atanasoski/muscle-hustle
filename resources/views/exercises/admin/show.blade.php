@@ -165,7 +165,7 @@
                                     Video
                                 </label>
                                 <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ Storage::url($exercise->video) }}" controls class="h-auto w-full">
+                                    <video src="{{ Storage::url($exercise->video) }}" controls muted class="video-no-sound h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
