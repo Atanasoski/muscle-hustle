@@ -4,7 +4,6 @@ namespace App\Http\Resources\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class PlanResource extends JsonResource
 {
@@ -21,7 +20,6 @@ class PlanResource extends JsonResource
             'partner_id' => $this->partner_id,
             'name' => $this->name,
             'description' => $this->description,
-            'cover_image' => $this->cover_image ? Storage::url($this->cover_image) : null,
             'is_active' => $this->is_active,
             'type' => $this->type?->value,
             'duration_weeks' => $this->duration_weeks,
