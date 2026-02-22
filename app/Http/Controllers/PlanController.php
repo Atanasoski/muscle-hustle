@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Services\PlanService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PlanController extends Controller
@@ -90,6 +91,9 @@ class PlanController extends Controller
         }
 
         $attributes = $this->planService->createAttributes($request->validated(), 'user', $user);
+        if ($request->hasFile('cover_image')) {
+            $attributes['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+        }
         $plan = Plan::create($attributes);
 
         return redirect()->route('plans.show', $plan)
@@ -230,7 +234,14 @@ class PlanController extends Controller
                 ->update(['is_active' => false]);
         }
 
-        $plan->update($request->validated());
+        $data = collect($request->validated())->except('cover_image')->all();
+        if ($request->hasFile('cover_image')) {
+            if ($plan->cover_image) {
+                Storage::disk('public')->delete($plan->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+        }
+        $plan->update($data);
 
         return redirect()->route('plans.index', $plan->user)
             ->with('success', 'Plan updated successfully!');
@@ -311,6 +322,9 @@ class PlanController extends Controller
         }
 
         $attributes = $this->planService->createAttributes($request->validated(), 'library');
+        if ($request->hasFile('cover_image')) {
+            $attributes['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+        }
         $plan = Plan::create($attributes);
 
         return redirect()
@@ -426,7 +440,14 @@ class PlanController extends Controller
             abort(403);
         }
 
-        $plan->update($request->validated());
+        $data = collect($request->validated())->except('cover_image')->all();
+        if ($request->hasFile('cover_image')) {
+            if ($plan->cover_image) {
+                Storage::disk('public')->delete($plan->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+        }
+        $plan->update($data);
 
         return redirect()
             ->route('partner.programs.show', $plan)

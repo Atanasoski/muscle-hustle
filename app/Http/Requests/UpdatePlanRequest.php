@@ -28,6 +28,7 @@ class UpdatePlanRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,webp|max:5120',
             'is_active' => 'nullable|boolean',
             'type' => ['required', Rule::enum(PlanType::class)],
             'duration_weeks' => 'nullable|integer|min:1|max:52',

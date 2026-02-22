@@ -9,6 +9,8 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkoutTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class PlanWebTest extends TestCase
@@ -167,5 +169,95 @@ class PlanWebTest extends TestCase
         $this->assertNotNull($workout);
         $this->assertEquals(3, $workout->week_number);
         $this->assertEquals(2, $workout->order_index);
+    }
+
+    public function test_library_plan_creation_with_cover_image_stores_file(): void
+    {
+        Storage::fake('public');
+        $partner = Partner::factory()->create();
+        $admin = User::factory()->create([
+            'partner_id' => $partner->id,
+        ]);
+        $admin->roles()->attach(Role::where('slug', 'partner_admin')->first());
+
+        $file = UploadedFile::fake()->image('cover.jpg', 800, 600);
+
+        $response = $this->actingAs($admin)->post(route('partner.programs.store'), [
+            'name' => 'Program with Cover',
+            'description' => 'Has a cover image',
+            'type' => 'library',
+            'duration_weeks' => 4,
+            'cover_image' => $file,
+        ]);
+
+        $response->assertRedirect(route('partner.programs.index'));
+        $plan = Plan::where('name', 'Program with Cover')->first();
+        $this->assertNotNull($plan);
+        $this->assertNotNull($plan->cover_image);
+        $this->assertStringStartsWith('plans/cover-images/', $plan->cover_image);
+        Storage::disk('public')->assertExists($plan->cover_image);
+    }
+
+    public function test_user_plan_creation_with_cover_image_stores_file(): void
+    {
+        Storage::fake('public');
+        $partner = Partner::factory()->create();
+        $admin = User::factory()->create([
+            'partner_id' => $partner->id,
+        ]);
+        $admin->roles()->attach(Role::where('slug', 'partner_admin')->first());
+        $member = User::factory()->create(['partner_id' => $partner->id]);
+
+        $file = UploadedFile::fake()->image('plan-cover.png', 1200, 675);
+
+        $response = $this->actingAs($admin)->post(route('plans.store', $member), [
+            'name' => 'User Plan with Cover',
+            'description' => null,
+            'type' => 'program',
+            'duration_weeks' => 2,
+            'is_active' => false,
+            'cover_image' => $file,
+        ]);
+
+        $response->assertRedirect();
+        $plan = Plan::where('name', 'User Plan with Cover')->first();
+        $this->assertNotNull($plan);
+        $this->assertNotNull($plan->cover_image);
+        Storage::disk('public')->assertExists($plan->cover_image);
+    }
+
+    public function test_plan_update_with_cover_image_replaces_old_file(): void
+    {
+        Storage::fake('public');
+        $partner = Partner::factory()->create();
+        $admin = User::factory()->create([
+            'partner_id' => $partner->id,
+        ]);
+        $admin->roles()->attach(Role::where('slug', 'partner_admin')->first());
+        $member = User::factory()->create(['partner_id' => $partner->id]);
+        $plan = Plan::factory()->program()->create([
+            'user_id' => $member->id,
+            'partner_id' => null,
+            'cover_image' => 'plans/cover-images/old-cover.jpg',
+        ]);
+        Storage::disk('public')->put($plan->cover_image, 'old content');
+
+        $newFile = UploadedFile::fake()->image('new-cover.jpg', 800, 450);
+
+        $response = $this->actingAs($admin)->put(route('plans.update', $plan), [
+            'name' => $plan->name,
+            'description' => $plan->description,
+            'type' => 'program',
+            'duration_weeks' => $plan->duration_weeks,
+            'is_active' => $plan->is_active,
+            'cover_image' => $newFile,
+        ]);
+
+        $response->assertRedirect(route('plans.index', $member));
+        $plan->refresh();
+        $this->assertNotNull($plan->cover_image);
+        $this->assertStringStartsWith('plans/cover-images/', $plan->cover_image);
+        Storage::disk('public')->assertMissing('plans/cover-images/old-cover.jpg');
+        Storage::disk('public')->assertExists($plan->cover_image);
     }
 }

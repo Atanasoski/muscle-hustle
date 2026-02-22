@@ -27,6 +27,7 @@ class UpdatePartnerExerciseRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:5000'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
             'video' => ['nullable', 'mimes:mp4,webm,ogg', 'max:51200'],
+            'remove_video' => ['nullable', 'boolean'],
         ];
     }
 }

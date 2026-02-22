@@ -69,80 +69,58 @@ class PartnerExerciseFileService
      * Store an image file for a partner exercise
      *
      * @param  \Illuminate\Http\UploadedFile  $file
-     * @return string|null Storage path or null if failed
+     * @return string Storage path
      */
-    public function storeImage($file, Partner $partner, Exercise $exercise): ?string
+    public function storeImage($file, Partner $partner, Exercise $exercise): string
     {
-        try {
-            $filename = $this->getImageFilename($partner, $exercise);
-            $extension = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg';
-            $path = "{$partner->slug}/exercises/images/{$filename}.{$extension}";
+        $filename = $this->getImageFilename($partner, $exercise);
+        $extension = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg';
+        $path = "{$partner->slug}/exercises/images/{$filename}.{$extension}";
 
-            // Delete old file if it exists (different extension)
-            $this->deleteOldImage($partner, $exercise);
+        $this->deleteOldImage($partner, $exercise);
 
-            Storage::putFileAs(
-                "{$partner->slug}/exercises/images",
-                $file,
-                "{$filename}.{$extension}"
-            );
+        Storage::putFileAs(
+            "{$partner->slug}/exercises/images",
+            $file,
+            "{$filename}.{$extension}"
+        );
 
-            Log::info('[PartnerExerciseFileService] Image stored successfully', [
-                'path' => $path,
-                'partner' => $partner->slug,
-                'exercise' => $exercise->name,
-            ]);
+        Log::info('[PartnerExerciseFileService] Image stored successfully', [
+            'path' => $path,
+            'partner' => $partner->slug,
+            'exercise' => $exercise->name,
+        ]);
 
-            return $path;
-        } catch (\Exception $e) {
-            Log::error('[PartnerExerciseFileService] Error storing image', [
-                'error' => $e->getMessage(),
-                'partner' => $partner->slug,
-                'exercise' => $exercise->name,
-            ]);
-
-            return null;
-        }
+        return $path;
     }
 
     /**
      * Store a video file for a partner exercise
      *
      * @param  \Illuminate\Http\UploadedFile  $file
-     * @return string|null Storage path or null if failed
+     * @return string Storage path
      */
-    public function storeVideo($file, Partner $partner, Exercise $exercise): ?string
+    public function storeVideo($file, Partner $partner, Exercise $exercise): string
     {
-        try {
-            $filename = $this->getVideoFilename($partner, $exercise);
-            $extension = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'mp4';
-            $path = "{$partner->slug}/exercises/videos/{$filename}.{$extension}";
+        $filename = $this->getVideoFilename($partner, $exercise);
+        $extension = $file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'mp4';
+        $path = "{$partner->slug}/exercises/videos/{$filename}.{$extension}";
 
-            // Delete old file if it exists (different extension)
-            $this->deleteOldVideo($partner, $exercise);
+        $this->deleteOldVideo($partner, $exercise);
 
-            Storage::putFileAs(
-                "{$partner->slug}/exercises/videos",
-                $file,
-                "{$filename}.{$extension}"
-            );
+        Storage::putFileAs(
+            "{$partner->slug}/exercises/videos",
+            $file,
+            "{$filename}.{$extension}"
+        );
 
-            Log::info('[PartnerExerciseFileService] Video stored successfully', [
-                'path' => $path,
-                'partner' => $partner->slug,
-                'exercise' => $exercise->name,
-            ]);
+        Log::info('[PartnerExerciseFileService] Video stored successfully', [
+            'path' => $path,
+            'partner' => $partner->slug,
+            'exercise' => $exercise->name,
+        ]);
 
-            return $path;
-        } catch (\Exception $e) {
-            Log::error('[PartnerExerciseFileService] Error storing video', [
-                'error' => $e->getMessage(),
-                'partner' => $partner->slug,
-                'exercise' => $exercise->name,
-            ]);
-
-            return null;
-        }
+        return $path;
     }
 
     /**

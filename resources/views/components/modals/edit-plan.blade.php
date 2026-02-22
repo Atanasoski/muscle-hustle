@@ -17,6 +17,7 @@
 
     <div class="flex min-h-full items-center justify-center p-4">
         <div x-show="editModalOpen"
+            x-ref="editPlanModalContent"
             class="relative w-full max-w-3xl transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all dark:border-gray-800 dark:bg-gray-900"
             @click.away="closeEditModal()">
             <template x-if="editingPlan">

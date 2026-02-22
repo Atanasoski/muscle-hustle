@@ -19,6 +19,11 @@ Alpine.start();
 
 // Initialize components on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+    // FilePond (must run before user can submit forms with file inputs)
+    import('./components/filepond-init').then((module) => {
+        module.initFilePond();
+    });
+
     // Map imports
     if (document.querySelector('#mapOne')) {
         import('./components/map').then(module => module.initMap());
