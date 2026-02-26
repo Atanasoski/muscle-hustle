@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MuscleGroupController;
+use App\Http\Controllers\Api\OnboardingController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
@@ -37,6 +38,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::patch('/profile', [ProfileController::class, 'update']);
     Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto']);
+
+    // Onboarding endpoints
+    Route::post('/onboarding/complete', [OnboardingController::class, 'complete']);
 
     // Exercises CRUD
     Route::apiResource('exercises', ExerciseController::class);
