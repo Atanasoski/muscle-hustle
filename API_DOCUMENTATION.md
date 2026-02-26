@@ -8,19 +8,21 @@ This documentation provides complete information about all API resources and end
 2. [Authentication](#authentication)
 3. [User Management](#user-management)
 4. [User Profile](#user-profile)
+
 5. [Onboarding](#onboarding)
 6. [Exercises](#exercises)
 7. [Muscle Groups](#muscle-groups)
 8. [Categories](#categories)
 9. [Exercise Classifications](#exercise-classifications)
 10. [Fitness Metrics](#fitness-metrics)
-11. [Custom Plans](#custom-plans)
-12. [Programs](#programs)
-13. [Workout Templates](#workout-templates)
-14. [Workout Planner](#workout-planner)
-15. [Workout Sessions](#workout-sessions)
-16. [Complete TypeScript Definitions](#complete-typescript-definitions)
-17. [Error Responses](#error-responses)
+11. [Plans](#plans)
+12. [Custom Plans](#custom-plans)
+13. [Programs](#programs)
+14. [Workout Templates](#workout-templates)
+15. [Workout Planner](#workout-planner)
+16. [Workout Sessions](#workout-sessions)
+17. [Complete TypeScript Definitions](#complete-typescript-definitions)
+18. [Error Responses](#error-responses)
 
 ---
 
@@ -873,6 +875,105 @@ interface WeeklyProgress {
     time_minutes: number;                // Time spent in minutes
   }>;
   historical_weeks?: Array<{ week: string, workouts: number }>; // Historical weekly workout counts for last 8 weeks (optional)
+}
+```
+
+---
+
+## Plans
+
+Plans are managed at `/api/plans`. All responses use `PlanResource`, which includes `cover_image` (full URL or null).
+
+### List Plans
+```
+GET /api/plans
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface PlanListResponse {
+  data: PlanResource[];
+}
+```
+
+### Get Single Plan
+```
+GET /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface PlanShowResponse {
+  data: PlanResource;
+}
+```
+
+### Create Plan
+```
+POST /api/plans
+```
+*Requires authentication*
+
+**Request Body (JSON):**
+```typescript
+interface StorePlanRequest {
+  name: string;           // required, max 255 chars
+  description?: string;   // optional
+  is_active?: boolean;    // optional, defaults to false
+}
+```
+
+**Request Body (multipart/form-data)** — when sending a cover image:
+- `name` (required), `description` (optional), `is_active` (optional)
+- `cover_image` (optional): image file (JPEG, PNG, WebP), max 5MB
+
+**Response (201 Created):**
+```typescript
+interface CreatePlanResponse {
+  message: "Plan created successfully";
+  data: PlanResource;
+}
+```
+
+### Update Plan
+```
+PUT /api/plans/{id}
+PATCH /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Request Body (JSON):**
+```typescript
+interface UpdatePlanRequest {
+  name: string;           // required, max 255 chars
+  description?: string;    // optional
+  is_active?: boolean;     // optional
+}
+```
+
+**Request Body (multipart/form-data)** — when sending a new cover image:
+- Same as JSON, plus optional `cover_image` file (JPEG, PNG, WebP, max 5MB). Replaces existing cover image.
+
+**Response:**
+```typescript
+interface UpdatePlanResponse {
+  message: "Plan updated successfully";
+  data: PlanResource;
+}
+```
+
+### Delete Plan
+```
+DELETE /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface DeletePlanResponse {
+  message: "Plan deleted successfully";
 }
 ```
 
@@ -2212,6 +2313,7 @@ interface PlanResource {
   partner_id: number | null;
   name: string;
   description: string | null;
+  cover_image: string | null;  // Full URL to cover image, or null if not set
   is_active: boolean;
   type: 'custom' | 'library' | 'program';
   duration_weeks: number | null;  // For library and program types only
@@ -2642,5 +2744,5 @@ await fetch(`/api/workout-templates/${pushTemplate.data.id}/exercises`, {
 3. **Set Deletion**: Only the last set for an exercise can be deleted
 4. **Session Uniqueness**: Only one active (uncompleted) session per day per user
 5. **Authorization**: Users can only access their own plans, templates, and sessions
-6. **File Uploads**: Profile photos max 2MB, exercise images max 5MB, videos max 50MB
+6. **File Uploads**: Profile photos max 2MB, exercise images max 5MB, videos max 50MB, plan cover images max 5MB
 7. **Weight Format**: Stored as decimals, may be returned as strings in JSON

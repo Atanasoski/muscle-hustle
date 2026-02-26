@@ -4,6 +4,7 @@ namespace App\Http\Resources\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Storage;
 
 class ProgramResource extends JsonResource
 {
@@ -21,6 +22,7 @@ class ProgramResource extends JsonResource
             'duration_weeks' => $this->duration_weeks,
             'is_active' => $this->is_active,
             'is_library_plan' => $this->isPartnerLibraryPlan(),
+            'cover_image' => $this->cover_image ? Storage::url($this->cover_image) : null,
             'progress_percentage' => $this->when(
                 $this->user_id,
                 fn () => $this->getProgressPercentage(auth()->user())

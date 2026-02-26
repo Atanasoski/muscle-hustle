@@ -16,8 +16,39 @@
         </div>
     </div>
 
+    @if (session('success'))
+        <div class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+            <p class="text-sm text-green-800 dark:text-green-400">{{ session('success') }}</p>
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+            <p class="text-sm text-red-800 dark:text-red-400">{{ session('error') }}</p>
+        </div>
+    @endif
+
     <!-- Edit Form -->
-    <form action="{{ route('exercises.updatePartner', $exercise) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('exercises.updatePartner', $exercise) }}"
+        method="POST"
+        enctype="multipart/form-data"
+        x-data="{
+            submitting: false,
+            removeVideo() {
+                const form = $el;
+                const videoEntry = form._filepondEntries?.find(e => e.options?.name === 'video');
+                if (videoEntry?.pond) videoEntry.pond.removeFiles();
+                let input = form.querySelector('input[name=remove_video]');
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'remove_video';
+                    form.appendChild(input);
+                }
+                input.value = '1';
+                form.requestSubmit();
+            }
+        }"
+        @submit.capture="submitting = true">
         @csrf
         @method('PUT')
 
@@ -131,17 +162,16 @@
                                 </div>
                                 <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Currently using default image</p>
                             @endif
-                            <input type="file"
-                                   name="image"
-                                   accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if($formImage)
-                                    Upload a new image to replace the current custom one (leave empty to keep current)
-                                @else
-                                    Upload a custom image for this exercise (leave empty to use default)
-                                @endif
-                            </p>
+                            <x-form.filepond
+                                name="image"
+                                label=""
+                                accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                maxFileSize="5MB"
+                                :required="false"
+                                :allowCrop="false"
+                                :currentFileUrl="$formImage ? Storage::url($formImage) : null"
+                                hint="{{ $formImage ? 'Upload a new image to replace the current custom one (leave empty to keep current).' : 'Upload a custom image for this exercise (leave empty to use default). Max 5MB.' }}"
+                            />
                         </div>
 
                         <!-- Custom Video -->
@@ -162,30 +192,31 @@
                             </div>
                             @if($formVideo)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ Storage::url($formVideo) }}" controls class="h-auto w-full">
+                                    <video src="{{ Storage::url($formVideo) }}" controls muted class="video-no-sound h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                                 <p class="mb-2 text-xs text-green-600 dark:text-green-400">✓ Custom video is currently set</p>
+                                <button type="button" @click="if (confirm('Remove custom video? The exercise will use the default video (if any).')) removeVideo()" class="text-sm font-medium text-error-600 hover:text-error-700 dark:text-error-400 dark:hover:text-error-300">
+                                    Remove custom video
+                                </button>
                             @elseif($exercise->video)
                                 <div class="mb-3 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <video src="{{ Storage::url($exercise->video) }}" controls class="h-auto w-full">
+                                    <video src="{{ Storage::url($exercise->video) }}" controls muted class="video-no-sound h-auto w-full">
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                                 <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Currently using default video</p>
                             @endif
-                            <input type="file"
-                                   name="video"
-                                   accept="video/mp4,video/webm,video/ogg"
-                                   class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-800 outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:focus:border-brand-500">
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if($formVideo)
-                                    Upload a new video to replace the current custom one (leave empty to keep current)
-                                @else
-                                    Upload a custom video for this exercise (leave empty to use default)
-                                @endif
-                            </p>
+                            <x-form.filepond
+                                name="video"
+                                label=""
+                                accept="video/mp4,video/webm,video/ogg"
+                                maxFileSize="50MB"
+                                :required="false"
+                                :allowCrop="false"
+                                hint="{{ $formVideo ? 'Upload a new video to replace the current custom one (leave empty to keep current). Max 50MB.' : 'Upload a custom video for this exercise (leave empty to use default). Max 50MB.' }}"
+                            />
                         </div>
                     </div>
                 </x-common.component-card>
@@ -280,18 +311,25 @@
 
                 <!-- Footer Buttons -->
                 <div class="flex gap-2">
-                    <a href="{{ route('partner.exercises.index', $exercise) }}" class="flex-1">
+                    <a href="{{ route('partner.exercises.index') }}" class="flex-1">
                         <x-ui.button type="button"
                                 variant="outline"
                                 className="w-full">
                             Cancel
                         </x-ui.button>
                     </a>
-                    <x-ui.button type="submit"
-                            variant="primary"
-                            className="flex-1">
-                        Save Changes
-                    </x-ui.button>
+                    <button type="submit"
+                        :disabled="submitting"
+                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-5 py-3.5 text-sm font-medium transition bg-gray-900 text-white shadow-theme-xs hover:bg-gray-800 disabled:opacity-50 disabled:bg-gray-400 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 dark:disabled:bg-gray-500 dark:disabled:text-gray-300">
+                        <span x-show="!submitting">Save Changes</span>
+                        <span x-show="submitting" class="inline-flex items-center gap-2" style="display: none;">
+                            <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Saving...
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>

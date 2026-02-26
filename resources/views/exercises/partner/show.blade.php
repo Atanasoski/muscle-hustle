@@ -164,8 +164,8 @@
                         @endif
                     </div>
                     @if($videoForPartner || $exercise->video)
-                        <div class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
-                            <video src="{{ Storage::url(($videoForPartner ?? $exercise->video)) }}" controls class="max-h-96 w-full">
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                            <video src="{{ Storage::url($videoForPartner ?? $exercise->video) }}" controls preload="metadata" playsinline muted class="video-no-sound max-h-96 w-full rounded-lg">
                                 Your browser does not support the video tag.
                             </video>
                         </div>
