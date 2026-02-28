@@ -3,6 +3,7 @@
 namespace App\Services\WorkoutGenerator;
 
 use App\Enums\FitnessGoal;
+use App\Enums\TrainingExperience;
 use App\Models\Exercise;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -74,18 +75,29 @@ class DeterministicWorkoutGenerator
         $durationMinutes = $preferences['duration_minutes'] ?? 60;
         $timeRemainingSeconds = $durationMinutes * 60;
 
-        $maxTotal = config('workout_generator.max_total_exercises', 10);
+        // Get goal and experience-based targets
+        $targets = $this->getExerciseCountTargets($user);
+        $minTotal = $targets['min'];
+        $maxTotal = $targets['max'];
+        $targetCompoundRatio = $targets['compound_ratio'];
+
         $maxPerRegion = config('workout_generator.max_exercises_per_region', 4);
+        $maxPerPattern = config('workout_generator.max_exercises_per_pattern', 4);
 
         // Group exercises by target region
         $byRegion = $exercises->groupBy(fn ($e) => $e->targetRegion?->code ?? 'UNKNOWN');
 
-        // Track exercises selected per region
+        // Track exercises selected per region, per pattern, and compound/isolation
         $countByRegion = [];
+        $countByPattern = [];
+        $compoundCount = 0;
+        $isolationCount = 0;
+        $compoundPatterns = config('workout_generator.compound_patterns', []);
 
         // Sort regions by the order in preferences (if provided)
         $preferredRegions = $preferences['target_regions'] ?? array_keys($byRegion->toArray());
 
+        // First pass: strict diversity (pattern|angle uniqueness)
         foreach ($preferredRegions as $region) {
             if (! $byRegion->has($region)) {
                 continue;
@@ -96,7 +108,7 @@ class DeterministicWorkoutGenerator
 
             // Shuffle first for variety on regenerate, then sort by compound-first priority
             $shuffled = $regionExercises->shuffle();
-            $sorted = $this->sortByCompoundPriority($shuffled);
+            $sorted = $this->sortByCompoundPriority($shuffled, $user);
 
             foreach ($sorted as $exercise) {
                 // Check total limit
@@ -119,6 +131,28 @@ class DeterministicWorkoutGenerator
                     continue;
                 }
 
+                // Check pattern limit
+                $patternCount = $countByPattern[$movementPattern] ?? 0;
+                if ($patternCount >= $maxPerPattern) {
+                    continue;
+                }
+
+                // Check compound/isolation ratio steering
+                $isCompound = in_array($movementPattern, $compoundPatterns);
+                $currentTotal = $compoundCount + $isolationCount;
+                if ($currentTotal > 0 && $selected->count() >= $minTotal) {
+                    $currentCompoundRatio = $compoundCount / $currentTotal;
+                    // If we're above target ratio, prefer isolation; if below, prefer compound
+                    // Only enforce ratio when we're at or above minimum to allow flexibility below min
+                    if ($isCompound && $currentCompoundRatio >= $targetCompoundRatio) {
+                        // We have enough compounds, skip this one
+                        continue;
+                    } elseif (! $isCompound && $currentCompoundRatio < $targetCompoundRatio) {
+                        // We need more compounds, skip isolation
+                        continue;
+                    }
+                }
+
                 // Estimate time for this exercise
                 $exerciseTime = $this->estimateExerciseTime($exercise, $user, $preferences);
 
@@ -130,7 +164,77 @@ class DeterministicWorkoutGenerator
                 $selected->push($exercise);
                 $seen[$key] = true;
                 $countByRegion[$region]++;
+                $countByPattern[$movementPattern] = ($countByPattern[$movementPattern] ?? 0) + 1;
+                if ($isCompound) {
+                    $compoundCount++;
+                } else {
+                    $isolationCount++;
+                }
                 $timeRemainingSeconds -= $exerciseTime;
+            }
+        }
+
+        // Second pass: relaxed diversity (if we're below minimum)
+        // Drop pattern|angle uniqueness constraint but still prevent exact duplicate exercises
+        if ($selected->count() < $minTotal && $selected->count() < $maxTotal) {
+            $selectedIds = $selected->pluck('id')->toArray();
+
+            foreach ($preferredRegions as $region) {
+                if (! $byRegion->has($region)) {
+                    continue;
+                }
+
+                $regionExercises = $byRegion->get($region)->shuffle();
+                $sorted = $this->sortByCompoundPriority($regionExercises, $user);
+
+                foreach ($sorted as $exercise) {
+                    if ($selected->count() >= $minTotal || $selected->count() >= $maxTotal) {
+                        break 2;
+                    }
+
+                    // Skip already selected exercises
+                    if (in_array($exercise->id, $selectedIds)) {
+                        continue;
+                    }
+
+                    // Still respect per-pattern cap
+                    $movementPattern = $exercise->movementPattern?->code ?? 'UNKNOWN';
+                    $patternCount = $countByPattern[$movementPattern] ?? 0;
+                    if ($patternCount >= $maxPerPattern) {
+                        continue;
+                    }
+
+                    // Check compound/isolation ratio steering
+                    $isCompound = in_array($movementPattern, $compoundPatterns);
+                    $currentTotal = $compoundCount + $isolationCount;
+                    if ($currentTotal > 0 && $selected->count() >= $minTotal) {
+                        $currentCompoundRatio = $compoundCount / $currentTotal;
+                        if ($isCompound && $currentCompoundRatio >= $targetCompoundRatio) {
+                            // We have enough compounds, skip this one
+                            continue;
+                        } elseif (! $isCompound && $currentCompoundRatio < $targetCompoundRatio) {
+                            // We need more compounds, skip isolation
+                            continue;
+                        }
+                    }
+
+                    // Check time
+                    $exerciseTime = $this->estimateExerciseTime($exercise, $user, $preferences);
+                    if ($timeRemainingSeconds < $exerciseTime) {
+                        continue;
+                    }
+
+                    $selected->push($exercise);
+                    $selectedIds[] = $exercise->id;
+                    $countByRegion[$region] = ($countByRegion[$region] ?? 0) + 1;
+                    $countByPattern[$movementPattern] = ($countByPattern[$movementPattern] ?? 0) + 1;
+                    if ($isCompound) {
+                        $compoundCount++;
+                    } else {
+                        $isolationCount++;
+                    }
+                    $timeRemainingSeconds -= $exerciseTime;
+                }
             }
         }
 
@@ -139,17 +243,30 @@ class DeterministicWorkoutGenerator
 
     /**
      * Sort exercises by compound-first priority while preserving shuffle order within priority groups
+     * For beginners, deprioritize complex compound patterns
      */
-    private function sortByCompoundPriority(Collection $exercises): Collection
+    private function sortByCompoundPriority(Collection $exercises, User $user): Collection
     {
         $compoundPatterns = config('workout_generator.compound_patterns', []);
+        $experience = $user->profile?->training_experience ?? TrainingExperience::Beginner;
+
+        // Complex patterns that beginners should deprioritize
+        $complexPatterns = ['HINGE', 'PULL_VERTICAL'];
+        $isBeginner = $experience === TrainingExperience::Beginner;
 
         // Use stable sort to preserve shuffle order within same priority
-        return $exercises->sortBy(function ($exercise) use ($compoundPatterns) {
+        return $exercises->sortBy(function ($exercise) use ($compoundPatterns, $complexPatterns, $isBeginner) {
             $pattern = $exercise->movementPattern?->code;
 
             // Compound movements get priority 0, isolation gets 1
-            return in_array($pattern, $compoundPatterns) ? 0 : 1;
+            $basePriority = in_array($pattern, $compoundPatterns) ? 0 : 1;
+
+            // For beginners, deprioritize complex patterns (add 0.5 to push them after simple compounds)
+            if ($isBeginner && in_array($pattern, $complexPatterns)) {
+                $basePriority += 0.5;
+            }
+
+            return $basePriority;
         })->values();
     }
 
@@ -176,8 +293,20 @@ class DeterministicWorkoutGenerator
         $fitnessGoal = $user->profile?->fitness_goal ?? FitnessGoal::GeneralFitness;
         $defaults = $this->getGoalDefaults($fitnessGoal);
 
-        $sets = $defaults['sets'];
-        $restSeconds = $defaults['rest_seconds'];
+        $isCompound = in_array(
+            $exercise->movementPattern?->code,
+            config('workout_generator.compound_patterns', [])
+        );
+
+        // Compound exercises use full goal defaults
+        // Isolation exercises use fewer sets and shorter rest
+        if ($isCompound) {
+            $sets = $defaults['sets'];
+            $restSeconds = $defaults['rest_seconds'];
+        } else {
+            $sets = max(2, $defaults['sets'] - 1);
+            $restSeconds = (int) ($defaults['rest_seconds'] * 0.5);
+        }
 
         // Total time = sets × (set duration + rest)
         // Don't count rest after the last set
@@ -231,6 +360,31 @@ class DeterministicWorkoutGenerator
             'sets' => 3,
             'reps' => 10,
             'rest_seconds' => 90,
+        ];
+    }
+
+    /**
+     * Get exercise count targets based on user's goal and experience
+     */
+    private function getExerciseCountTargets(User $user): array
+    {
+        $fitnessGoal = $user->profile?->fitness_goal ?? FitnessGoal::GeneralFitness;
+        $trainingExperience = $user->profile?->training_experience ?? TrainingExperience::Beginner;
+
+        $targets = config('workout_generator.exercise_count_targets', []);
+
+        $goalKey = $fitnessGoal->value;
+        $experienceKey = $trainingExperience->value;
+
+        if (isset($targets[$goalKey][$experienceKey])) {
+            return $targets[$goalKey][$experienceKey];
+        }
+
+        // Fallback to general_fitness/beginner if not found
+        return $targets['general_fitness']['beginner'] ?? [
+            'min' => 4,
+            'max' => 6,
+            'compound_ratio' => 0.75,
         ];
     }
 

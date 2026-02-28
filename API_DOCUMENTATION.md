@@ -8,18 +8,21 @@ This documentation provides complete information about all API resources and end
 2. [Authentication](#authentication)
 3. [User Management](#user-management)
 4. [User Profile](#user-profile)
-5. [Exercises](#exercises)
-6. [Muscle Groups](#muscle-groups)
-7. [Categories](#categories)
-8. [Exercise Classifications](#exercise-classifications)
-9. [Fitness Metrics](#fitness-metrics)
-10. [Custom Plans](#custom-plans)
-11. [Programs](#programs)
-12. [Workout Templates](#workout-templates)
-13. [Workout Planner](#workout-planner)
-14. [Workout Sessions](#workout-sessions)
-15. [Complete TypeScript Definitions](#complete-typescript-definitions)
-16. [Error Responses](#error-responses)
+
+5. [Onboarding](#onboarding)
+6. [Exercises](#exercises)
+7. [Muscle Groups](#muscle-groups)
+8. [Categories](#categories)
+9. [Exercise Classifications](#exercise-classifications)
+10. [Fitness Metrics](#fitness-metrics)
+11. [Plans](#plans)
+12. [Custom Plans](#custom-plans)
+13. [Programs](#programs)
+14. [Workout Templates](#workout-templates)
+15. [Workout Planner](#workout-planner)
+16. [Workout Sessions](#workout-sessions)
+17. [Complete TypeScript Definitions](#complete-typescript-definitions)
+18. [Error Responses](#error-responses)
 
 ---
 
@@ -287,6 +290,82 @@ interface DeletePhotoResponse {
   user: UserResource;
 }
 ```
+
+---
+
+## Onboarding
+
+### Complete Onboarding
+```
+POST /api/onboarding/complete
+```
+*Requires authentication*
+
+Generates a personalized welcome workout plan based on the user's profile. This endpoint should be called when a user completes their onboarding process. The plan is created as a custom plan that the user can fully edit.
+
+**Request Body (optional):**
+```typescript
+interface CompleteOnboardingRequest {
+  plan_name?: string;  // Optional: Custom name for the plan (defaults to "Your Personalized Plan")
+}
+```
+
+**Response (201 Created):**
+```typescript
+interface CompleteOnboardingResponse {
+  message: "Welcome plan created successfully";
+  data: CustomPlanResource;  // Full plan with workout_templates loaded
+}
+```
+
+**Error Responses:**
+
+**409 Conflict:**
+```typescript
+{
+  message: "Onboarding has already been completed"
+}
+```
+
+**422 Unprocessable Entity:**
+```typescript
+{
+  message: "User profile is required for welcome plan generation"
+}
+// OR
+{
+  message: "Fitness goal is required for welcome plan generation"
+}
+// OR
+{
+  message: "Training experience is required for welcome plan generation"
+}
+// OR
+{
+  message: "Training days per week is required for welcome plan generation"
+}
+// OR
+{
+  message: "Workout duration is required for welcome plan generation"
+}
+```
+
+**500 Internal Server Error:**
+```typescript
+{
+  message: "Failed to complete onboarding. Please try again later."
+}
+```
+
+**Notes:**
+- This endpoint can only be called once per user. If `onboarding_completed_at` is already set, it will return a 409 Conflict error.
+- The generated plan is automatically set as active (`is_active: true`).
+- The workout split is automatically determined based on `training_days_per_week`:
+  - 1-2 days: Full Body workouts
+  - 3 days: Push/Legs/Pull split
+  - 4 days: Upper/Lower split
+  - 5-6 days: Push/Pull/Legs (PPL) split
+- Each workout template includes exercises selected by the workout generator based on the user's fitness goal, training experience, and workout duration preferences.
 
 ---
 
@@ -796,6 +875,105 @@ interface WeeklyProgress {
     time_minutes: number;                // Time spent in minutes
   }>;
   historical_weeks?: Array<{ week: string, workouts: number }>; // Historical weekly workout counts for last 8 weeks (optional)
+}
+```
+
+---
+
+## Plans
+
+Plans are managed at `/api/plans`. All responses use `PlanResource`, which includes `cover_image` (full URL or null).
+
+### List Plans
+```
+GET /api/plans
+```
+*Requires authentication*
+
+**Response:**
+```typescript
+interface PlanListResponse {
+  data: PlanResource[];
+}
+```
+
+### Get Single Plan
+```
+GET /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface PlanShowResponse {
+  data: PlanResource;
+}
+```
+
+### Create Plan
+```
+POST /api/plans
+```
+*Requires authentication*
+
+**Request Body (JSON):**
+```typescript
+interface StorePlanRequest {
+  name: string;           // required, max 255 chars
+  description?: string;   // optional
+  is_active?: boolean;    // optional, defaults to false
+}
+```
+
+**Request Body (multipart/form-data)** — when sending a cover image:
+- `name` (required), `description` (optional), `is_active` (optional)
+- `cover_image` (optional): image file (JPEG, PNG, WebP), max 5MB
+
+**Response (201 Created):**
+```typescript
+interface CreatePlanResponse {
+  message: "Plan created successfully";
+  data: PlanResource;
+}
+```
+
+### Update Plan
+```
+PUT /api/plans/{id}
+PATCH /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Request Body (JSON):**
+```typescript
+interface UpdatePlanRequest {
+  name: string;           // required, max 255 chars
+  description?: string;    // optional
+  is_active?: boolean;     // optional
+}
+```
+
+**Request Body (multipart/form-data)** — when sending a new cover image:
+- Same as JSON, plus optional `cover_image` file (JPEG, PNG, WebP, max 5MB). Replaces existing cover image.
+
+**Response:**
+```typescript
+interface UpdatePlanResponse {
+  message: "Plan updated successfully";
+  data: PlanResource;
+}
+```
+
+### Delete Plan
+```
+DELETE /api/plans/{id}
+```
+*Requires authentication (owner only)*
+
+**Response:**
+```typescript
+interface DeletePlanResponse {
+  message: "Plan deleted successfully";
 }
 ```
 
@@ -2135,6 +2313,7 @@ interface PlanResource {
   partner_id: number | null;
   name: string;
   description: string | null;
+  cover_image: string | null;  // Full URL to cover image, or null if not set
   is_active: boolean;
   type: 'custom' | 'library' | 'program';
   duration_weeks: number | null;  // For library and program types only
@@ -2344,6 +2523,7 @@ interface ValidationError {
 | PUT/PATCH | `/api/profile` | Update profile |
 | DELETE | `/api/profile/photo` | Delete profile photo |
 | GET | `/api/user/fitness-metrics` | Get fitness metrics |
+| POST | `/api/onboarding/complete` | Complete onboarding and generate welcome plan |
 
 ### Exercises
 | Method | Endpoint | Description |
@@ -2564,5 +2744,5 @@ await fetch(`/api/workout-templates/${pushTemplate.data.id}/exercises`, {
 3. **Set Deletion**: Only the last set for an exercise can be deleted
 4. **Session Uniqueness**: Only one active (uncompleted) session per day per user
 5. **Authorization**: Users can only access their own plans, templates, and sessions
-6. **File Uploads**: Profile photos max 2MB, exercise images max 5MB, videos max 50MB
+6. **File Uploads**: Profile photos max 2MB, exercise images max 5MB, videos max 50MB, plan cover images max 5MB
 7. **Weight Format**: Stored as decimals, may be returned as strings in JSON

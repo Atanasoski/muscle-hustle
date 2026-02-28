@@ -6,6 +6,7 @@ use App\Enums\FitnessGoal;
 use App\Enums\TrainingExperience;
 use App\Enums\WorkoutSessionStatus;
 use App\Models\Exercise;
+use App\Models\Partner;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\WorkoutSession;
@@ -18,14 +19,19 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_user_can_generate_draft_workout(): void
     {
-        $user = User::factory()->create();
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
         UserProfile::factory()->create([
             'user_id' => $user->id,
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
 
-        Exercise::factory()->count(5)->create();
+        // Create properly classified exercises
+        $exercises = Exercise::factory()->count(5)->press()->barbell()->flat()->create();
+        foreach ($exercises as $exercise) {
+            $exercise->partners()->attach($partner->id);
+        }
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/workout-sessions/generate', []);
@@ -56,14 +62,19 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_user_can_confirm_draft_workout(): void
     {
-        $user = User::factory()->create();
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
         UserProfile::factory()->create([
             'user_id' => $user->id,
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
 
-        Exercise::factory()->count(3)->create();
+        // Create properly classified exercises
+        $exercises = Exercise::factory()->count(3)->press()->barbell()->flat()->create();
+        foreach ($exercises as $exercise) {
+            $exercise->partners()->attach($partner->id);
+        }
 
         // First, generate a draft workout
         $generateResponse = $this->actingAs($user, 'sanctum')
@@ -153,14 +164,19 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_generate_with_preferences(): void
     {
-        $user = User::factory()->create();
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
         UserProfile::factory()->create([
             'user_id' => $user->id,
             'fitness_goal' => FitnessGoal::Strength,
             'training_experience' => TrainingExperience::Advanced,
         ]);
 
-        Exercise::factory()->count(5)->create();
+        // Create properly classified exercises
+        $exercises = Exercise::factory()->count(5)->press()->barbell()->flat()->create();
+        foreach ($exercises as $exercise) {
+            $exercise->partners()->attach($partner->id);
+        }
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/workout-sessions/generate', [
@@ -215,14 +231,19 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_confirm_requires_draft_status(): void
     {
-        $user = User::factory()->create();
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
         UserProfile::factory()->create([
             'user_id' => $user->id,
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
 
-        Exercise::factory()->count(3)->create();
+        // Create properly classified exercises
+        $exercises = Exercise::factory()->count(3)->press()->barbell()->flat()->create();
+        foreach ($exercises as $exercise) {
+            $exercise->partners()->attach($partner->id);
+        }
 
         // Generate a draft session
         $generateResponse = $this->actingAs($user, 'sanctum')
@@ -246,7 +267,8 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_user_can_regenerate_draft_workout(): void
     {
-        $user = User::factory()->create();
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
         UserProfile::factory()->create([
             'user_id' => $user->id,
             'fitness_goal' => FitnessGoal::MuscleGain,
@@ -254,7 +276,10 @@ class WorkoutSessionGenerationTest extends TestCase
         ]);
 
         // Create many exercises to allow for shuffling variety
-        Exercise::factory()->count(20)->create();
+        $exercises = Exercise::factory()->count(20)->press()->barbell()->flat()->create();
+        foreach ($exercises as $exercise) {
+            $exercise->partners()->attach($partner->id);
+        }
 
         // Generate first draft session
         $response1 = $this->actingAs($user, 'sanctum')
@@ -285,14 +310,19 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_regenerate_requires_draft_status(): void
     {
-        $user = User::factory()->create();
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
         UserProfile::factory()->create([
             'user_id' => $user->id,
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
 
-        Exercise::factory()->count(3)->create();
+        // Create properly classified exercises
+        $exercises = Exercise::factory()->count(3)->press()->barbell()->flat()->create();
+        foreach ($exercises as $exercise) {
+            $exercise->partners()->attach($partner->id);
+        }
 
         // Generate and confirm a session
         $generateResponse = $this->actingAs($user, 'sanctum')

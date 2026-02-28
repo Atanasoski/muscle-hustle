@@ -57,12 +57,13 @@ return [
     | Exercise Limits
     |--------------------------------------------------------------------------
     |
-    | Maximum and minimum exercises per target region and total workout.
+    | Maximum and minimum exercises per target region, movement pattern, and total workout.
     |
     */
 
     'max_exercises_per_region' => 4,
     'min_exercises_per_region' => 1,
+    'max_exercises_per_pattern' => 4,
     'max_total_exercises' => 10,
     'min_total_exercises' => 4,
 
@@ -98,4 +99,102 @@ return [
             'rest_seconds' => 60,
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exercise Count Targets by Goal and Experience
+    |--------------------------------------------------------------------------
+    |
+    | Defines minimum, maximum, and compound ratio for exercises based on
+    | user's fitness goal and training experience level.
+    |
+    | - min: Minimum number of exercises to include
+    | - max: Maximum number of exercises to include
+    | - compound_ratio: Fraction (0.0-1.0) of exercises that should be compound
+    |
+    */
+
+    'exercise_count_targets' => [
+        'strength' => [
+            'beginner' => [
+                'min' => 3,
+                'max' => 5,
+                'compound_ratio' => 1.0,
+            ],
+            'intermediate' => [
+                'min' => 4,
+                'max' => 6,
+                'compound_ratio' => 0.80,
+            ],
+            'advanced' => [
+                'min' => 5,
+                'max' => 7,
+                'compound_ratio' => 0.70,
+            ],
+        ],
+        'muscle_gain' => [
+            'beginner' => [
+                'min' => 4,
+                'max' => 6,
+                'compound_ratio' => 0.80,
+            ],
+            'intermediate' => [
+                'min' => 5,
+                'max' => 8,
+                'compound_ratio' => 0.60,
+            ],
+            'advanced' => [
+                'min' => 6,
+                'max' => 10,
+                'compound_ratio' => 0.50,
+            ],
+        ],
+        'fat_loss' => [
+            'beginner' => [
+                'min' => 4,
+                'max' => 6,
+                'compound_ratio' => 0.75,
+            ],
+            'intermediate' => [
+                'min' => 5,
+                'max' => 8,
+                'compound_ratio' => 0.60,
+            ],
+            'advanced' => [
+                'min' => 6,
+                'max' => 10,
+                'compound_ratio' => 0.50,
+            ],
+        ],
+        'general_fitness' => [
+            'beginner' => [
+                'min' => 4,
+                'max' => 6,
+                'compound_ratio' => 0.75,
+            ],
+            'intermediate' => [
+                'min' => 5,
+                'max' => 7,
+                'compound_ratio' => 0.60,
+            ],
+            'advanced' => [
+                'min' => 5,
+                'max' => 8,
+                'compound_ratio' => 0.50,
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Time Estimation Modifiers
+    |--------------------------------------------------------------------------
+    |
+    | Modifiers for time estimation based on exercise type.
+    | These are used to differentiate compound vs isolation exercise time.
+    |
+    */
+
+    'compound_time_modifier' => 1.0,
+    'isolation_time_modifier' => 0.5,
 ];

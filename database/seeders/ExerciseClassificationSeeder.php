@@ -77,7 +77,7 @@ class ExerciseClassificationSeeder extends Seeder
         'machine-plate-loaded' => 'MACHINE',
         'bodyweight' => 'BODYWEIGHT',
         'bands' => 'BAND',
-        'trx' => 'BODYWEIGHT',
+        'trx' => 'TRX',
     ];
 
     /**
@@ -167,23 +167,85 @@ class ExerciseClassificationSeeder extends Seeder
     }
 
     /**
+     * Well-known exercises that don't contain equipment in their name.
+     * Checked via exact match (lowercased) before heuristic inference.
+     *
+     * @var array<string, string>
+     */
+    private const EXERCISE_EQUIPMENT_OVERRIDES = [
+        // Barbell exercises
+        'deadlift' => 'BARBELL',
+        'romanian deadlift' => 'BARBELL',
+        'sumo deadlift' => 'BARBELL',
+        'trap bar deadlift' => 'BARBELL',
+        'rack pull' => 'BARBELL',
+        'bent-over row' => 'BARBELL',
+        'pendlay row' => 'BARBELL',
+        't-bar row' => 'BARBELL',
+        'chest-supported t-bar row' => 'BARBELL',
+        'close-grip bench press (chest focus)' => 'BARBELL',
+        'close-grip bench press (triceps focus)' => 'BARBELL',
+        'power clean' => 'BARBELL',
+        'power snatch' => 'BARBELL',
+        'push press' => 'BARBELL',
+        'high pull' => 'BARBELL',
+        'thruster' => 'BARBELL',
+        'wrist curls' => 'BARBELL',
+        'reverse wrist curls' => 'BARBELL',
+        'plate front raises' => 'BARBELL',
+
+        // Dumbbell exercises
+        'arnold press' => 'DUMBBELL',
+        'concentration curl' => 'DUMBBELL',
+        'hammer curl' => 'DUMBBELL',
+        'renegade row' => 'DUMBBELL',
+        'farmer\'s walk' => 'DUMBBELL',
+
+        // Cable exercises
+        'face pulls' => 'CABLE',
+        'rope triceps pushdown' => 'CABLE',
+        'reverse-grip triceps pushdown' => 'CABLE',
+        'single-arm triceps pushdown' => 'CABLE',
+
+        // Bodyweight exercises
+        'inverted row' => 'BODYWEIGHT',
+        'nordic hamstring curl' => 'BODYWEIGHT',
+        'box jump' => 'BODYWEIGHT',
+        'hyperextensions' => 'BODYWEIGHT',
+        '45-degree back extension' => 'BODYWEIGHT',
+        'ballerina split stretch' => 'BODYWEIGHT',
+    ];
+
+    /**
      * Infer equipment type from exercise name and category slug.
      */
     private function inferEquipmentType(string $name, ?string $categorySlug): string
     {
         $nameLower = Str::lower($name);
 
-        // Check for Smith Machine in name first (overrides category)
+        // 1. Exact name override for well-known exercises
+        if (isset(self::EXERCISE_EQUIPMENT_OVERRIDES[$nameLower])) {
+            return self::EXERCISE_EQUIPMENT_OVERRIDES[$nameLower];
+        }
+
+        // 2. Explicit equipment in name (most reliable)
         if (Str::contains($nameLower, 'smith')) {
             return 'SMITH';
         }
 
-        // Check exercise name for equipment keywords
+        if (Str::contains($nameLower, 'trx')) {
+            return 'TRX';
+        }
+
+        if (Str::contains($nameLower, 'landmine')) {
+            return 'BARBELL';
+        }
+
         if (Str::contains($nameLower, 'dumbbell')) {
             return 'DUMBBELL';
         }
 
-        if (Str::contains($nameLower, 'barbell') || Str::contains($nameLower, 'ez-bar') || Str::contains($nameLower, 'ez bar')) {
+        if (Str::contains($nameLower, ['barbell', 'ez-bar', 'ez bar', 'ez curl bar'])) {
             return 'BARBELL';
         }
 
@@ -195,20 +257,96 @@ class ExerciseClassificationSeeder extends Seeder
             return 'CABLE';
         }
 
-        if (Str::contains($nameLower, ['band', 'resistance band'])) {
+        if (Str::contains($nameLower, ['band', 'resistance band', 'resistance-band'])) {
             return 'BAND';
         }
 
-        if (Str::contains($nameLower, 'trx')) {
+        if (Str::contains($nameLower, ['medicine ball', 'med ball', 'medicine-ball'])) {
+            return 'MEDICINE_BALL';
+        }
+
+        // 3. "Machine" explicitly in name → MACHINE
+        if (Str::contains($nameLower, 'machine')) {
+            return 'MACHINE';
+        }
+
+        // 4. Context-based inference for exercises without equipment keywords
+
+        // Machine indicators: plate-loaded, pulldown, leg curl/extension, pec deck, hack squat
+        if (Str::contains($nameLower, [
+            'plate-loaded', 'plate loaded',
+            'pulldown', 'pull-down', 'pull down',
+            'leg extension', 'leg curl', 'lying leg', 'seated leg', 'standing leg curl',
+            'pec deck', 'hip abduction',
+            'hack squat', 'pendulum squat',
+            'leg press',
+        ])) {
+            return 'MACHINE';
+        }
+
+        // Cable indicators: pushdown, face pull, crossover
+        if (Str::contains($nameLower, [
+            'pushdown', 'push-down', 'push down',
+            'face pull', 'crossover', 'cross-over',
+        ])) {
+            return 'CABLE';
+        }
+
+        // Barbell indicators: bench press, deadlift, clean, snatch, press (Olympic context)
+        if (Str::contains($nameLower, [
+            'bench press', 'deadlift', 'clean and', 'power clean', 'power snatch',
+            'snatch grip', 'rack pull', 'pendlay',
+        ])) {
+            return 'BARBELL';
+        }
+
+        // Bodyweight indicators
+        if (Str::contains($nameLower, [
+            'push-up', 'pushup', 'push up',
+            'pull-up', 'pullup', 'pull up',
+            'chin-up', 'chinup', 'chin up',
+            'plank', 'burpee', 'mountain climber', 'jumping jack',
+            'sit-up', 'situp',
+            'handstand', 'pike', 'wall sit',
+            'sit through', 'sit-through',
+            'snap', 'windmill',
+            'bear crawl', 'crab walk', 'duck walk',
+            'hollow body', 'superman', 'dead bug',
+            'bird dog', 'scorpion',
+            'v-up', 'v sit', 'v-sit',
+            'flutter kick', 'scissor kick',
+            'dragon flag', 'human flag',
+            'muscle-up', 'muscle up',
+            'box jump', 'broad jump', 'depth jump',
+            'inverted row', 'nordic',
+            'hyperextension', 'back extension',
+        ]) && ! Str::contains($nameLower, ['dumbbell', 'barbell', 'kettlebell', 'cable', 'band', 'machine', 'smith', 'trx', 'plate-loaded'])) {
             return 'BODYWEIGHT';
         }
 
-        // Use category slug mapping
+        // Bodyweight: exercises with these patterns that have no equipment qualifier
+        if (Str::contains($nameLower, [
+            'crunch', 'leg raise', 'russian twist',
+            'hip thrust', 'glute bridge',
+            'single leg', 'single-leg',
+            'calf raise', 'standing calf',
+            'dip', 'lunge', 'squat',
+            'hip circle', 'hip mobility',
+        ]) && ! Str::contains($nameLower, ['dumbbell', 'barbell', 'kettlebell', 'cable', 'band', 'machine', 'smith', 'trx', 'plate-loaded', 'hack', 'pendulum', 'leg press'])) {
+            return 'BODYWEIGHT';
+        }
+
+        // 5. Use category slug mapping (for specific equipment categories)
         if ($categorySlug && isset(self::CATEGORY_TO_EQUIPMENT[$categorySlug])) {
             return self::CATEGORY_TO_EQUIPMENT[$categorySlug];
         }
 
-        // Fallback to MACHINE
+        // 6. Power/Olympic lifting without specific equipment → typically barbell
+        if ($categorySlug === 'power-olympic-lifting') {
+            return 'BARBELL';
+        }
+
+        // 7. Fallback to MACHINE only for exercises that genuinely seem like machines
         return 'MACHINE';
     }
 
@@ -221,8 +359,8 @@ class ExerciseClassificationSeeder extends Seeder
     {
         $nameLower = Str::lower($name);
 
-        // Press patterns (chest press, shoulder press, overhead press, bench press)
-        if (Str::contains($nameLower, ['bench press', 'chest press', 'shoulder press', 'overhead press', 'military press'])) {
+        // Press patterns (chest press, shoulder press, overhead press, bench press, push press, landmine press)
+        if (Str::contains($nameLower, ['bench press', 'chest press', 'shoulder press', 'overhead press', 'military press', 'push press', 'landmine press'])) {
             return 'PRESS';
         }
 
@@ -404,40 +542,167 @@ class ExerciseClassificationSeeder extends Seeder
     }
 
     /**
+     * Movement pattern to default angle mapping.
+     *
+     * @var array<string, string>
+     */
+    private const MOVEMENT_TO_DEFAULT_ANGLE = [
+        'PRESS' => 'FLAT',
+        'ROW' => 'HORIZONTAL',
+        'FLY' => 'FLAT',
+        'PULL_VERTICAL' => 'VERTICAL',
+        'DIP' => 'VERTICAL',
+        'PUSHUP' => 'HORIZONTAL',
+    ];
+
+    /**
      * Infer angle from exercise name.
      */
     private function inferAngle(string $name, string $movementCode): ?string
     {
         $nameLower = Str::lower($name);
 
-        // Incline angle
+        // Explicit angle keywords (highest priority)
         if (Str::contains($nameLower, 'incline')) {
             return 'INCLINE';
         }
 
-        // Decline angle
         if (Str::contains($nameLower, 'decline')) {
             return 'DECLINE';
         }
 
-        // Low-to-high angle
-        if (Str::contains($nameLower, ['low-to-high', 'low to high'])) {
+        if (Str::contains($nameLower, ['low-to-high', 'low to high', 'landmine'])) {
             return 'LOW_TO_HIGH';
         }
 
-        // High-to-low angle
         if (Str::contains($nameLower, ['high-to-low', 'high to low'])) {
             return 'HIGH_TO_LOW';
         }
 
-        // Vertical angle (overhead or vertical pull movements)
-        if (Str::contains($nameLower, 'overhead')) {
+        // Vertical angle keywords (overhead, standing press variations, front raise, etc.)
+        if (Str::contains($nameLower, [
+            'overhead', 'push press', 'standing press', 'arnold press', 'z press',
+            'front raise', 'military press', 'strict press', 'press behind neck',
+            'upright row', 'pull-up', 'chin-up', 'lat pulldown', 'cable pulldown',
+        ])) {
             return 'VERTICAL';
+        }
+
+        // Shoulder press variations (without incline qualifier) are vertical
+        if (Str::contains($nameLower, 'shoulder press') && ! Str::contains($nameLower, 'incline')) {
+            return 'VERTICAL';
+        }
+
+        // Position-based angle inference for PRESS movements
+        if ($movementCode === 'PRESS') {
+            // Standing/seated variations suggest vertical
+            if (Str::contains($nameLower, ['standing', 'seated press', 'seated shoulder'])) {
+                return 'VERTICAL';
+            }
+
+            // Half-kneeling, kneeling variations often suggest vertical or low-to-high
+            if (Str::contains($nameLower, ['half-kneeling', 'half kneeling', 'kneeling press'])) {
+                return 'LOW_TO_HIGH';
+            }
+
+            // Bench press (no incline/decline qualifier) is flat
+            if (Str::contains($nameLower, 'bench press') && ! Str::contains($nameLower, ['incline', 'decline'])) {
+                return 'FLAT';
+            }
+
+            // Floor press is flat
+            if (Str::contains($nameLower, 'floor press')) {
+                return 'FLAT';
+            }
+
+            // Close-grip, wide-grip variations of bench press are flat
+            if (Str::contains($nameLower, ['close-grip', 'close grip', 'wide-grip', 'wide grip']) && Str::contains($nameLower, 'press')) {
+                return 'FLAT';
+            }
+        }
+
+        // Position-based angle inference for ROW movements
+        if ($movementCode === 'ROW') {
+            // Bent-over, pendlay, t-bar rows are horizontal
+            if (Str::contains($nameLower, ['bent-over', 'bent over', 'pendlay', 't-bar', 't bar', 'barbell row'])) {
+                return 'HORIZONTAL';
+            }
+
+            // Seated rows are horizontal
+            if (Str::contains($nameLower, ['seated row', 'seated cable row', 'machine row'])) {
+                return 'HORIZONTAL';
+            }
+
+            // Single-arm, one-arm variations often suggest low-to-high
+            if (Str::contains($nameLower, ['single-arm', 'single arm', 'one-arm', 'one arm'])) {
+                return 'LOW_TO_HIGH';
+            }
+
+            // Chest-supported rows are horizontal
+            if (Str::contains($nameLower, ['chest-supported', 'chest supported', 'chest support'])) {
+                return 'HORIZONTAL';
+            }
+
+            // Inverted rows are horizontal
+            if (Str::contains($nameLower, 'inverted row')) {
+                return 'HORIZONTAL';
+            }
+        }
+
+        // Lateral raise variations are horizontal
+        if (Str::contains($nameLower, ['lateral raise', 'side raise', 'side delt'])) {
+            return 'HORIZONTAL';
+        }
+
+        // Rear delt fly is horizontal
+        if (Str::contains($nameLower, ['rear delt', 'rear deltoid', 'rear fly'])) {
+            return 'HORIZONTAL';
+        }
+
+        // Face pull is horizontal
+        if (Str::contains($nameLower, 'face pull')) {
+            return 'HORIZONTAL';
         }
 
         // Vertical pulls are inherently vertical
         if ($movementCode === 'PULL_VERTICAL') {
             return 'VERTICAL';
+        }
+
+        // Dips are vertical
+        if ($movementCode === 'DIP') {
+            return 'VERTICAL';
+        }
+
+        // Pushups are horizontal
+        if ($movementCode === 'PUSHUP') {
+            return 'HORIZONTAL';
+        }
+
+        // For exercises without explicit keywords, use pattern-based defaults
+        // but add some variation based on exercise name patterns
+        if (isset(self::MOVEMENT_TO_DEFAULT_ANGLE[$movementCode])) {
+            $defaultAngle = self::MOVEMENT_TO_DEFAULT_ANGLE[$movementCode];
+
+            // Add variation for PRESS: if it's not a bench press, consider vertical
+            if ($movementCode === 'PRESS' && $defaultAngle === 'FLAT') {
+                // If it contains "press" but not "bench", it might be vertical
+                if (Str::contains($nameLower, 'press') && ! Str::contains($nameLower, 'bench')) {
+                    // Check if it's likely vertical based on other keywords
+                    if (Str::contains($nameLower, ['standing', 'seated', 'military', 'strict', 'overhead'])) {
+                        return 'VERTICAL';
+                    }
+                }
+            }
+
+            // Add variation for ROW: single-arm variations suggest low-to-high
+            if ($movementCode === 'ROW' && $defaultAngle === 'HORIZONTAL') {
+                if (Str::contains($nameLower, ['single-arm', 'single arm', 'one-arm', 'one arm', 'alternating'])) {
+                    return 'LOW_TO_HIGH';
+                }
+            }
+
+            return $defaultAngle;
         }
 
         // Don't force any angle - return null

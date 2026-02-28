@@ -26,6 +26,7 @@ class User extends Authenticatable
         'profile_photo',
         'partner_id',
         'last_login_at',
+        'onboarding_completed_at',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
+            'onboarding_completed_at' => 'datetime',
         ];
     }
 

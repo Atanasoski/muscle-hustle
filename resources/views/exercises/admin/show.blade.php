@@ -112,7 +112,7 @@
                 <x-common.component-card title="Media">
                     <div class="grid grid-cols-1 gap-6 {{ ($exercise->image && $exercise->video) || ($exercise->muscle_group_image && ($exercise->image || $exercise->video)) ? 'md:grid-cols-2' : '' }}">
                         <!-- Muscle Group Image -->
-                        <div>
+                            <div>
                             <div class="mb-3 flex items-center justify-between gap-2">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Muscle Group Image
@@ -138,7 +138,7 @@
                                     <span x-text="isLoading ? 'Updating...' : 'Update Image'"></span>
                                 </button>
                             </div>
-                            <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+                                <div class="flex items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
                                 <img x-show="imageUrl" :src="imageUrl" alt="Muscle group image" class="max-h-96 w-full object-contain" />
                                 <div x-show="!imageUrl" class="flex items-center justify-center py-8">
                                     <p class="text-sm text-gray-500 dark:text-gray-400">No muscle group image available</p>

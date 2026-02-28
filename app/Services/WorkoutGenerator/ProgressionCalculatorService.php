@@ -184,7 +184,10 @@ class ProgressionCalculatorService
     }
 
     /**
-     * Estimate starting weight based on user profile and exercise characteristics
+     * Estimate starting weight based on user profile and exercise characteristics.
+     *
+     * Applies modifiers for movement pattern, gender, experience, equipment type,
+     * and angle. Dumbbell weights are estimated per dumbbell (not total).
      */
     private function estimateStartingWeight(Exercise $exercise, User $user, TrainingExperience $experience): float
     {
@@ -197,10 +200,11 @@ class ProgressionCalculatorService
         $bodyWeight = (float) $profile->weight;
         $gender = $profile->gender ?? \App\Enums\Gender::Male;
 
-        // Get multiplier based on movement pattern
         $movementCode = $exercise->movementPattern?->code ?? 'UNKNOWN';
+        $equipmentCode = $exercise->equipmentType?->code ?? 'UNKNOWN';
+        $angleCode = $exercise->angle?->code ?? null;
 
-        // Base multipliers by movement pattern (as fraction of body weight)
+        // Base multiplier by movement pattern (as fraction of body weight)
         $baseMultiplier = $this->getBaseMultiplier($movementCode);
 
         // Adjust for gender (females typically ~60-70% of male strength ratios)
@@ -212,22 +216,29 @@ class ProgressionCalculatorService
 
         // Adjust for experience
         $experienceModifier = match ($experience) {
-            TrainingExperience::Beginner => 0.6,      // Start conservative but realistic
+            TrainingExperience::Beginner => 0.6,
             TrainingExperience::Intermediate => 1.0,
             TrainingExperience::Advanced => 1.3,
         };
 
-        $estimatedWeight = $bodyWeight * $baseMultiplier * $genderModifier * $experienceModifier;
+        // Adjust for equipment type (dumbbell = per hand, cable lighter, etc.)
+        $equipmentModifier = $this->getEquipmentModifier($equipmentCode);
+
+        // Adjust for angle (overhead press lighter than bench, etc.)
+        $angleModifier = $this->getAngleModifier($movementCode, $angleCode);
+
+        $estimatedWeight = $bodyWeight * $baseMultiplier * $genderModifier
+            * $experienceModifier * $equipmentModifier * $angleModifier;
 
         // Round to realistic weight increments based on equipment type
         return $this->roundToEquipmentIncrement($estimatedWeight, $exercise);
     }
 
     /**
-     * Get the appropriate weight increment based on equipment type
+     * Get the appropriate weight increment based on equipment type.
      *
      * Barbell: 2.5kg (smallest common plate pair = 1.25kg × 2)
-     * Dumbbell: Fixed increments, typically 2kg or 2.5kg jumps
+     * Dumbbell: Fixed increments, typically 2kg or 2.5kg jumps (per dumbbell)
      * Cable/Machine: Usually 2.5kg or 5kg pin increments
      * Kettlebell: Fixed weights, typically 4kg jumps
      */
@@ -237,14 +248,65 @@ class ProgressionCalculatorService
 
         return match (strtoupper($equipmentCode)) {
             'BARBELL' => 2.5,           // 1.25kg plates on each side
-            'DUMBBELL' => 2.0,          // Fixed dumbbell increments (per hand)
+            'DUMBBELL' => 2.0,          // Fixed dumbbell increments (per dumbbell)
             'CABLE' => 2.5,             // Cable stack increments
             'MACHINE' => 5.0,           // Machine weight stack increments
             'SMITH' => 2.5,             // Similar to barbell
             'KETTLEBELL' => 4.0,        // Standard KB jumps (8, 12, 16, 20, 24...)
             'BAND' => 0.0,              // Bands don't have weight
             'BODYWEIGHT' => 0.0,        // No external weight
+            'TRX' => 0.0,              // No external weight
+            'MEDICINE_BALL' => 1.0,    // Fixed weight, smallest ~1kg increment
             default => 2.5,             // Safe default
+        };
+    }
+
+    /**
+     * Get equipment modifier for starting weight estimation.
+     *
+     * Dumbbell weights are per dumbbell (~45% of barbell equivalent due to
+     * stabilization demands). Cable/machine weights differ from free weights.
+     */
+    private function getEquipmentModifier(string $equipmentCode): float
+    {
+        return match (strtoupper($equipmentCode)) {
+            'BARBELL' => 1.0,          // Baseline: total weight on bar
+            'DUMBBELL' => 0.45,        // Per dumbbell (~45% of barbell, stabilization cost)
+            'CABLE' => 0.55,           // Cable stacks lighter due to pulley mechanics
+            'MACHINE' => 0.80,         // Guided path, but stack calibration varies
+            'SMITH' => 0.85,           // Guided barbell, slightly less than free barbell
+            'KETTLEBELL' => 0.45,      // Single implement, similar to per-dumbbell
+            'MEDICINE_BALL' => 0.10,   // Very light implements
+            'BODYWEIGHT' => 1.0,       // N/A (weight increment is 0)
+            'TRX' => 1.0,             // N/A (weight increment is 0)
+            'BAND' => 1.0,            // N/A (weight increment is 0)
+            default => 0.70,           // Conservative default
+        };
+    }
+
+    /**
+     * Get angle modifier for starting weight estimation.
+     *
+     * Only affects upper body presses, rows, and flies where the angle
+     * significantly changes the leverage and difficulty.
+     * e.g. Overhead press (~65% of bench press), incline (~85% of flat).
+     */
+    private function getAngleModifier(string $movementCode, ?string $angleCode): float
+    {
+        // Angle only significantly affects upper body pressing, rowing, and flies
+        if (! in_array($movementCode, ['PRESS', 'ROW', 'FLY'])) {
+            return 1.0;
+        }
+
+        return match ($angleCode) {
+            'FLAT' => 1.0,             // Strongest position for press/fly
+            'HORIZONTAL' => 1.0,       // Strongest position for rows
+            'INCLINE' => 0.85,         // ~15% less than flat
+            'DECLINE' => 1.05,         // Slightly stronger than flat for press
+            'VERTICAL' => 0.65,        // Overhead press ~65% of bench press
+            'LOW_TO_HIGH' => 0.60,     // Landmine/low-to-high angle press
+            'HIGH_TO_LOW' => 0.80,     // High-to-low cable work
+            default => 0.85,           // Conservative default
         };
     }
 
