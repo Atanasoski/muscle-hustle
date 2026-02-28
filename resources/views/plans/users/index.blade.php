@@ -78,7 +78,7 @@
                                     'duration_weeks' => $plan->duration_weeks,
                                     'is_active' => (bool) $plan->is_active,
                                     'update_url' => route('plans.update', $plan),
-                                    'cover_image_url' => $plan->cover_image ? asset('storage/'.$plan->cover_image) : null,
+                                    'cover_image_url' => $plan->cover_image ? Storage::url($plan->cover_image) : null,
                                 ];
                             @endphp
                             <tr class="group transition-colors hover:bg-gray-50/80 dark:hover:bg-gray-700"
@@ -87,7 +87,7 @@
                                     <div class="flex items-center gap-3">
                                         <div class="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
                                             @if($plan->cover_image)
-                                                <img src="{{ asset('storage/'.$plan->cover_image) }}"
+                                                <img src="{{ Storage::url($plan->cover_image) }}"
                                                     alt=""
                                                     class="h-full w-full object-cover">
                                             @else

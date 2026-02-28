@@ -11,15 +11,16 @@ use App\Models\MuscleGroup;
 use App\Models\Partner;
 use App\Models\Plan;
 use App\Models\User;
+use App\Services\PlanFileService;
 use App\Services\PlanService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PlanController extends Controller
 {
     public function __construct(
+        private PlanFileService $planFileService,
         private PlanService $planService
     ) {}
 
@@ -92,7 +93,7 @@ class PlanController extends Controller
 
         $attributes = $this->planService->createAttributes($request->validated(), 'user', $user);
         if ($request->hasFile('cover_image')) {
-            $attributes['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+            $attributes['cover_image'] = $this->planFileService->storeCoverImage($request->file('cover_image'), null);
         }
         $plan = Plan::create($attributes);
 
@@ -236,10 +237,8 @@ class PlanController extends Controller
 
         $data = collect($request->validated())->except('cover_image')->all();
         if ($request->hasFile('cover_image')) {
-            if ($plan->cover_image) {
-                Storage::disk('public')->delete($plan->cover_image);
-            }
-            $data['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+            $this->planFileService->deleteCoverImage($plan->cover_image);
+            $data['cover_image'] = $this->planFileService->storeCoverImage($request->file('cover_image'), null);
         }
         $plan->update($data);
 
@@ -321,9 +320,10 @@ class PlanController extends Controller
             abort(403);
         }
 
+        $partner = Partner::findOrFail($currentUser->partner_id);
         $attributes = $this->planService->createAttributes($request->validated(), 'library');
         if ($request->hasFile('cover_image')) {
-            $attributes['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+            $attributes['cover_image'] = $this->planFileService->storeCoverImage($request->file('cover_image'), $partner);
         }
         $plan = Plan::create($attributes);
 
@@ -442,10 +442,9 @@ class PlanController extends Controller
 
         $data = collect($request->validated())->except('cover_image')->all();
         if ($request->hasFile('cover_image')) {
-            if ($plan->cover_image) {
-                Storage::disk('public')->delete($plan->cover_image);
-            }
-            $data['cover_image'] = $request->file('cover_image')->store('plans/cover-images', 'public');
+            $this->planFileService->deleteCoverImage($plan->cover_image);
+            $plan->loadMissing('partner');
+            $data['cover_image'] = $this->planFileService->storeCoverImage($request->file('cover_image'), $plan->partner);
         }
         $plan->update($data);
 

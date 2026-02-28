@@ -59,7 +59,7 @@
             resizeTargetWidth="2400"
             resizeTargetHeight="2400"
             resizeMode="contain"
-            :currentFileUrl="$plan?->cover_image ? asset('storage/'.$plan->cover_image) : null"
+            :currentFileUrl="$plan?->cover_image ? Storage::url($plan->cover_image) : null"
             hint="Optional. Whole image kept (no crop). Saved as JPEG; PNG/WebP are converted and compressed. Max 2400 px, max 5MB."
         />
 

@@ -173,7 +173,7 @@ class PlanWebTest extends TestCase
 
     public function test_library_plan_creation_with_cover_image_stores_file(): void
     {
-        Storage::fake('public');
+        Storage::fake();
         $partner = Partner::factory()->create();
         $admin = User::factory()->create([
             'partner_id' => $partner->id,
@@ -194,13 +194,13 @@ class PlanWebTest extends TestCase
         $plan = Plan::where('name', 'Program with Cover')->first();
         $this->assertNotNull($plan);
         $this->assertNotNull($plan->cover_image);
-        $this->assertStringStartsWith('plans/cover-images/', $plan->cover_image);
-        Storage::disk('public')->assertExists($plan->cover_image);
+        $this->assertStringStartsWith("{$partner->slug}/plans/cover-images/", $plan->cover_image);
+        Storage::assertExists($plan->cover_image);
     }
 
     public function test_user_plan_creation_with_cover_image_stores_file(): void
     {
-        Storage::fake('public');
+        Storage::fake();
         $partner = Partner::factory()->create();
         $admin = User::factory()->create([
             'partner_id' => $partner->id,
@@ -223,24 +223,26 @@ class PlanWebTest extends TestCase
         $plan = Plan::where('name', 'User Plan with Cover')->first();
         $this->assertNotNull($plan);
         $this->assertNotNull($plan->cover_image);
-        Storage::disk('public')->assertExists($plan->cover_image);
+        $this->assertStringStartsWith('plans/cover-images/', $plan->cover_image);
+        Storage::assertExists($plan->cover_image);
     }
 
     public function test_plan_update_with_cover_image_replaces_old_file(): void
     {
-        Storage::fake('public');
+        Storage::fake();
         $partner = Partner::factory()->create();
         $admin = User::factory()->create([
             'partner_id' => $partner->id,
         ]);
         $admin->roles()->attach(Role::where('slug', 'partner_admin')->first());
         $member = User::factory()->create(['partner_id' => $partner->id]);
+        $oldPath = 'plans/cover-images/old-cover.jpg';
         $plan = Plan::factory()->program()->create([
             'user_id' => $member->id,
             'partner_id' => null,
-            'cover_image' => 'plans/cover-images/old-cover.jpg',
+            'cover_image' => $oldPath,
         ]);
-        Storage::disk('public')->put($plan->cover_image, 'old content');
+        Storage::put($oldPath, 'old content');
 
         $newFile = UploadedFile::fake()->image('new-cover.jpg', 800, 450);
 
@@ -257,7 +259,7 @@ class PlanWebTest extends TestCase
         $plan->refresh();
         $this->assertNotNull($plan->cover_image);
         $this->assertStringStartsWith('plans/cover-images/', $plan->cover_image);
-        Storage::disk('public')->assertMissing('plans/cover-images/old-cover.jpg');
-        Storage::disk('public')->assertExists($plan->cover_image);
+        Storage::assertMissing($oldPath);
+        Storage::assertExists($plan->cover_image);
     }
 }
