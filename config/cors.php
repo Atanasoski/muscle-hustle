@@ -26,6 +26,8 @@ return [
         'https://fit-nation-app.vercel.app',
         'https://fitnation-topaz.vercel.app',
         'https://app.fitnation.mk',
+        'https://*.fitnation.mk',
+        'https://fitnation.mk',
     ],
 
     'allowed_origins_patterns' => [],
