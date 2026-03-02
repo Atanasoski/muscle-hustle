@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MuscleGroupController;
 use App\Http\Controllers\Api\OnboardingController;
+use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserController;
@@ -20,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 // Public authentication endpoints
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])
+    ->middleware('throttle:6,1');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
+    ->middleware('throttle:6,1');
 
 // Public invitation validation
 Route::get('/invitations/{token}', [InvitationController::class, 'show']);
