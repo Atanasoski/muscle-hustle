@@ -31,6 +31,33 @@ class WorkoutSession extends Model
         'status' => WorkoutSessionStatus::class,
     ];
 
+    protected $appends = ['status_label', 'status_badge_classes'];
+
+    /**
+     * Display label for the session status (for UI badges).
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            WorkoutSessionStatus::Cancelled => 'Cancelled',
+            WorkoutSessionStatus::Completed => 'Completed',
+            WorkoutSessionStatus::Draft => 'Draft',
+            WorkoutSessionStatus::Active => 'In Progress',
+        };
+    }
+
+    /**
+     * Tailwind classes for the status pill badge (rounded-full, index/card).
+     */
+    public function getStatusBadgeClassesAttribute(): string
+    {
+        return match ($this->status) {
+            WorkoutSessionStatus::Cancelled => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+            WorkoutSessionStatus::Completed => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+            default => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+        };
+    }
+
     /**
      * Relationship: WorkoutSession belongs to User
      */
