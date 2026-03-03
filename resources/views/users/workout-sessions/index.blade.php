@@ -44,15 +44,9 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-4">
-                                    @if($session->completed_at)
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                                            Completed
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                                            In Progress
-                                        </span>
-                                    @endif
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $session->status_badge_classes }}">
+                                        {{ $session->status_label }}
+                                    </span>
                                 </td>
                                 <td class="px-4 py-4 text-right">
                                     <a href="{{ route('users.workout-sessions.show', [$user, $session]) }}" class="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">

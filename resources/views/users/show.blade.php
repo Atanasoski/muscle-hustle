@@ -314,10 +314,14 @@
                     <a href="{{ route('users.workout-sessions.show', [$user, $workout]) }}" class="block w-[260px] shrink-0">
                         <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/30 dark:hover:border-gray-700">
                         <div class="flex items-start justify-between gap-3">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-lg {{ $workout->completed_at ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-300' : 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300' }}">
-                                @if($workout->completed_at)
+                            <div class="flex h-9 w-9 items-center justify-center rounded-lg {{ $workout->status_label === 'Completed' ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-300' : ($workout->status_label === 'Cancelled' ? 'bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300' : 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300') }}">
+                                @if($workout->status_label === 'Completed')
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                @elseif($workout->status_label === 'Cancelled')
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 @else
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,8 +330,8 @@
                                     </svg>
                                 @endif
                             </div>
-                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $workout->completed_at ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' }}">
-                                {{ $workout->completed_at ? 'Completed' : 'In Progress' }}
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $workout->status_badge_classes }}">
+                                {{ $workout->status_label }}
                             </span>
                         </div>
 
