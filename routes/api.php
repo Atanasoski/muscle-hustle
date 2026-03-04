@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FitnessMetricsController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MuscleGroupController;
 use App\Http\Controllers\Api\OnboardingController;
+use App\Http\Controllers\Api\PartnerController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProfileController;
@@ -28,6 +29,9 @@ Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']
 
 // Public invitation validation
 Route::get('/invitations/{token}', [InvitationController::class, 'show']);
+
+Route::get('/partners/{partner}/branding', [PartnerController::class, 'branding'])
+    ->middleware('throttle:6,1');
 
 // Protected endpoints
 Route::middleware('auth:sanctum')->name('api.')->group(function () {

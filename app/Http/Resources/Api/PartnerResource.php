@@ -15,19 +15,16 @@ class PartnerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'domain' => $this->domain,
             'is_active' => $this->is_active,
-            'identity' => $this->whenLoaded('identity', function () {
+            'visual_identity' => $this->whenLoaded('identity', function () {
                 return new PartnerVisualIdentityResource($this->identity);
             }),
             'users' => $this->whenLoaded('users', function () {
                 return UserResource::collection($this->users);
-            }),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            })
         ];
     }
 }

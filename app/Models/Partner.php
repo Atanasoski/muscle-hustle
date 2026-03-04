@@ -27,6 +27,14 @@ class Partner extends Model
     }
 
     /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
      * Get the identity for the partner.
      */
     public function identity(): HasOne

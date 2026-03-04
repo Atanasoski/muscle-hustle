@@ -70,6 +70,16 @@ class PartnerController extends Controller
         ]);
     }
 
+    public function branding(Partner $partner): JsonResponse
+    {
+
+        $partner->load('identity');
+
+        return response()->json([
+            'data' => new PartnerResource($partner),
+        ], 200);
+    }
+
     /**
      * Update the specified partner in storage.
      */
