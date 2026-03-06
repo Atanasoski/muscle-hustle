@@ -39,8 +39,9 @@ class WelcomePlanGenerationService
                 'user_id' => $user->id,
                 'partner_id' => $user->partner_id,
                 'name' => $planName ?? 'Your Personalized Plan',
-                'description' => 'Auto-generated welcome plan based on your profile',
-                'type' => PlanType::Custom,
+                'description' => 'Auto-generated 12-week program based on your profile',
+                'type' => PlanType::Program,
+                'duration_weeks' => 12,
                 'is_active' => true,
             ]);
 
@@ -48,13 +49,19 @@ class WelcomePlanGenerationService
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
                 'training_days' => $user->profile->training_days_per_week,
+                'duration_weeks' => 12,
             ]);
 
-            // Generate workout templates for each day
-            $dayIndex = 0;
-            foreach ($split as $targetRegions) {
-                $this->createWorkoutTemplate($plan, $dayIndex, $targetRegions, $user);
-                $dayIndex++;
+            // Generate workout templates for 12 weeks
+            // Each week gets variety through exercise shuffling in the generator
+            $orderIndex = 0;
+            for ($week = 1; $week <= 12; $week++) {
+                $dayIndex = 0;
+                foreach ($split as $targetRegions) {
+                    $this->createWorkoutTemplate($plan, $dayIndex, $targetRegions, $user, $week, $orderIndex);
+                    $dayIndex++;
+                    $orderIndex++;
+                }
             }
 
             // Mark onboarding as complete
@@ -125,13 +132,14 @@ class WelcomePlanGenerationService
     }
 
     /**
-     * Create a workout template for a specific day
+     * Create a workout template for a specific day and week
      */
-    private function createWorkoutTemplate(Plan $plan, int $dayIndex, array $targetRegions, User $user): WorkoutTemplate
+    private function createWorkoutTemplate(Plan $plan, int $dayIndex, array $targetRegions, User $user, int $weekNumber, int $orderIndex): WorkoutTemplate
     {
         $workoutName = $this->getWorkoutName($targetRegions, $dayIndex);
 
         // Generate workout using existing generator
+        // The generator shuffles exercises, so each call will produce variety
         $generatedWorkout = $this->workoutGenerator->generate($user, [
             'target_regions' => $targetRegions,
             'duration_minutes' => $user->profile->workout_duration_minutes,
@@ -143,8 +151,8 @@ class WelcomePlanGenerationService
             'name' => $workoutName,
             'description' => $generatedWorkout['rationale'] ?? null,
             'day_of_week' => $dayIndex,
-            'week_number' => 1,
-            'order_index' => $dayIndex,
+            'week_number' => $weekNumber,
+            'order_index' => $orderIndex,
         ]);
 
         // Attach exercises to template
@@ -164,6 +172,8 @@ class WelcomePlanGenerationService
         Log::info('Workout template created', [
             'template_id' => $template->id,
             'plan_id' => $plan->id,
+            'week_number' => $weekNumber,
+            'day_index' => $dayIndex,
             'exercises_count' => count($generatedWorkout['exercises']),
         ]);
 
