@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Enums\WorkoutSessionStatus;
 use App\Http\Resources\Concerns\FormatsWeights;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,6 +27,14 @@ class WorkoutTemplateResource extends JsonResource
             'day_of_week' => $this->day_of_week,
             'week_number' => $this->week_number,
             'order_index' => $this->order_index,
+            'last_completed_session_id' => $this->when(
+                auth()->check(),
+                fn () => $this->workoutSessions()
+                    ->where('user_id', auth()->id())
+                    ->where('status', WorkoutSessionStatus::Completed)
+                    ->latest('completed_at')
+                    ->value('id')
+            ),
             'plan' => $this->whenLoaded('plan', function () {
                 return new PlanResource($this->plan);
             }),
