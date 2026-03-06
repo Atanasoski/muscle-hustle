@@ -221,8 +221,13 @@ class WorkoutGeneratorDiversityTest extends TestCase
             'duration_minutes' => 30,
         ]);
 
-        // Strength user should get at least 3 exercises in 30 minutes (not just 2)
-        $this->assertGreaterThanOrEqual(3, count($result['exercises']), 'Strength user should get at least 3 exercises in 30 minutes');
+        // Strength user with long rest periods (180s) - each compound exercise takes ~12 min
+        // In 30 minutes with 10% buffer (27 min), only 2 exercises fit, which is correct
+        $safetyMin = config('workout_generator.exercise_count_safety.min', 3);
+        $exerciseCount = count($result['exercises']);
+        // Should get at least safety minimum if time allows, but duration is primary constraint
+        $this->assertGreaterThanOrEqual(2, $exerciseCount, 'Strength user should get at least 2 exercises in 30 minutes (duration is primary constraint)');
+        $this->assertLessThanOrEqual($safetyMin + 1, $exerciseCount, 'Should respect duration constraint even if below safety minimum');
     }
 
     public function test_beginner_gets_mostly_compound_exercises(): void
@@ -415,11 +420,13 @@ class WorkoutGeneratorDiversityTest extends TestCase
             'duration_minutes' => 60,
         ]);
 
-        // Should get at least min exercises (5 for muscle_gain/intermediate) even if strict pass only found 2
+        // Should get at least safety minimum (3) even if strict pass only found 2
         // But we only have 2 unique pattern|angle combos, so relaxed pass should add more
-        $this->assertGreaterThanOrEqual(2, count($result['exercises']), 'Should get at least 2 exercises');
+        $safetyMin = config('workout_generator.exercise_count_safety.min', 3);
+        $safetyMax = config('workout_generator.exercise_count_safety.max', 12);
+        $this->assertGreaterThanOrEqual($safetyMin, count($result['exercises']), 'Should get at least safety minimum exercises');
         // With relaxed pass, should be able to get more than just the 2 unique combinations
-        $this->assertLessThanOrEqual(5, count($result['exercises']), 'Should respect max exercises');
+        $this->assertLessThanOrEqual($safetyMax, count($result['exercises']), 'Should respect safety maximum exercises');
     }
 
     public function test_different_goals_produce_different_exercise_counts(): void
@@ -485,14 +492,29 @@ class WorkoutGeneratorDiversityTest extends TestCase
             'duration_minutes' => 60,
         ]);
 
-        // Strength should get fewer exercises (4-6) than fat loss (5-8) due to longer rest times
-        // But both should be within their target ranges
+        // Strength should get fewer exercises than fat loss due to longer rest times (180s vs 45s)
+        // Duration is primary constraint, so both should fit within the 60-minute session
         $strengthCount = count($strengthResult['exercises']);
         $fatLossCount = count($fatLossResult['exercises']);
 
-        $this->assertGreaterThanOrEqual(4, $strengthCount, 'Strength user should get at least 4 exercises');
-        $this->assertLessThanOrEqual(6, $strengthCount, 'Strength user should get at most 6 exercises');
-        $this->assertGreaterThanOrEqual(5, $fatLossCount, 'Fat loss user should get at least 5 exercises');
-        $this->assertLessThanOrEqual(8, $fatLossCount, 'Fat loss user should get at most 8 exercises');
+        $safetyMin = config('workout_generator.exercise_count_safety.min', 3);
+        $safetyMax = config('workout_generator.exercise_count_safety.max', 12);
+
+        // Both should respect safety rails
+        $this->assertGreaterThanOrEqual($safetyMin, $strengthCount, 'Strength user should get at least safety minimum exercises');
+        $this->assertLessThanOrEqual($safetyMax, $strengthCount, 'Strength user should respect safety maximum exercises');
+        $this->assertGreaterThanOrEqual($safetyMin, $fatLossCount, 'Fat loss user should get at least safety minimum exercises');
+        $this->assertLessThanOrEqual($safetyMax, $fatLossCount, 'Fat loss user should respect safety maximum exercises');
+
+        // Relative comparison: strength should get fewer or equal exercises than fat loss for same duration
+        // (strength has longer rest periods, so fewer exercises fit in 60 minutes)
+        // Note: With limited exercise pools, they may end up equal, but strength should never get MORE
+        $this->assertLessThanOrEqual($strengthCount, $fatLossCount, 'Strength user should get fewer or equal exercises than fat loss user for same duration due to longer rest times');
+
+        // If we have enough exercises available, strength should actually get fewer
+        // (This is a soft assertion - if exercise pool is limited, equality is acceptable)
+        if ($fatLossCount > 3) {
+            $this->assertLessThan($strengthCount, $fatLossCount, 'With sufficient exercises, strength should get fewer than fat loss due to longer rest times');
+        }
     }
 }

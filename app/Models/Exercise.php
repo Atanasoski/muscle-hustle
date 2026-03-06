@@ -129,6 +129,14 @@ class Exercise extends Model
     }
 
     /**
+     * Relationship: Exercise belongs to many TrainingStyles (many-to-many)
+     */
+    public function trainingStyles(): BelongsToMany
+    {
+        return $this->belongsToMany(TrainingStyle::class, 'exercise_training_style');
+    }
+
+    /**
      * Scope: Get exercises for a specific partner
      */
     public function scopeForPartner($query, Partner $partner)

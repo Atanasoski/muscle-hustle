@@ -42,15 +42,54 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Duration Estimation
+    | Set-Based Duration Calculation
     |--------------------------------------------------------------------------
     |
-    | Average time in seconds for completing a single set, used to estimate
-    | total workout duration.
+    | Simple formula: 1 set = 3 minutes (universal, no variations).
+    | Total sets = duration (minutes) ÷ 3.
     |
     */
 
-    'set_duration_seconds' => 45,
+    'minutes_per_set' => 3,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exercise Count by Goal and Duration
+    |--------------------------------------------------------------------------
+    |
+    | Target number of exercises based on fitness goal and workout duration.
+    | Strength: fewer exercises (more sets each)
+    | Muscle Gain: balanced
+    | Fat Loss: more exercises (fewer sets each)
+    |
+    */
+
+    'exercise_count_by_goal' => [
+        'strength' => [
+            30 => 4,   // 10 sets total
+            45 => 4,   // 15 sets total
+            60 => 5,   // 20 sets total
+            90 => 7,   // 30 sets total
+        ],
+        'muscle_gain' => [
+            30 => 4,   // 10 sets total
+            45 => 5,   // 15 sets total
+            60 => 6,   // 20 sets total
+            90 => 8,   // 30 sets total
+        ],
+        'fat_loss' => [
+            30 => 5,   // 10 sets total
+            45 => 6,   // 15 sets total
+            60 => 7,   // 20 sets total
+            90 => 10,  // 30 sets total
+        ],
+        'general_fitness' => [
+            30 => 4,   // 10 sets total
+            45 => 5,   // 15 sets total
+            60 => 6,   // 20 sets total
+            90 => 8,   // 30 sets total
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -64,7 +103,7 @@ return [
     'max_exercises_per_region' => 4,
     'min_exercises_per_region' => 1,
     'max_exercises_per_pattern' => 4,
-    'max_total_exercises' => 10,
+    'max_total_exercises' => 12,
     'min_total_exercises' => 4,
 
     /*
@@ -102,99 +141,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Exercise Count Targets by Goal and Experience
+    | Set Distribution Limits
     |--------------------------------------------------------------------------
     |
-    | Defines minimum, maximum, and compound ratio for exercises based on
-    | user's fitness goal and training experience level.
-    |
-    | - min: Minimum number of exercises to include
-    | - max: Maximum number of exercises to include
-    | - compound_ratio: Fraction (0.0-1.0) of exercises that should be compound
+    | Maximum sets per exercise type. Compounds can have more sets than isolation.
     |
     */
 
-    'exercise_count_targets' => [
-        'strength' => [
-            'beginner' => [
-                'min' => 3,
-                'max' => 5,
-                'compound_ratio' => 1.0,
-            ],
-            'intermediate' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.80,
-            ],
-            'advanced' => [
-                'min' => 5,
-                'max' => 7,
-                'compound_ratio' => 0.70,
-            ],
-        ],
-        'muscle_gain' => [
-            'beginner' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.80,
-            ],
-            'intermediate' => [
-                'min' => 5,
-                'max' => 8,
-                'compound_ratio' => 0.60,
-            ],
-            'advanced' => [
-                'min' => 6,
-                'max' => 10,
-                'compound_ratio' => 0.50,
-            ],
-        ],
-        'fat_loss' => [
-            'beginner' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.75,
-            ],
-            'intermediate' => [
-                'min' => 5,
-                'max' => 8,
-                'compound_ratio' => 0.60,
-            ],
-            'advanced' => [
-                'min' => 6,
-                'max' => 10,
-                'compound_ratio' => 0.50,
-            ],
-        ],
-        'general_fitness' => [
-            'beginner' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.75,
-            ],
-            'intermediate' => [
-                'min' => 5,
-                'max' => 7,
-                'compound_ratio' => 0.60,
-            ],
-            'advanced' => [
-                'min' => 5,
-                'max' => 8,
-                'compound_ratio' => 0.50,
-            ],
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Time Estimation Modifiers
-    |--------------------------------------------------------------------------
-    |
-    | Modifiers for time estimation based on exercise type.
-    | These are used to differentiate compound vs isolation exercise time.
-    |
-    */
-
-    'compound_time_modifier' => 1.0,
-    'isolation_time_modifier' => 0.5,
+    'max_sets_per_compound' => 4,
+    'max_sets_per_isolation' => 3,
 ];

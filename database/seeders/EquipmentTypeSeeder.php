@@ -25,6 +25,7 @@ class EquipmentTypeSeeder extends Seeder
             ['code' => 'KETTLEBELL', 'name' => 'Kettlebell', 'display_order' => 80],
             ['code' => 'TRX', 'name' => 'TRX', 'display_order' => 90],
             ['code' => 'MEDICINE_BALL', 'name' => 'Medicine Ball', 'display_order' => 100],
+            ['code' => 'LANDMINE', 'name' => 'Landmine', 'display_order' => 110],
         ];
 
         foreach ($types as $type) {

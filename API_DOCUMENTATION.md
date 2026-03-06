@@ -361,11 +361,14 @@ interface CompleteOnboardingResponse {
 - This endpoint can only be called once per user. If `onboarding_completed_at` is already set, it will return a 409 Conflict error.
 - The generated plan is automatically set as active (`is_active: true`).
 - The workout split is automatically determined based on `training_days_per_week`:
-  - 1-2 days: Full Body workouts
-  - 3 days: Push/Legs/Pull split
-  - 4 days: Upper/Lower split
-  - 5-6 days: Push/Pull/Legs (PPL) split
-- Each workout template includes exercises selected by the workout generator based on the user's fitness goal, training experience, and workout duration preferences.
+  - 1 day: Full Body
+  - 2 days: Full Body, Full Body
+  - 3 days: Full Body, Full Body, Full Body
+  - 4 days: Push, Pull, Push, Pull
+  - 5 days: Push, Legs, Pull, Lower Body, Upper Body
+  - 6 days: Push, Pull, Legs, Push, Pull, Legs
+  - 7 days: Push, Pull, Legs, Push, Pull, Legs, Full Body
+- Each workout template includes exercises selected by the workout generator based on the user's fitness goal, training experience, and workout duration preferences. The number of exercises is determined by how many fit within the specified duration (with a 10% buffer for warm-up/transitions), with safety rails of 3-12 exercises.
 
 ---
 
@@ -1624,8 +1627,7 @@ Generates a new workout session in draft status. Creates a session with exercise
 **Request Body:**
 ```typescript
 interface GenerateWorkoutRequest {
-  focus_muscle_groups?: string[];      // optional, e.g., ["Chest", "Triceps", "Shoulders"] - infers target_regions if not provided
-  target_regions?: string[];           // optional, e.g., ["UPPER_PUSH", "UPPER_PULL"] - inferred from focus_muscle_groups if not provided
+  target_regions?: string[];           // optional, e.g., ["UPPER_PUSH", "UPPER_PULL"] - defaults to all regions (full body) if not provided
   equipment_types?: string[];          // optional, e.g., ["MACHINE", "BARBELL"] - defaults to all if not provided
   movement_patterns?: string[];        // optional, e.g., ["PRESS", "FLY", "DIP"]
   angles?: string[];                   // optional, e.g., ["FLAT", "INCLINE", "DECLINE"]
@@ -1634,12 +1636,19 @@ interface GenerateWorkoutRequest {
 }
 ```
 
-**Smart Inference:**
-- If `target_regions` not provided but `focus_muscle_groups` provided → system infers target regions from muscle groups
+**Defaults:**
+- If `target_regions` not provided → system generates full body workout (all target regions)
 - If `equipment_types` not provided → system uses all available equipment types
 - If `duration_minutes` not provided → system uses user profile `workout_duration_minutes`
 - If `difficulty` not provided → system uses user profile `training_experience`
-- If neither `target_regions` nor `focus_muscle_groups` provided → system generates full body workout (all target regions)
+
+**Note:** The frontend should map user-friendly labels (e.g., "Push", "Pull", "Legs", "Full Body") to target region codes. For example:
+- "Push" → `["UPPER_PUSH"]`
+- "Pull" → `["UPPER_PULL"]`
+- "Legs" → `["LOWER"]`
+- "Upper Body" → `["UPPER_PUSH", "UPPER_PULL"]`
+- "Lower Body" → `["LOWER", "CORE"]`
+- "Full Body" → `["UPPER_PUSH", "UPPER_PULL", "LOWER"]` or omit `target_regions` entirely
 
 **Available Target Region Codes:**
 - `UPPER_PUSH` - Chest, Triceps, Front/Side Delts
@@ -1711,7 +1720,7 @@ interface GeneratedSessionResource extends WorkoutSessionResource {
 **Example Request:**
 ```json
 {
-  "focus_muscle_groups": ["Chest", "Triceps"],
+  "target_regions": ["UPPER_PUSH"],
   "equipment_types": ["MACHINE"],
   "duration_minutes": 45
 }
@@ -1722,6 +1731,11 @@ interface GeneratedSessionResource extends WorkoutSessionResource {
 - The session is stored in the database with all exercises
 - User can modify exercises using standard exercise management endpoints before confirming
 - Call regenerate endpoint to cancel this draft and create a new one
+- **Exercise Selection Logic:** Duration is the primary constraint for exercise selection. The system selects exercises that fit within the specified `duration_minutes` (with a 10% buffer reserved for warm-up and transitions). The number of exercises varies based on:
+  - **Fitness Goal:** Different goals have different rest periods and sets (e.g., strength: 180s rest, muscle gain: 90s rest, fat loss: 45s rest), which naturally results in different exercise counts for the same duration
+  - **Exercise Type:** Compound exercises take longer than isolation exercises due to more sets and longer rest periods
+  - **Safety Rails:** Minimum 3 exercises and maximum 12 exercises are enforced to prevent edge cases
+- Different fitness goals will naturally produce different exercise counts for the same duration (e.g., a 60-minute strength workout may have 4-5 exercises, while a 60-minute fat loss workout may have 8-10 exercises)
 
 ---
 
@@ -1789,9 +1803,8 @@ Cancels the current draft session and generates a new one with optionally differ
 **Request Body:**
 ```typescript
 interface RegenerateWorkoutRequest {
-  focus_muscle_groups?: string[];      // optional
-  target_regions?: string[];           // optional
-  equipment_types?: string[];          // optional
+  target_regions?: string[];           // optional - defaults to all regions (full body) if not provided
+  equipment_types?: string[];          // optional - defaults to all if not provided
   movement_patterns?: string[];        // optional
   angles?: string[];                   // optional
   duration_minutes?: number;           // optional, min 15, max 180
