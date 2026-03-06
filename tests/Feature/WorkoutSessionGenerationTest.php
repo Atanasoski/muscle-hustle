@@ -7,8 +7,8 @@ use App\Enums\TrainingExperience;
 use App\Enums\WorkoutSessionStatus;
 use App\Models\Exercise;
 use App\Models\Partner;
+use App\Models\TargetRegion;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Models\WorkoutSession;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -21,8 +21,7 @@ class WorkoutSessionGenerationTest extends TestCase
     {
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
@@ -64,8 +63,7 @@ class WorkoutSessionGenerationTest extends TestCase
     {
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
@@ -129,8 +127,7 @@ class WorkoutSessionGenerationTest extends TestCase
     public function test_generate_requires_fitness_goal(): void
     {
         $user = User::factory()->create();
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => null,
             'training_experience' => TrainingExperience::Beginner,
         ]);
@@ -147,8 +144,7 @@ class WorkoutSessionGenerationTest extends TestCase
     public function test_generate_requires_training_experience(): void
     {
         $user = User::factory()->create();
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => null,
         ]);
@@ -164,23 +160,29 @@ class WorkoutSessionGenerationTest extends TestCase
 
     public function test_generate_with_preferences(): void
     {
+        // Ensure target region exists before creating user/exercises
+        $targetRegion = TargetRegion::firstOrCreate(
+            ['code' => 'UPPER_PUSH'],
+            ['name' => 'Upper Push', 'display_order' => 10]
+        );
+
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::Strength,
             'training_experience' => TrainingExperience::Advanced,
         ]);
 
-        // Create properly classified exercises
+        // Create properly classified exercises with target region
         $exercises = Exercise::factory()->count(5)->press()->barbell()->flat()->create();
         foreach ($exercises as $exercise) {
+            $exercise->update(['target_region_id' => $targetRegion->id]);
             $exercise->partners()->attach($partner->id);
         }
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/workout-sessions/generate', [
-                'focus_muscle_groups' => ['Chest', 'Triceps'],
+                'target_regions' => ['UPPER_PUSH'],
                 'duration_minutes' => 60,
                 'difficulty' => 'advanced',
             ]);
@@ -193,8 +195,7 @@ class WorkoutSessionGenerationTest extends TestCase
     public function test_generate_validation(): void
     {
         $user = User::factory()->create();
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
@@ -212,8 +213,7 @@ class WorkoutSessionGenerationTest extends TestCase
     public function test_generate_handles_no_exercises_gracefully(): void
     {
         $user = User::factory()->create();
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
@@ -233,8 +233,7 @@ class WorkoutSessionGenerationTest extends TestCase
     {
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
@@ -269,8 +268,7 @@ class WorkoutSessionGenerationTest extends TestCase
     {
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);
@@ -312,8 +310,7 @@ class WorkoutSessionGenerationTest extends TestCase
     {
         $partner = Partner::factory()->create();
         $user = User::factory()->create(['partner_id' => $partner->id]);
-        UserProfile::factory()->create([
-            'user_id' => $user->id,
+        $user->profile()->update([
             'fitness_goal' => FitnessGoal::MuscleGain,
             'training_experience' => TrainingExperience::Intermediate,
         ]);

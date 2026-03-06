@@ -42,15 +42,54 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Duration Estimation
+    | Set-Based Duration Calculation
     |--------------------------------------------------------------------------
     |
-    | Average time in seconds for completing a single set, used to estimate
-    | total workout duration.
+    | Simple formula: 1 set = 3 minutes (universal, no variations).
+    | Total sets = duration (minutes) ÷ 3.
     |
     */
 
-    'set_duration_seconds' => 45,
+    'minutes_per_set' => 3,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exercise Count by Goal and Duration
+    |--------------------------------------------------------------------------
+    |
+    | Target number of exercises based on fitness goal and workout duration.
+    | Strength: fewer exercises (more sets each)
+    | Muscle Gain: balanced
+    | Fat Loss: more exercises (fewer sets each)
+    |
+    */
+
+    'exercise_count_by_goal' => [
+        'strength' => [
+            30 => 4,   // 10 sets total
+            45 => 4,   // 15 sets total
+            60 => 5,   // 20 sets total
+            90 => 7,   // 30 sets total
+        ],
+        'muscle_gain' => [
+            30 => 4,   // 10 sets total
+            45 => 5,   // 15 sets total
+            60 => 6,   // 20 sets total
+            90 => 8,   // 30 sets total
+        ],
+        'fat_loss' => [
+            30 => 5,   // 10 sets total
+            45 => 6,   // 15 sets total
+            60 => 7,   // 20 sets total
+            90 => 10,  // 30 sets total
+        ],
+        'general_fitness' => [
+            30 => 4,   // 10 sets total
+            45 => 5,   // 15 sets total
+            60 => 6,   // 20 sets total
+            90 => 8,   // 30 sets total
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -64,7 +103,7 @@ return [
     'max_exercises_per_region' => 4,
     'min_exercises_per_region' => 1,
     'max_exercises_per_pattern' => 4,
-    'max_total_exercises' => 10,
+    'max_total_exercises' => 12,
     'min_total_exercises' => 4,
 
     /*
@@ -102,60 +141,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Exercise Count Safety Rails
+    | Set Distribution Limits
     |--------------------------------------------------------------------------
     |
-    | Absolute minimum and maximum exercise counts to prevent edge cases.
-    | Duration is the primary constraint, but these provide safety boundaries.
+    | Maximum sets per exercise type. Compounds can have more sets than isolation.
     |
     */
 
-    'exercise_count_safety' => [
-        'min' => 3,
-        'max' => 12,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Compound Exercise Ratios by Goal
-    |--------------------------------------------------------------------------
-    |
-    | Target fraction (0.0-1.0) of exercises that should be compound movements
-    | based on fitness goal. This influences exercise selection to maintain
-    | appropriate compound-to-isolation balance.
-    |
-    */
-
-    'compound_ratios' => [
-        'strength' => 0.80,
-        'muscle_gain' => 0.60,
-        'fat_loss' => 0.60,
-        'general_fitness' => 0.65,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Session Time Buffer
-    |--------------------------------------------------------------------------
-    |
-    | Percentage of session duration reserved for warm-up, transitions, and
-    | other non-exercise activities. Applied as a buffer when calculating
-    | available time for exercises.
-    |
-    */
-
-    'session_time_buffer' => 0.10,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Time Estimation Modifiers
-    |--------------------------------------------------------------------------
-    |
-    | Modifiers for time estimation based on exercise type.
-    | These are used to differentiate compound vs isolation exercise time.
-    |
-    */
-
-    'compound_time_modifier' => 1.0,
-    'isolation_time_modifier' => 0.5,
+    'max_sets_per_compound' => 4,
+    'max_sets_per_isolation' => 3,
 ];

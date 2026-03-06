@@ -12,14 +12,10 @@ class ExerciseSelectorService
      */
     public function getAvailableExercises(array $filters = [], $partner = null): Collection
     {
-        $query = Exercise::with(['muscleGroups', 'category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle', 'trainingStyles'])
-            ->forPartner($partner);
+        $query = Exercise::with(['muscleGroups', 'category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle', 'trainingStyles']);
 
-        // Filter by muscle groups if provided
-        if (! empty($filters['focus_muscle_groups'])) {
-            $query->whereHas('muscleGroups', function ($q) use ($filters) {
-                $q->whereIn('name', $filters['focus_muscle_groups']);
-            });
+        if ($partner !== null) {
+            $query->forPartner($partner);
         }
 
         // Filter by target regions if provided
@@ -66,22 +62,6 @@ class ExerciseSelectorService
         $limit = $filters['limit'] ?? 200;
 
         return $query->limit($limit)->get();
-    }
-
-    /**
-     * Filter exercises by muscle groups
-     */
-    public function filterByMuscleGroups(Collection $exercises, array $muscleGroups): Collection
-    {
-        if (empty($muscleGroups)) {
-            return $exercises;
-        }
-
-        return $exercises->filter(function ($exercise) use ($muscleGroups) {
-            $exerciseMuscleGroups = $exercise->muscleGroups->pluck('name')->toArray();
-
-            return ! empty(array_intersect($muscleGroups, $exerciseMuscleGroups));
-        });
     }
 
     /**

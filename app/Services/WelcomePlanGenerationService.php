@@ -78,33 +78,49 @@ class WelcomePlanGenerationService
     private function determineSplit(int $daysPerWeek): array
     {
         return match ($daysPerWeek) {
+            1 => [
+                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
+            ],
+            2 => [
+                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
+                ['UPPER_PULL', 'UPPER_PUSH', 'LOWER'], // Full Body (Pull focus)
+            ],
             3 => [
-                ['UPPER_PUSH'],
-                ['LOWER'],
-                ['UPPER_PULL'],
+                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
+                ['UPPER_PULL', 'UPPER_PUSH', 'LOWER'], // Full Body (Pull focus)
+                ['LOWER', 'UPPER_PUSH', 'UPPER_PULL'], // Full Body (Lower focus)
             ],
             4 => [
-                ['UPPER_PUSH'],
-                ['LOWER'],
-                ['UPPER_PULL'],
-                ['LOWER', 'ARMS'],
+                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
+                ['LOWER', 'CORE'], // Legs + Core
+                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
+                ['LOWER', 'CORE'], // Lower Body
             ],
             5 => [
-                ['UPPER_PUSH'],
-                ['LOWER'],
-                ['UPPER_PULL'],
-                ['UPPER_PUSH'],
-                ['LOWER'],
+                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
+                ['LOWER', 'CORE'], // Legs + Core
+                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
+                ['LOWER', 'CORE'], // Lower Body
+                ['UPPER_PUSH', 'UPPER_PULL'], // Upper Body
             ],
             6 => [
-                ['UPPER_PUSH'],
-                ['LOWER'],
-                ['UPPER_PULL'],
-                ['UPPER_PUSH'],
-                ['LOWER'],
-                ['UPPER_PULL'],
+                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
+                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
+                ['LOWER', 'CORE'], // Legs + Core
+                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
+                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
+                ['LOWER', 'CORE'], // Legs + Core
             ],
-            default => [['UPPER_PUSH', 'UPPER_PULL', 'LOWER']],
+            7 => [
+                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
+                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
+                ['LOWER', 'CORE'], // Legs + Core
+                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
+                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
+                ['LOWER', 'CORE'], // Legs + Core
+                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
+            ],
+            default => [['UPPER_PUSH', 'UPPER_PULL', 'LOWER']], // Full Body
         };
     }
 
@@ -159,6 +175,42 @@ class WelcomePlanGenerationService
      */
     private function getWorkoutName(array $targetRegions, int $dayIndex): string
     {
+        // Check for special multi-region combinations first
+        $regionSet = array_unique($targetRegions);
+        sort($regionSet);
+        $regionKey = implode('|', $regionSet);
+
+        // Check if it's a full body workout (all three main regions)
+        $isFullBody = count($regionSet) === 3
+            && in_array('UPPER_PUSH', $regionSet)
+            && in_array('UPPER_PULL', $regionSet)
+            && in_array('LOWER', $regionSet);
+
+        if ($isFullBody) {
+            // Determine focus based on first region in the array (order matters for exercise selection)
+            $firstRegion = $targetRegions[0];
+            $focus = match ($firstRegion) {
+                'UPPER_PUSH' => 'Push',
+                'UPPER_PULL' => 'Pull',
+                'LOWER' => 'Legs',
+                default => '',
+            };
+
+            return $focus ? "Full Body ({$focus})" : 'Full Body';
+        }
+
+        $specialNames = [
+            'CORE|LOWER' => 'Legs Day',
+            'UPPER_PULL|UPPER_PUSH' => 'Upper Body Day',
+            'ARMS|UPPER_PUSH' => 'Push Day',
+            'ARMS|UPPER_PULL' => 'Pull Day',
+        ];
+
+        if (isset($specialNames[$regionKey])) {
+            return $specialNames[$regionKey];
+        }
+
+        // Single region or other combinations
         $regionNames = [
             'UPPER_PUSH' => 'Push',
             'UPPER_PULL' => 'Pull',

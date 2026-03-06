@@ -23,8 +23,6 @@ class RegenerateWorkoutSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'focus_muscle_groups' => 'nullable|array',
-            'focus_muscle_groups.*' => 'string|max:255',
             'target_regions' => 'nullable|array',
             'target_regions.*' => 'string|exists:target_regions,code',
             'equipment_types' => 'nullable|array',
@@ -49,8 +47,6 @@ class RegenerateWorkoutSessionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'focus_muscle_groups.array' => 'Focus muscle groups must be an array.',
-            'focus_muscle_groups.*.string' => 'Each muscle group must be a string.',
             'target_regions.array' => 'Target regions must be an array.',
             'target_regions.*.exists' => 'One or more target region codes do not exist.',
             'equipment_types.array' => 'Equipment types must be an array.',

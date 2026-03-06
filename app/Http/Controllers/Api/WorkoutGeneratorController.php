@@ -28,7 +28,6 @@ class WorkoutGeneratorController extends Controller
             $user = Auth::user();
 
             $preferences = [
-                'focus_muscle_groups' => $request->input('focus_muscle_groups'),
                 'target_regions' => $request->input('target_regions'),
                 'equipment_types' => $request->input('equipment_types'),
                 'movement_patterns' => $request->input('movement_patterns'),
@@ -96,7 +95,6 @@ class WorkoutGeneratorController extends Controller
             $this->authorize('regenerate', $session);
 
             $preferences = [
-                'focus_muscle_groups' => $request->input('focus_muscle_groups'),
                 'target_regions' => $request->input('target_regions'),
                 'equipment_types' => $request->input('equipment_types'),
                 'movement_patterns' => $request->input('movement_patterns'),
