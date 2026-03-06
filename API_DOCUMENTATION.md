@@ -365,7 +365,7 @@ interface CompleteOnboardingResponse {
   - 3 days: Push/Legs/Pull split
   - 4 days: Upper/Lower split
   - 5-6 days: Push/Pull/Legs (PPL) split
-- Each workout template includes exercises selected by the workout generator based on the user's fitness goal, training experience, and workout duration preferences.
+- Each workout template includes exercises selected by the workout generator based on the user's fitness goal, training experience, and workout duration preferences. The number of exercises is determined by how many fit within the specified duration (with a 10% buffer for warm-up/transitions), with safety rails of 3-12 exercises.
 
 ---
 
@@ -1722,6 +1722,11 @@ interface GeneratedSessionResource extends WorkoutSessionResource {
 - The session is stored in the database with all exercises
 - User can modify exercises using standard exercise management endpoints before confirming
 - Call regenerate endpoint to cancel this draft and create a new one
+- **Exercise Selection Logic:** Duration is the primary constraint for exercise selection. The system selects exercises that fit within the specified `duration_minutes` (with a 10% buffer reserved for warm-up and transitions). The number of exercises varies based on:
+  - **Fitness Goal:** Different goals have different rest periods and sets (e.g., strength: 180s rest, muscle gain: 90s rest, fat loss: 45s rest), which naturally results in different exercise counts for the same duration
+  - **Exercise Type:** Compound exercises take longer than isolation exercises due to more sets and longer rest periods
+  - **Safety Rails:** Minimum 3 exercises and maximum 12 exercises are enforced to prevent edge cases
+- Different fitness goals will naturally produce different exercise counts for the same duration (e.g., a 60-minute strength workout may have 4-5 exercises, while a 60-minute fat loss workout may have 8-10 exercises)
 
 ---
 
