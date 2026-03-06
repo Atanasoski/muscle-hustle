@@ -257,6 +257,7 @@ class ProgressionCalculatorService
             'BODYWEIGHT' => 0.0,        // No external weight
             'TRX' => 0.0,              // No external weight
             'MEDICINE_BALL' => 1.0,    // Fixed weight, smallest ~1kg increment
+            'LANDMINE' => 2.5,         // Barbell in landmine attachment, same plate increments
             default => 2.5,             // Safe default
         };
     }
@@ -277,6 +278,7 @@ class ProgressionCalculatorService
             'SMITH' => 0.85,           // Guided barbell, slightly less than free barbell
             'KETTLEBELL' => 0.45,      // Single implement, similar to per-dumbbell
             'MEDICINE_BALL' => 0.10,   // Very light implements
+            'LANDMINE' => 0.75,        // Barbell in landmine, angled leverage reduces load
             'BODYWEIGHT' => 1.0,       // N/A (weight increment is 0)
             'TRX' => 1.0,             // N/A (weight increment is 0)
             'BAND' => 1.0,            // N/A (weight increment is 0)

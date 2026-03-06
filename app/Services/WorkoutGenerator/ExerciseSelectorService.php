@@ -12,7 +12,7 @@ class ExerciseSelectorService
      */
     public function getAvailableExercises(array $filters = [], $partner = null): Collection
     {
-        $query = Exercise::with(['muscleGroups', 'category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle'])
+        $query = Exercise::with(['muscleGroups', 'category', 'movementPattern', 'targetRegion', 'equipmentType', 'angle', 'trainingStyles'])
             ->forPartner($partner);
 
         // Filter by muscle groups if provided
@@ -49,6 +49,16 @@ class ExerciseSelectorService
                 $q->whereHas('angle', function ($subQ) use ($filters) {
                     $subQ->whereIn('code', $filters['angles']);
                 })->orWhereNull('angle_id'); // Include exercises without angles
+            });
+        }
+
+        // Filter by training styles if provided
+        // Include exercises without training styles when filtering for BODYBUILDING (default)
+        if (! empty($filters['training_styles'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->whereHas('trainingStyles', function ($subQ) use ($filters) {
+                    $subQ->whereIn('code', $filters['training_styles']);
+                });
             });
         }
 

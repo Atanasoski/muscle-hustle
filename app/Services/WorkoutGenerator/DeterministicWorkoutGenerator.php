@@ -33,6 +33,7 @@ class DeterministicWorkoutGenerator
             'equipment_types' => $normalizedPreferences['equipment_types'] ?? null,
             'movement_patterns' => $normalizedPreferences['movement_patterns'] ?? null,
             'angles' => $normalizedPreferences['angles'] ?? null,
+            'training_styles' => $preferences['training_styles'] ?? ['BODYBUILDING'],
             'limit' => 200,
         ], $user->partner);
 
@@ -67,19 +68,23 @@ class DeterministicWorkoutGenerator
 
     /**
      * Select diverse exercises ensuring no duplicate movement_pattern + angle combinations
+     * Duration is the primary constraint; safety rails prevent edge cases.
      */
     private function selectDiverseExercises(EloquentCollection $exercises, array $preferences, User $user): Collection
     {
         $selected = collect();
         $seen = []; // Track movement_pattern|angle combinations
         $durationMinutes = $preferences['duration_minutes'] ?? 60;
-        $timeRemainingSeconds = $durationMinutes * 60;
 
-        // Get goal and experience-based targets
-        $targets = $this->getExerciseCountTargets($user);
-        $minTotal = $targets['min'];
-        $maxTotal = $targets['max'];
-        $targetCompoundRatio = $targets['compound_ratio'];
+        // Apply time buffer for warm-up/transitions
+        $buffer = config('workout_generator.session_time_buffer', 0.10);
+        $timeRemainingSeconds = (int) ($durationMinutes * 60 * (1 - $buffer));
+
+        // Get safety rails and compound ratio
+        $constraints = $this->getWorkoutConstraints($user);
+        $safetyMin = $constraints['min'];
+        $safetyMax = $constraints['max'];
+        $targetCompoundRatio = $constraints['compound_ratio'];
 
         $maxPerRegion = config('workout_generator.max_exercises_per_region', 4);
         $maxPerPattern = config('workout_generator.max_exercises_per_pattern', 4);
@@ -111,8 +116,13 @@ class DeterministicWorkoutGenerator
             $sorted = $this->sortByCompoundPriority($shuffled, $user);
 
             foreach ($sorted as $exercise) {
-                // Check total limit
-                if ($selected->count() >= $maxTotal) {
+                // Check safety ceiling (hard stop)
+                if ($selected->count() >= $safetyMax) {
+                    break 2;
+                }
+
+                // Check time remaining (primary constraint)
+                if ($timeRemainingSeconds <= 0) {
                     break 2;
                 }
 
@@ -140,10 +150,10 @@ class DeterministicWorkoutGenerator
                 // Check compound/isolation ratio steering
                 $isCompound = in_array($movementPattern, $compoundPatterns);
                 $currentTotal = $compoundCount + $isolationCount;
-                if ($currentTotal > 0 && $selected->count() >= $minTotal) {
+                if ($currentTotal > 0 && $selected->count() >= $safetyMin) {
                     $currentCompoundRatio = $compoundCount / $currentTotal;
                     // If we're above target ratio, prefer isolation; if below, prefer compound
-                    // Only enforce ratio when we're at or above minimum to allow flexibility below min
+                    // Only enforce ratio when we're at or above safety min to allow flexibility below min
                     if ($isCompound && $currentCompoundRatio >= $targetCompoundRatio) {
                         // We have enough compounds, skip this one
                         continue;
@@ -174,9 +184,9 @@ class DeterministicWorkoutGenerator
             }
         }
 
-        // Second pass: relaxed diversity (if we're below minimum)
+        // Second pass: relaxed diversity (if we're below safety minimum and have time remaining)
         // Drop pattern|angle uniqueness constraint but still prevent exact duplicate exercises
-        if ($selected->count() < $minTotal && $selected->count() < $maxTotal) {
+        if ($selected->count() < $safetyMin && $timeRemainingSeconds > 0) {
             $selectedIds = $selected->pluck('id')->toArray();
 
             foreach ($preferredRegions as $region) {
@@ -188,7 +198,8 @@ class DeterministicWorkoutGenerator
                 $sorted = $this->sortByCompoundPriority($regionExercises, $user);
 
                 foreach ($sorted as $exercise) {
-                    if ($selected->count() >= $minTotal || $selected->count() >= $maxTotal) {
+                    // Stop if we've reached safety minimum or run out of time
+                    if ($selected->count() >= $safetyMin || $timeRemainingSeconds <= 0) {
                         break 2;
                     }
 
@@ -207,7 +218,7 @@ class DeterministicWorkoutGenerator
                     // Check compound/isolation ratio steering
                     $isCompound = in_array($movementPattern, $compoundPatterns);
                     $currentTotal = $compoundCount + $isolationCount;
-                    if ($currentTotal > 0 && $selected->count() >= $minTotal) {
+                    if ($currentTotal > 0 && $selected->count() >= $safetyMin) {
                         $currentCompoundRatio = $compoundCount / $currentTotal;
                         if ($isCompound && $currentCompoundRatio >= $targetCompoundRatio) {
                             // We have enough compounds, skip this one
@@ -271,16 +282,63 @@ class DeterministicWorkoutGenerator
     }
 
     /**
-     * Order all selected exercises: compound first, isolation last
+     * Muscle group ordering priority for bodybuilding-style workouts.
+     * Lower number = earlier in workout (bigger muscles first).
+     */
+    private const MUSCLE_GROUP_PRIORITY = [
+        // UPPER_PUSH (Push day order)
+        'Chest' => 10,
+        'Front Delts' => 20,
+        'Side Delts' => 25,
+        'Triceps' => 30,
+
+        // UPPER_PULL (Pull day order)
+        'Lats' => 10,
+        'Upper Back' => 15,
+        'Rear Delts' => 20,
+        'Traps' => 25,
+        'Biceps' => 30,
+        'Forearms' => 35,
+
+        // LOWER (Leg day order)
+        'Quadriceps' => 10,
+        'Glutes' => 10,
+        'Hamstrings' => 20,
+        'Calves' => 30,
+
+        // CORE
+        'Abs' => 10,
+        'Obliques' => 20,
+        'Lower Back' => 25,
+    ];
+
+    /**
+     * Order all selected exercises: by muscle group priority, then compound first
      */
     private function orderByCompoundFirst(Collection $exercises): Collection
     {
         $compoundPatterns = config('workout_generator.compound_patterns', []);
 
         return $exercises->sortBy(function ($exercise) use ($compoundPatterns) {
-            $pattern = $exercise->movementPattern?->code;
+            // Get primary muscle group priority (use the first/highest priority primary muscle)
+            $primaryMuscles = $exercise->muscleGroups->filter(function ($muscle) {
+                return $muscle->pivot->is_primary ?? false;
+            });
 
-            return in_array($pattern, $compoundPatterns) ? 0 : 1;
+            $muscleGroupPriority = 100; // Default for unknown muscles
+
+            foreach ($primaryMuscles as $muscle) {
+                $priority = self::MUSCLE_GROUP_PRIORITY[$muscle->name] ?? 50;
+                $muscleGroupPriority = min($muscleGroupPriority, $priority);
+            }
+
+            // Compound vs isolation (0 for compound, 1 for isolation)
+            $pattern = $exercise->movementPattern?->code;
+            $compoundPriority = in_array($pattern, $compoundPatterns) ? 0 : 1;
+
+            // Combine: muscle group (0-100) * 10 + compound priority (0-1)
+            // This ensures muscle group order takes precedence, then compound/isolation within each group
+            return ($muscleGroupPriority * 10) + $compoundPriority;
         })->values();
     }
 
@@ -364,27 +422,22 @@ class DeterministicWorkoutGenerator
     }
 
     /**
-     * Get exercise count targets based on user's goal and experience
+     * Get workout constraints: safety rails and compound ratio based on fitness goal
      */
-    private function getExerciseCountTargets(User $user): array
+    private function getWorkoutConstraints(User $user): array
     {
         $fitnessGoal = $user->profile?->fitness_goal ?? FitnessGoal::GeneralFitness;
-        $trainingExperience = $user->profile?->training_experience ?? TrainingExperience::Beginner;
 
-        $targets = config('workout_generator.exercise_count_targets', []);
+        $safety = config('workout_generator.exercise_count_safety', ['min' => 3, 'max' => 12]);
+        $compoundRatios = config('workout_generator.compound_ratios', []);
 
         $goalKey = $fitnessGoal->value;
-        $experienceKey = $trainingExperience->value;
+        $compoundRatio = $compoundRatios[$goalKey] ?? 0.65;
 
-        if (isset($targets[$goalKey][$experienceKey])) {
-            return $targets[$goalKey][$experienceKey];
-        }
-
-        // Fallback to general_fitness/beginner if not found
-        return $targets['general_fitness']['beginner'] ?? [
-            'min' => 4,
-            'max' => 6,
-            'compound_ratio' => 0.75,
+        return [
+            'min' => $safety['min'],
+            'max' => $safety['max'],
+            'compound_ratio' => $compoundRatio,
         ];
     }
 

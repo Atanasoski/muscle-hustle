@@ -10,6 +10,7 @@ use App\Models\EquipmentType;
 use App\Models\Exercise;
 use App\Models\MovementPattern;
 use App\Models\TargetRegion;
+use App\Models\TrainingStyle;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -29,6 +30,8 @@ class ExerciseClassificationSeeder extends Seeder
     private array $angles = [];
 
     private array $categories = [];
+
+    private array $trainingStyles = [];
 
     /**
      * Movement pattern to target region mapping.
@@ -104,11 +107,97 @@ class ExerciseClassificationSeeder extends Seeder
                     }
 
                     $exercise->update($classification);
+
+                    // Sync training styles
+                    $trainingStyleCodes = $this->inferTrainingStyles($exercise);
+                    if (! empty($trainingStyleCodes)) {
+                        $trainingStyleIds = [];
+                        foreach ($trainingStyleCodes as $code) {
+                            if (isset($this->trainingStyles[$code])) {
+                                $trainingStyleIds[] = $this->trainingStyles[$code];
+                            }
+                        }
+                        if (! empty($trainingStyleIds)) {
+                            $exercise->trainingStyles()->sync($trainingStyleIds);
+                        }
+                    }
+
                     $processed++;
                 }
             });
 
         $this->command->info("Exercise classification complete: {$processed} classified, {$skipped} skipped.");
+    }
+
+    /**
+     * Infer training styles from exercise name and equipment type.
+     *
+     * @return array<string>
+     */
+    private function inferTrainingStyles(Exercise $exercise): array
+    {
+        $name = Str::lower($exercise->name);
+        $equipmentCode = $exercise->equipmentType?->code ?? '';
+
+        $styles = [];
+
+        // Equipment-based classification
+        if (in_array($equipmentCode, ['TRX', 'LANDMINE', 'MEDICINE_BALL', 'KETTLEBELL', 'BAND'])) {
+            $styles[] = 'FUNCTIONAL';
+        }
+
+        // Name-based classification for Olympic lifts
+        $olympicPatterns = ['clean', 'snatch', 'push press', 'high pull', 'clean and press'];
+        foreach ($olympicPatterns as $pattern) {
+            if (Str::contains($name, $pattern)) {
+                $styles[] = 'OLYMPIC';
+                break;
+            }
+        }
+
+        // Name-based classification for functional movements
+        $functionalPatterns = [
+            'thruster',
+            'ground to overhead',
+            'renegade',
+            'box jump',
+            'jump squat',
+            'squat jump',
+            'weighted squat jump',
+            'windmill',
+            'sit through',
+            't-plank',
+            't plank',
+            'side row',
+            'overhead march',
+            'march',
+            'bridge pullover',
+            'cossack',
+            'lunge to march',
+            'cross lunge',
+        ];
+        foreach ($functionalPatterns as $pattern) {
+            if (Str::contains($name, $pattern)) {
+                $styles[] = 'FUNCTIONAL';
+                break;
+            }
+        }
+
+        // Calisthenics exercises (bodyweight movements that are also bodybuilding)
+        $calisthenicsPatterns = ['dips', 'pull-ups', 'pull ups', 'handstand', 'push-up', 'pushup'];
+        foreach ($calisthenicsPatterns as $pattern) {
+            if (Str::contains($name, $pattern) && $equipmentCode === 'BODYWEIGHT') {
+                $styles[] = 'CALISTHENICS';
+                break;
+            }
+        }
+
+        // Default to BODYBUILDING if no other styles found
+        if (empty($styles)) {
+            $styles[] = 'BODYBUILDING';
+        }
+
+        return array_unique($styles);
     }
 
     /**
@@ -121,6 +210,7 @@ class ExerciseClassificationSeeder extends Seeder
         $this->equipmentTypes = EquipmentType::pluck('id', 'code')->toArray();
         $this->angles = Angle::pluck('id', 'code')->toArray();
         $this->categories = Category::pluck('id', 'slug')->toArray();
+        $this->trainingStyles = TrainingStyle::pluck('id', 'code')->toArray();
     }
 
     /**
@@ -238,7 +328,7 @@ class ExerciseClassificationSeeder extends Seeder
         }
 
         if (Str::contains($nameLower, 'landmine')) {
-            return 'BARBELL';
+            return 'LANDMINE';
         }
 
         if (Str::contains($nameLower, 'dumbbell')) {

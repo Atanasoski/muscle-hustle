@@ -102,88 +102,49 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Exercise Count Targets by Goal and Experience
+    | Exercise Count Safety Rails
     |--------------------------------------------------------------------------
     |
-    | Defines minimum, maximum, and compound ratio for exercises based on
-    | user's fitness goal and training experience level.
-    |
-    | - min: Minimum number of exercises to include
-    | - max: Maximum number of exercises to include
-    | - compound_ratio: Fraction (0.0-1.0) of exercises that should be compound
+    | Absolute minimum and maximum exercise counts to prevent edge cases.
+    | Duration is the primary constraint, but these provide safety boundaries.
     |
     */
 
-    'exercise_count_targets' => [
-        'strength' => [
-            'beginner' => [
-                'min' => 3,
-                'max' => 5,
-                'compound_ratio' => 1.0,
-            ],
-            'intermediate' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.80,
-            ],
-            'advanced' => [
-                'min' => 5,
-                'max' => 7,
-                'compound_ratio' => 0.70,
-            ],
-        ],
-        'muscle_gain' => [
-            'beginner' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.80,
-            ],
-            'intermediate' => [
-                'min' => 5,
-                'max' => 8,
-                'compound_ratio' => 0.60,
-            ],
-            'advanced' => [
-                'min' => 6,
-                'max' => 10,
-                'compound_ratio' => 0.50,
-            ],
-        ],
-        'fat_loss' => [
-            'beginner' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.75,
-            ],
-            'intermediate' => [
-                'min' => 5,
-                'max' => 8,
-                'compound_ratio' => 0.60,
-            ],
-            'advanced' => [
-                'min' => 6,
-                'max' => 10,
-                'compound_ratio' => 0.50,
-            ],
-        ],
-        'general_fitness' => [
-            'beginner' => [
-                'min' => 4,
-                'max' => 6,
-                'compound_ratio' => 0.75,
-            ],
-            'intermediate' => [
-                'min' => 5,
-                'max' => 7,
-                'compound_ratio' => 0.60,
-            ],
-            'advanced' => [
-                'min' => 5,
-                'max' => 8,
-                'compound_ratio' => 0.50,
-            ],
-        ],
+    'exercise_count_safety' => [
+        'min' => 3,
+        'max' => 12,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Compound Exercise Ratios by Goal
+    |--------------------------------------------------------------------------
+    |
+    | Target fraction (0.0-1.0) of exercises that should be compound movements
+    | based on fitness goal. This influences exercise selection to maintain
+    | appropriate compound-to-isolation balance.
+    |
+    */
+
+    'compound_ratios' => [
+        'strength' => 0.80,
+        'muscle_gain' => 0.60,
+        'fat_loss' => 0.60,
+        'general_fitness' => 0.65,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Session Time Buffer
+    |--------------------------------------------------------------------------
+    |
+    | Percentage of session duration reserved for warm-up, transitions, and
+    | other non-exercise activities. Applied as a buffer when calculating
+    | available time for exercises.
+    |
+    */
+
+    'session_time_buffer' => 0.10,
 
     /*
     |--------------------------------------------------------------------------

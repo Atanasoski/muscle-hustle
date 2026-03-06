@@ -78,13 +78,6 @@ class WelcomePlanGenerationService
     private function determineSplit(int $daysPerWeek): array
     {
         return match ($daysPerWeek) {
-            1 => [
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER', 'CORE'],
-            ],
-            2 => [
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER', 'CORE'],
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER', 'CORE'],
-            ],
             3 => [
                 ['UPPER_PUSH'],
                 ['LOWER'],
@@ -103,7 +96,7 @@ class WelcomePlanGenerationService
                 ['UPPER_PUSH'],
                 ['LOWER'],
             ],
-            6, 7 => [
+            6 => [
                 ['UPPER_PUSH'],
                 ['LOWER'],
                 ['UPPER_PULL'],
