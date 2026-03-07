@@ -35,11 +35,11 @@ class WorkoutTemplate extends Model
     }
 
     /**
-     * Scope: order by program sequence (order_index)
+     * Scope: order by program sequence (week_number, then order_index within week)
      */
     public function scopeOrderedByProgram(Builder $query): Builder
     {
-        return $query->orderBy('order_index');
+        return $query->orderBy('week_number')->orderBy('order_index');
     }
 
     /**
