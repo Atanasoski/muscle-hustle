@@ -49,12 +49,12 @@ class ProgramApiTest extends TestCase
         $user = User::factory()->create(['partner_id' => $partner->id]);
         Sanctum::actingAs($user);
 
-        // Create library programs for this partner
-        Plan::factory()->partnerLibrary($partner)->count(3)->create();
+        // Create library programs for this partner (is_active so they appear in library)
+        Plan::factory()->partnerLibrary($partner)->count(3)->create(['is_active' => true]);
 
         // Create library program for another partner (should not appear)
         $otherPartner = Partner::factory()->create();
-        Plan::factory()->partnerLibrary($otherPartner)->create();
+        Plan::factory()->partnerLibrary($otherPartner)->create(['is_active' => true]);
 
         $response = $this->getJson('/api/programs/library');
 
@@ -71,6 +71,7 @@ class ProgramApiTest extends TestCase
         $libraryProgram = Plan::factory()->partnerLibrary($partner)->create([
             'name' => 'Library Program',
             'duration_weeks' => 8,
+            'is_active' => true,
         ]);
 
         WorkoutTemplate::factory()->create([
@@ -188,6 +189,22 @@ class ProgramApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonCount(0, 'data');
+    }
+
+    public function test_library_excludes_inactive_programs(): void
+    {
+        $partner = Partner::factory()->create();
+        $user = User::factory()->create(['partner_id' => $partner->id]);
+        Sanctum::actingAs($user);
+
+        Plan::factory()->partnerLibrary($partner)->create(['is_active' => true, 'name' => 'Active Program']);
+        Plan::factory()->partnerLibrary($partner)->create(['is_active' => false, 'name' => 'Inactive Program']);
+
+        $response = $this->getJson('/api/programs/library');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Active Program');
     }
 
     public function test_cannot_access_custom_plan_as_program(): void

@@ -287,6 +287,7 @@ class PlanController extends Controller
 
         $libraryPrograms = Plan::forPartner($partner->id)
             ->where('type', PlanType::Library)
+            ->where('is_active', true)
             ->with(['workoutTemplates' => fn ($query) => $query->orderedByProgram()->with(['exercises.category', 'exercises.partners'])])
             ->latest()
             ->get();

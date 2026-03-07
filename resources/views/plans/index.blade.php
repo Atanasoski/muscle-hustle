@@ -38,6 +38,7 @@
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400" style="width: 300px;">Program Details</th>
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Duration</th>
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Templates</th>
+                            <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Active</th>
                             <th class="px-6 py-4 font-medium text-gray-500 dark:text-gray-400">Last Updated</th>
                             <th class="px-6 py-4 text-right font-medium text-gray-500 dark:text-gray-400">Actions</th>
                         </tr>
@@ -79,6 +80,13 @@
                                     <span class="text-gray-700 dark:text-gray-300">
                                         {{ $plan->workout_templates_count }} {{ Str::plural('workout', $plan->workout_templates_count) }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($plan->is_active)
+                                        <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">Active</span>
+                                    @else
+                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400">Hidden</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
                                     {{ $plan->updated_at->format('M d, Y') }}
