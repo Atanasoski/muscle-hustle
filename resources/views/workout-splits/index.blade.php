@@ -3,7 +3,15 @@
 @section('title', 'Workout Splits')
 
 @section('content')
-<div class="space-y-6">
+<div x-data="{
+    activeFilter: 'all',
+    setFilter(focus) {
+        this.activeFilter = focus;
+    },
+    showGroup(focus) {
+        return this.activeFilter === 'all' || this.activeFilter === focus;
+    }
+}" class="space-y-6">
     <!-- Breadcrumb -->
     <x-common.page-breadcrumb pageTitle="Workout Splits" />
 
@@ -26,6 +34,28 @@
         </a>
     </div>
 
+    <!-- Focus Filter -->
+    <div class="flex flex-wrap gap-2">
+        <button
+            @click="setFilter('all')"
+            :class="activeFilter === 'all'
+                ? 'bg-brand-500 text-white border-brand-500'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300 dark:bg-white/3 dark:text-gray-300 dark:border-gray-800'"
+            class="rounded-lg border px-4 py-2 text-sm font-medium transition">
+            All
+        </button>
+        @foreach(\App\Enums\SplitFocus::cases() as $focus)
+            <button
+                @click="setFilter('{{ $focus->value }}')"
+                :class="activeFilter === '{{ $focus->value }}'
+                    ? 'bg-brand-500 text-white border-brand-500'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300 dark:bg-white/3 dark:text-gray-300 dark:border-gray-800'"
+                class="rounded-lg border px-4 py-2 text-sm font-medium transition">
+                {{ ucfirst(str_replace('_', ' ', $focus->value)) }}
+            </button>
+        @endforeach
+    </div>
+
     @if(session('success'))
         <div class="rounded-lg bg-green-50 border border-green-200 p-4 dark:bg-green-900/20 dark:border-green-800">
             <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
@@ -35,7 +65,7 @@
     <!-- Splits grouped by focus and days per week -->
     @forelse($splits as $focus => $focusGroups)
         @foreach($focusGroups as $daysPerWeek => $splitDays)
-            <x-common.component-card>
+            <x-common.component-card x-show="showGroup('{{ $focus }}')" x-cloak>
                 <x-slot:title>
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
@@ -120,3 +150,9 @@
     @endforelse
 </div>
 @endsection
+
+@push('styles')
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+@endpush
