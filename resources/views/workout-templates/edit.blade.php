@@ -25,8 +25,7 @@
             'action' => route('workouts.update', $workoutTemplate),
             'method' => 'PUT',
             'context' => 'library',
-            'dayOfWeekOptions' => $dayOfWeekOptions,
-            'dayOfWeekValue' => $dayOfWeekValue,
+            {{-- day_of_week (commented out) 'dayOfWeekOptions' => $dayOfWeekOptions, 'dayOfWeekValue' => $dayOfWeekValue, --}}
         ])
     </x-common.component-card>
 @endsection

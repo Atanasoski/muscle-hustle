@@ -24,8 +24,7 @@
             'action' => route('workouts.store', $plan),
             'method' => 'POST',
             'context' => 'library',
-            'dayOfWeekOptions' => $dayOfWeekOptions,
-            'dayOfWeekValue' => $dayOfWeekValue,
+            {{-- day_of_week (commented out) 'dayOfWeekOptions' => $dayOfWeekOptions, 'dayOfWeekValue' => $dayOfWeekValue, --}}
         ])
     </x-common.component-card>
 @endsection

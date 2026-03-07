@@ -26,7 +26,8 @@ class WorkoutTemplateController extends Controller
         $isLibrary = $plan->user_id === null;
         $user = $isLibrary ? null : $plan->user;
 
-        // day_of_week (commented out): $dayOfWeekOptions = $this->dayOfWeekOptions();
+        // day_of_week (commented out)
+        // $dayOfWeekOptions = $this->dayOfWeekOptions();
         // $dayOfWeekValue = $request->old('day_of_week');
 
         $view = $isLibrary ? 'workout-templates.create' : 'workout-templates.users.create';
@@ -127,7 +128,8 @@ class WorkoutTemplateController extends Controller
         $isLibrary = $workoutTemplate->plan->user_id === null;
         $user = $isLibrary ? null : $workoutTemplate->plan->user;
 
-        // day_of_week (commented out): $dayOfWeekOptions = $this->dayOfWeekOptions();
+        // day_of_week (commented out)
+        // $dayOfWeekOptions = $this->dayOfWeekOptions();
         // $dayOfWeekValue = $request->old('day_of_week', $workoutTemplate->day_of_week);
 
         $view = $isLibrary ? 'workout-templates.edit' : 'workout-templates.users.edit';

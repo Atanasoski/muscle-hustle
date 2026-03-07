@@ -4,6 +4,7 @@
     'action' => '',
     'method' => 'POST',
     'context' => 'library', // 'library' or 'user'
+    // day_of_week (commented out): form UI and passing from controller/views are disabled
     'dayOfWeekOptions' => [],
     'dayOfWeekValue' => null,
 ])
