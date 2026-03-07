@@ -60,6 +60,15 @@ class MenuHelper
             ];
         }
 
+        // Workout Splits - Only for admins
+        if ($user && $user->hasRole('admin')) {
+            $items[] = [
+                'icon' => 'task',
+                'name' => 'Workout Splits',
+                'path' => '/admin/workout-splits',
+            ];
+        }
+
         return $items;
     }
 

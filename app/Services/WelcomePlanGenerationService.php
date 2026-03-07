@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\Gender;
 use App\Enums\PlanType;
+use App\Enums\SplitFocus;
 use App\Models\Plan;
 use App\Models\User;
+use App\Models\WorkoutSplit;
 use App\Models\WorkoutTemplate;
 use App\Models\WorkoutTemplateExercise;
 use App\Services\WorkoutGenerator\DeterministicWorkoutGenerator;
@@ -31,8 +34,13 @@ class WelcomePlanGenerationService
         }
 
         return DB::transaction(function () use ($user, $planName) {
-            // Determine workout split based on training days
-            $split = $this->determineSplit($user->profile->training_days_per_week);
+            // Determine workout split based on training days and gender
+            $splitFocus = match ($user->profile->gender) {
+                Gender::Female => SplitFocus::LowerFocus,
+                default => SplitFocus::Balanced,
+            };
+
+            $split = $this->determineSplit($user->profile->training_days_per_week, $splitFocus);
 
             // Create the plan
             $plan = Plan::create([
@@ -80,55 +88,19 @@ class WelcomePlanGenerationService
     }
 
     /**
-     * Determine workout split based on training days per week
+     * Determine workout split based on training days per week and focus
      */
-    private function determineSplit(int $daysPerWeek): array
+    private function determineSplit(int $daysPerWeek, SplitFocus $splitFocus): array
     {
-        return match ($daysPerWeek) {
-            1 => [
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
-            ],
-            2 => [
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
-                ['UPPER_PULL', 'UPPER_PUSH', 'LOWER'], // Full Body (Pull focus)
-            ],
-            3 => [
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
-                ['UPPER_PULL', 'UPPER_PUSH', 'LOWER'], // Full Body (Pull focus)
-                ['LOWER', 'UPPER_PUSH', 'UPPER_PULL'], // Full Body (Lower focus)
-            ],
-            4 => [
-                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
-                ['LOWER', 'CORE'], // Legs + Core
-                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
-                ['LOWER', 'CORE'], // Lower Body
-            ],
-            5 => [
-                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
-                ['LOWER', 'CORE'], // Legs + Core
-                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
-                ['LOWER', 'CORE'], // Lower Body
-                ['UPPER_PUSH', 'UPPER_PULL'], // Upper Body
-            ],
-            6 => [
-                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
-                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
-                ['LOWER', 'CORE'], // Legs + Core
-                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
-                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
-                ['LOWER', 'CORE'], // Legs + Core
-            ],
-            7 => [
-                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
-                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
-                ['LOWER', 'CORE'], // Legs + Core
-                ['UPPER_PUSH', 'ARMS'], // Push + Triceps
-                ['UPPER_PULL', 'ARMS'], // Pull + Biceps
-                ['LOWER', 'CORE'], // Legs + Core
-                ['UPPER_PUSH', 'UPPER_PULL', 'LOWER'], // Full Body (Push focus)
-            ],
-            default => [['UPPER_PUSH', 'UPPER_PULL', 'LOWER']], // Full Body
-        };
+        $split = WorkoutSplit::getSplit($daysPerWeek, $splitFocus);
+
+        if (empty($split)) {
+            throw new \RuntimeException(
+                "No workout split found for {$daysPerWeek} days/week with {$splitFocus->value} focus"
+            );
+        }
+
+        return $split;
     }
 
     /**
