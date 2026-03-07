@@ -6,6 +6,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserWorkoutSessionController;
+use App\Http\Controllers\WorkoutSplitController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,6 +25,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/exercises/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
         Route::delete('/exercises/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
         Route::post('/exercises/{exercise}/update-muscle-group-image', [ExerciseController::class, 'updateMuscleGroupImage'])->name('exercises.updateMuscleGroupImage');
+
+        Route::resource('workout-splits', WorkoutSplitController::class)
+            ->names([
+                'index' => 'workout-splits.index',
+                'create' => 'workout-splits.create',
+                'store' => 'workout-splits.store',
+                'edit' => 'workout-splits.edit',
+                'update' => 'workout-splits.update',
+                'destroy' => 'workout-splits.destroy',
+            ]);
     });
 
     // Dashboard

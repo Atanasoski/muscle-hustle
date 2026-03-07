@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             ExerciseSeeder::class,       // Create global exercises
             ExerciseClassificationSeeder::class, // Classify exercises with lookup table FKs
             PartnerExerciseSeeder::class, // Link partners to default exercises
+            WorkoutSplitSeeder::class,   // Create workout splits
         ]);
 
         $this->command->info('');
